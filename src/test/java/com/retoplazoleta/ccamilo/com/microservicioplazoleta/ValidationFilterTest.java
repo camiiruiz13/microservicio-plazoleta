@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RolDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.UsuarioDTOResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.TokenInvalidoException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.TokenJwtConfig;
@@ -25,8 +26,10 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.Date;
 
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.TOKEN_INVALID;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.TOKEN_VENCIDO;
 import static jdk.dynalink.linker.support.Guards.isNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
@@ -144,7 +147,7 @@ class ValidationFilterTest {
         when(loginClient.sendRequest(
                 anyString(),
                 eq(HttpMethod.GET),
-                any(),                 
+                any(),
                 anyString()
         )).thenAnswer(invocation -> {
             UsuarioDTOResponse userDTO = new UsuarioDTOResponse();
@@ -168,6 +171,57 @@ class ValidationFilterTest {
         );
 
         verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    @Order(5)
+    void handlesExceptionInValidation() throws Exception {
+        ValidationFilter filter = buildFilter();
+
+        when(request.getHeader(TokenJwtConfig.HEADER_AUTHORIZATION))
+                .thenReturn(TokenJwtConfig.PREFIX_TOKEN + jwt);
+
+
+        when(loginClient.sendRequest(
+                anyString(),
+                eq(HttpMethod.GET),
+                any(),
+                anyString()
+        )).thenThrow(new RuntimeException("Error personalizado"));
+
+        // Captura el contenido escrito en la respuesta
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Ejecuta el filtro usando reflexión
+        TestUtil.invokePrivateMethod(
+                filter,
+                "doFilterInternal",
+                void.class,
+                new Class[]{HttpServletRequest.class, HttpServletResponse.class, FilterChain.class},
+                request, response, chain
+        );
+
+        // Validaciones
+        String result = writer.toString();
+        assertTrue(result.contains("Token inválido:"), "Debe contener el prefijo del mensaje");
+        assertTrue(result.contains("Error personalizado"), "Debe contener el mensaje de la excepción");
+        verify(response).setStatus(401);
+    }
+
+    @Test
+    @Order(6)
+    void testPrivateIsTokenExpired() throws Exception {
+        ValidationFilter filter = buildFilter();
+
+        Date expired = new Date(System.currentTimeMillis() - 1000);
+        Date valid = new Date(System.currentTimeMillis() + 1000);
+
+        boolean expiredResult = TestUtil.invokePrivateMethod(filter, "isTokenExpired", Boolean.class, new Class[]{Date.class}, expired);
+        boolean validResult = TestUtil.invokePrivateMethod(filter, "isTokenExpired", Boolean.class, new Class[]{Date.class}, valid);
+
+        assertTrue(expiredResult);
+        assertFalse(validResult);
     }
 
 
