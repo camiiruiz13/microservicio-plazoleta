@@ -1,26 +1,46 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.impl;
 
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericRequest;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorClientExeption;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.web.client.*;
 
-import java.util.LinkedHashMap;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.*;
 
 @RequiredArgsConstructor
 public class GenericAplClient implements IGenericApiClient {
-    @Override
-    public GenericResponseDTO<LinkedHashMap<?, ?>> sendRequest(String url, HttpMethod method, Object payload) {
 
+
+    private final RestTemplate restTemplate;
+
+    @Override
+    public GenericResponseDTO<?> sendRequest(String url, HttpMethod method, Object payload, String token) {
+        try {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        ResponseEntity<String> responseEntity;
-        GenericRequest<?> request = new GenericRequest<>();
+        headers.set(HttpHeaders.AUTHORIZATION, token);
+        HttpEntity<Object> entity = (payload != null)
+                ? new HttpEntity<>(payload, headers)
+                : new HttpEntity<>(headers);
 
-        return null;
+
+        ResponseEntity<GenericResponseDTO> responseEntity =
+                restTemplate.exchange(url, method, entity, GenericResponseDTO.class);
+
+        GenericResponseDTO<?> body = responseEntity.getBody();
+
+        return body;
+
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            throw new ErrorClientExeption(HTTP_ERROR.getMessage() + " " + ex.getStatusCode(), ex);
+        } catch (ResourceAccessException ex) {
+            throw new ErrorClientExeption(ACCES_EXCEPTION.getMessage()+ ex.getMessage(), ex);
+        } catch (RestClientException ex) {
+            throw new ErrorClientExeption(REST_CLIENT_EXCEPTION.getMessage() + ex.getMessage(), ex);
+        }
+
+
     }
 }
