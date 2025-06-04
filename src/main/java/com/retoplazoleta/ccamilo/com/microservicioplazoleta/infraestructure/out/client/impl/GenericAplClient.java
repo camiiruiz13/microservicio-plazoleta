@@ -16,7 +16,7 @@ public class GenericAplClient implements IGenericApiClient {
     private final RestTemplate restTemplate;
 
     @Override
-    public GenericResponseDTO<?> sendRequest(String url, HttpMethod method, Object payload, String token) {
+    public <T> GenericResponseDTO<T> sendRequest(String url, HttpMethod method, Object payload, String token) {
         try {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -31,7 +31,7 @@ public class GenericAplClient implements IGenericApiClient {
 
         GenericResponseDTO<?> body = responseEntity.getBody();
 
-        return body;
+        return (GenericResponseDTO<T>) body;
 
         } catch (HttpClientErrorException | HttpServerErrorException ex) {
             throw new ErrorClientExeption(HTTP_ERROR.getMessage() + " " + ex.getStatusCode(), ex);

@@ -70,6 +70,8 @@ jacocoTestReport {
                             '**/config/**',
                             '**/entities/**',
                             '**/mapper/**',
+                            '**/util/**',
+                            '**/enums/**',
                             '**/security/handler/CustomAccessDeniedHandler.class',
                             '**/security/handler/CustomAuthenticationEntryPoint.class',
                             '**/security/jwt/SimpleGrantedAuthorityJsonCreator.class',

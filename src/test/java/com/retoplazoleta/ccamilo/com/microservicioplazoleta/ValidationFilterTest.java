@@ -1,0 +1,176 @@
+package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RolDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.UsuarioDTOResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.TokenJwtConfig;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.auth.ValidationFilter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.util.Date;
+
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.TOKEN_VENCIDO;
+import static jdk.dynalink.linker.support.Guards.isNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ExtendWith(MockitoExtension.class)
+class ValidationFilterTest {
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+    @Mock
+    private IGenericApiClient loginClient;
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private HttpServletResponse response;
+    @Mock
+    private FilterChain chain;
+
+    private final String correo = "test@correo.com";
+    private final String jwt = JWT.create()
+            .withSubject(correo)
+            .withExpiresAt(new Date(System.currentTimeMillis() + 10000))
+            .sign(Algorithm.HMAC256("secret"));
+
+    private ValidationFilter buildFilter() throws Exception {
+        ValidationFilter filter = new ValidationFilter(authenticationManager, loginClient);
+        Field urlUsers = ValidationFilter.class.getDeclaredField("urlUsers");
+        urlUsers.setAccessible(true);
+        urlUsers.set(filter, "http://localhost:8080/user");
+        return filter;
+    }
+
+    @Test
+    @Order(1)
+    void skipsIfHeaderNull() throws Exception {
+        ValidationFilter filter = buildFilter();
+        when(request.getHeader(TokenJwtConfig.HEADER_AUTHORIZATION)).thenReturn(null);
+
+        TestUtil.invokePrivateMethod(
+                filter,
+                "doFilterInternal",
+                void.class,
+                new Class[]{HttpServletRequest.class, HttpServletResponse.class, FilterChain.class},
+                request, response, chain
+        );
+
+        verify(chain).doFilter(request, response);
+    }
+
+
+    @Test
+    @Order(2)
+    void skipsIfHeaderWithoutBearer() throws Exception {
+        ValidationFilter filter = buildFilter();
+        when(request.getHeader(TokenJwtConfig.HEADER_AUTHORIZATION)).thenReturn("XYZ123");
+
+        TestUtil.invokePrivateMethod(
+                filter,
+                "doFilterInternal",
+                void.class,
+                new Class[]{HttpServletRequest.class, HttpServletResponse.class, FilterChain.class},
+                request, response, chain
+        );
+
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    @Order(3)
+    void rejectsExpiredToken() throws Exception {
+        String expired = JWT.create()
+                .withSubject(correo)
+                .withExpiresAt(new Date(System.currentTimeMillis() - 1000))
+                .sign(Algorithm.HMAC256("secret"));
+
+        ValidationFilter filter = buildFilter();
+        when(request.getHeader(TokenJwtConfig.HEADER_AUTHORIZATION)).thenReturn(TokenJwtConfig.PREFIX_TOKEN + expired);
+
+        StringWriter output = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(output));
+
+        TestUtil.invokePrivateMethod(
+                filter,
+                "doFilterInternal",
+                void.class,
+                new Class[]{HttpServletRequest.class, HttpServletResponse.class, FilterChain.class},
+                request, response, chain
+        );
+
+        assertTrue(output.toString().contains(TOKEN_VENCIDO.getMessage()));
+        verify(response).setStatus(401);
+    }
+
+    @Test
+    @Order(4)
+    void authenticatesWithValidToken() throws Exception {
+        ValidationFilter filter = buildFilter();
+
+        RolDTO rol = new RolDTO();
+        rol.setNombre("ADMIN");
+
+        UsuarioDTOResponse user = new UsuarioDTOResponse();
+        user.setIdUsuario(1L);
+        user.setCorreo(correo);
+        user.setRol(rol);
+
+        GenericResponseDTO<UsuarioDTOResponse> apiResponse = new GenericResponseDTO<>();
+        apiResponse.setObjectResponse(user);
+
+        when(request.getHeader(TokenJwtConfig.HEADER_AUTHORIZATION))
+                .thenReturn(TokenJwtConfig.PREFIX_TOKEN + jwt);
+
+        when(loginClient.sendRequest(
+                anyString(),
+                eq(HttpMethod.GET),
+                any(),                 
+                anyString()
+        )).thenAnswer(invocation -> {
+            UsuarioDTOResponse userDTO = new UsuarioDTOResponse();
+            userDTO.setIdUsuario(1L);
+            userDTO.setCorreo(correo);
+            RolDTO roleDTO = new RolDTO();
+            roleDTO.setNombre("ADMIN");
+            userDTO.setRol(roleDTO);
+
+            GenericResponseDTO<UsuarioDTOResponse> response = new GenericResponseDTO<>();
+            response.setObjectResponse(userDTO);
+            return response;
+        });
+
+        TestUtil.invokePrivateMethod(
+                filter,
+                "doFilterInternal",
+                void.class,
+                new Class[]{HttpServletRequest.class, HttpServletResponse.class, FilterChain.class},
+                request, response, chain
+        );
+
+        verify(chain).doFilter(request, response);
+    }
+
+
+
+
+}

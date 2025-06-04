@@ -1,1 +1,9 @@
-spring.application.name=microservicio-plazoleta
+spring:
+  application:
+    name: microservicio-plazoleta
+
+server:
+  port: 8080
+
+hostUsers: http://localhost:8080
+userServices: ${hostUsers}/api/users
