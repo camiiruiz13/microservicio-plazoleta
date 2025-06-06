@@ -3,8 +3,8 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.sec
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RolDTO;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.UsuarioDTOResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RoleDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.UserDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.TokenJwtConfig;
@@ -67,10 +67,10 @@ public class ValidationFilter extends BasicAuthenticationFilter {
 
             String correo = decodedJWT.getSubject();
 
-            UsuarioDTOResponse usuario = consultarUsuarioPorCorreo(correo, header);
+            UserDTOResponse usuario = consultarUsuarioPorCorreo(correo, header);
 
             Long idUser = usuario.getIdUsuario();
-            RolDTO rol = usuario.getRol();
+            RoleDTO rol = usuario.getRol();
             String nombre = rol.getNombre();
             Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + nombre));
             AuthenticatedUser userAuthenticate = new AuthenticatedUser(
@@ -90,12 +90,12 @@ public class ValidationFilter extends BasicAuthenticationFilter {
         }
     }
 
-    private UsuarioDTOResponse consultarUsuarioPorCorreo(String correo, String token) {
+    private UserDTOResponse consultarUsuarioPorCorreo(String correo, String token) {
         String url = this.urlUsers + "/buscarPorCorreo/{correo}";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         String finalUrl = builder.buildAndExpand(correo).toUriString();
 
-        GenericResponseDTO<UsuarioDTOResponse> response = loginClient.sendRequest(
+        GenericResponseDTO<UserDTOResponse> response = loginClient.sendRequest(
                 finalUrl,
                 HttpMethod.GET,
                 null,

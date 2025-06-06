@@ -2,7 +2,6 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.res
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UsuarioDTOResponse implements Serializable {
+public class UserDTOResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long idUsuario;
@@ -22,5 +21,5 @@ public class UsuarioDTOResponse implements Serializable {
     private String celular;
     private String fechaNacimiento;
     private String correo;
-    private RolDTO rol;
+    private RoleDTO rol;
 }

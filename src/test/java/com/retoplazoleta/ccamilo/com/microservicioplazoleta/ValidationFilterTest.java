@@ -2,9 +2,8 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RolDTO;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.UsuarioDTOResponse;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.TokenInvalidoException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RoleDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.UserDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.TokenJwtConfig;
@@ -14,9 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,9 +23,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.TOKEN_INVALID;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.TOKEN_VENCIDO;
-import static jdk.dynalink.linker.support.Guards.isNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
@@ -130,15 +125,15 @@ class ValidationFilterTest {
     void authenticatesWithValidToken() throws Exception {
         ValidationFilter filter = buildFilter();
 
-        RolDTO rol = new RolDTO();
+        RoleDTO rol = new RoleDTO();
         rol.setNombre("ADMIN");
 
-        UsuarioDTOResponse user = new UsuarioDTOResponse();
+        UserDTOResponse user = new UserDTOResponse();
         user.setIdUsuario(1L);
         user.setCorreo(correo);
         user.setRol(rol);
 
-        GenericResponseDTO<UsuarioDTOResponse> apiResponse = new GenericResponseDTO<>();
+        GenericResponseDTO<UserDTOResponse> apiResponse = new GenericResponseDTO<>();
         apiResponse.setObjectResponse(user);
 
         when(request.getHeader(TokenJwtConfig.HEADER_AUTHORIZATION))
@@ -150,14 +145,14 @@ class ValidationFilterTest {
                 any(),
                 anyString()
         )).thenAnswer(invocation -> {
-            UsuarioDTOResponse userDTO = new UsuarioDTOResponse();
+            UserDTOResponse userDTO = new UserDTOResponse();
             userDTO.setIdUsuario(1L);
             userDTO.setCorreo(correo);
-            RolDTO roleDTO = new RolDTO();
+            RoleDTO roleDTO = new RoleDTO();
             roleDTO.setNombre("ADMIN");
             userDTO.setRol(roleDTO);
 
-            GenericResponseDTO<UsuarioDTOResponse> response = new GenericResponseDTO<>();
+            GenericResponseDTO<UserDTOResponse> response = new GenericResponseDTO<>();
             response.setObjectResponse(userDTO);
             return response;
         });
