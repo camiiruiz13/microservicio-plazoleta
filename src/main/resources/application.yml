@@ -2,8 +2,31 @@ spring:
   application:
     name: microservicio-plazoleta
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/PLAZOLETA
+    username: postgres
+    password:
+
+      
+    driver-class-name: org.postgresql.Driver
+
+  sql:
+    init:
+      mode: always
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
 server:
-  port: 8080
+  port: 8081
 
 hostUsers: http://localhost:8080
 userServices: ${hostUsers}/api/users
+
+appDescripcion: API para gestionar platos y pedidos
+appVersion: 1.0.0
