@@ -1,4 +1,4 @@
-package com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.util;
+package com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.util;
 
 public class SwaggerConstants {
 

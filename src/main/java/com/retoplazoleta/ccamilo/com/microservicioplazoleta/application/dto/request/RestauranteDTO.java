@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.util.SwaggerConstants.*;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.util.SwaggerConstants.*;
 
 @Data
 @NoArgsConstructor
