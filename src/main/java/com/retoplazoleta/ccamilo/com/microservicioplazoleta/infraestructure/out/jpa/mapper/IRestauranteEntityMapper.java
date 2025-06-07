@@ -3,7 +3,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity.RestauranteEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,

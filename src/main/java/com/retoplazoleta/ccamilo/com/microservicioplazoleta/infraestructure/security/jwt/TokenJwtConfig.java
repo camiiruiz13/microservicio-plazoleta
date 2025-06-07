@@ -1,4 +1,4 @@
-package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security;
+package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt;
 
 import io.jsonwebtoken.Jwts;
 

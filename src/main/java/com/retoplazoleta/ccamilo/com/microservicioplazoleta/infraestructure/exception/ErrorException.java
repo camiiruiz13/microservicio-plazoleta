@@ -11,7 +11,8 @@ public enum ErrorException {
     ACCES_EXCEPTION("No se pudo acceder al recurso: "),
     REST_CLIENT_EXCEPTION("Error en la solicitud: "),
     TOKEN_VENCIDO("El token ha vencido"),
-    TOKEN_INVALID("Token inválido: " );
+    TOKEN_INVALID("Token inválido: " ),
+    ACCES_DENIED("Acceso denegado: No tiene permisos para realizar esta operación"),;
 
     private final String message;
 

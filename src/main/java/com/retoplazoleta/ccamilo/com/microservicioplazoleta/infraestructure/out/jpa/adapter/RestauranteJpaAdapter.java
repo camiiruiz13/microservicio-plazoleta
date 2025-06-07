@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RestauranteJpaAdapter implements IRestaurantePersitencePort {
 
-    private  final IRestauranteEntityMapper restauranteEntityMapper;
     private final RestauranteRepository repository;
+    private  final IRestauranteEntityMapper restauranteEntityMapper;
 
     @Override
     public Restaurante saveRestaurante(Restaurante restaurante) {

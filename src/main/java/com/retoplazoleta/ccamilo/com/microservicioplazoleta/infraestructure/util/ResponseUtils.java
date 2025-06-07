@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.TokenJwtConfig.CONTENT_TYPE;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.TokenJwtConfig.HEADER_AUTHORIZATION;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.CONTENT_TYPE;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.HEADER_AUTHORIZATION;
 
 
 public class ResponseUtils {
@@ -51,4 +51,6 @@ public class ResponseUtils {
         }
         response.getWriter().write(mapper.writeValueAsString(body));
     }
+
+
 }

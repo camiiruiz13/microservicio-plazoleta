@@ -6,7 +6,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.resp
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.UserDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.TokenJwtConfig;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.auth.ValidationFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
