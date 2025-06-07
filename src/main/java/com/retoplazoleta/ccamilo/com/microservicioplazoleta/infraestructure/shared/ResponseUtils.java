@@ -1,4 +1,4 @@
-package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.util;
+package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;

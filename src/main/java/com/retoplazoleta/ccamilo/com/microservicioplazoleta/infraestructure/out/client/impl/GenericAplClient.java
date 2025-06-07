@@ -1,5 +1,6 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorClientExeption;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
@@ -12,35 +13,43 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructu
 @RequiredArgsConstructor
 public class GenericAplClient implements IGenericApiClient {
 
-
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     @Override
-    public <T> GenericResponseDTO<T> sendRequest(String url, HttpMethod method, Object payload, String token) {
+    public <T> GenericResponseDTO<T> sendRequest(String url, HttpMethod method, Object payload, String token, Class<T> responseType) {
         try {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(HttpHeaders.AUTHORIZATION, token);
-        HttpEntity<Object> entity = (payload != null)
-                ? new HttpEntity<>(payload, headers)
-                : new HttpEntity<>(headers);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set(HttpHeaders.AUTHORIZATION, token);
+            HttpEntity<Object> entity = (payload != null)
+                    ? new HttpEntity<>(payload, headers)
+                    : new HttpEntity<>(headers);
+
+            ResponseEntity<GenericResponseDTO> responseEntity = restTemplate.exchange(
+                    url,
+                    method,
+                    entity,
+                    GenericResponseDTO.class
+            );
+
+            GenericResponseDTO<T> rawBody = responseEntity.getBody();
 
 
-        ResponseEntity<GenericResponseDTO> responseEntity =
-                restTemplate.exchange(url, method, entity, GenericResponseDTO.class);
+            T typedData = objectMapper.convertValue(rawBody.getObjectResponse(), responseType);
+            return GenericResponseDTO.<T>builder()
+                    .objectResponse(typedData)
+                    .message(rawBody.getMessage())
+                    .statusCode(rawBody.getStatusCode())
+                    .build();
 
-        GenericResponseDTO<?> body = responseEntity.getBody();
-
-        return (GenericResponseDTO<T>) body;
 
         } catch (HttpClientErrorException | HttpServerErrorException ex) {
             throw new ErrorClientExeption(HTTP_ERROR.getMessage() + " " + ex.getStatusCode(), ex);
         } catch (ResourceAccessException ex) {
-            throw new ErrorClientExeption(ACCES_EXCEPTION.getMessage()+ ex.getMessage(), ex);
+            throw new ErrorClientExeption(ACCES_EXCEPTION.getMessage() + ex.getMessage(), ex);
         } catch (RestClientException ex) {
             throw new ErrorClientExeption(REST_CLIENT_EXCEPTION.getMessage() + ex.getMessage(), ex);
         }
-
-
     }
 }

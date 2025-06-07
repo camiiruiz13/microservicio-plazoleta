@@ -24,7 +24,7 @@ public class ApiAdapter implements IApiClientPort{
 
     @Override
     public Long idPropietario(String correo, String token) {
-        String url = this.urlUsers + FIND_BY_CORREO_API;
+        String url = this.urlUsers + FIND_BY_CORREO_API.getMessage();
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         String finalUrl = builder.buildAndExpand(correo).toUriString();
 

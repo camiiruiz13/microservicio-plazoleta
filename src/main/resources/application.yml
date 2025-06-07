@@ -5,9 +5,9 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/PLAZOLETA
     username: postgres
-    password:
+    password: admin
 
-      
+
     driver-class-name: org.postgresql.Driver
 
   sql:

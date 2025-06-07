@@ -18,15 +18,17 @@ public class RestauranteDTO {
     @Schema(description = DIRECCION_DESC, example = DIRECCION_EXAMPLE, type =STRING_TYPE, requiredMode = Schema.RequiredMode.REQUIRED)
     private String direccion;
 
-    @Schema(description = CORREO_DESC, example = CORREO_EXAMPLE, requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = CORREO_DESC, example = CORREO_EXAMPLE, type =STRING_TYPE,  requiredMode = Schema.RequiredMode.REQUIRED)
     private String correo;
 
-    @Schema(description = NIT_DESC, example = NIT_EXAMPLE, requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = NIT_DESC, example = NIT_EXAMPLE, type =STRING_TYPE,  requiredMode = Schema.RequiredMode.REQUIRED)
     private String nit;
 
-    @Schema(description = NIT_DESC, example = NIT_EXAMPLE, requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = TELEFONO_DESC, example = TELEFONO_EXAMPLE, type =STRING_TYPE,  maxLength = 13,
+            pattern = PATTERN, requiredMode = Schema.RequiredMode.REQUIRED)
     private String telefono;;
 
+    @Schema(description = IMAGE_DESC, example = IMAGE_EXAMPLE , type =STRING_TYPE,  requiredMode = Schema.RequiredMode.REQUIRED)
     private String urlLogo;
 
 }

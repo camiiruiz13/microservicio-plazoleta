@@ -19,7 +19,11 @@ public class SwaggerConstants {
     public static final String NIT_EXAMPLE = "45689236";
 
     public static final String TELEFONO_DESC = "El campo TelefonoRestaurante debe contener un máximo de 13 caracteres";
+
     public static final String TELEFONO_EXAMPLE = "+573005698325";
+
+    public static final String IMAGE_DESC = "Campo para el logo de la imagen";
+    public static final String IMAGE_EXAMPLE = "http//:www.images.com";
 
     public static final String STRING_TYPE= "string";
 

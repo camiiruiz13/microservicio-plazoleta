@@ -12,6 +12,8 @@ public enum ErrorException {
     REST_CLIENT_EXCEPTION("Error en la solicitud: "),
     TOKEN_VENCIDO("El token ha vencido"),
     TOKEN_INVALID("Token inválido: " ),
+    RESTAURANT_VALIDATION("Error interno en el servidor: " ),
+    GENERIC_EXCEPTION("Error interno en el servidor: " ),
     ACCES_DENIED("Acceso denegado: No tiene permisos para realizar esta operación"),;
 
     private final String message;

@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.EndpointApi.BASE_PATH_RESTAURANTE;
+
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -30,13 +32,19 @@ public class SecurityConfig {
             "/swagger-resources/**",
             "/webjars/**",
             "/configuration/**",
-            //BASE_URL + "/**"
+            BASE_PATH_RESTAURANTE + "/**"
     };
 
 
     @Bean
     AuthenticationManager authenticationManager() throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+
+    @Bean
+     ValidationFilter jwtValidationFilter() throws Exception {
+        return new ValidationFilter(authenticationManager(), loginClient);
     }
 
     @Bean
@@ -48,7 +56,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(ex -> ex.accessDeniedHandler(customAccessDeniedHandler)
                         .authenticationEntryPoint(customAuthenticationEntryPoint))
-                .addFilter(new ValidationFilter(authenticationManager(), loginClient))
+                .addFilter(jwtValidationFilter())
                 .csrf(config -> config.disable())
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();

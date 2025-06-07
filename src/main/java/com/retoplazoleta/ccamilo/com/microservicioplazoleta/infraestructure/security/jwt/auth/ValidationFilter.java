@@ -33,7 +33,7 @@ import java.util.List;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.ApiClient.FIND_BY_CORREO_API;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.TOKEN_INVALID;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.TOKEN_VENCIDO;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.util.ResponseUtils.write;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseUtils.write;
 
 @Slf4j
 public class ValidationFilter extends BasicAuthenticationFilter {
@@ -92,7 +92,7 @@ public class ValidationFilter extends BasicAuthenticationFilter {
     }
 
     private UserDTOResponse consultarUsuarioPorCorreo(String correo, String token) {
-        String url = this.urlUsers + FIND_BY_CORREO_API;
+        String url = this.urlUsers + FIND_BY_CORREO_API.getMessage();
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         String finalUrl = builder.buildAndExpand(correo).toUriString();
 

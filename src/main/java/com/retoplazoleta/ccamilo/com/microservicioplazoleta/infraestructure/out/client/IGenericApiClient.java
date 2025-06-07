@@ -7,5 +7,5 @@ import java.util.LinkedHashMap;
 
 public interface IGenericApiClient {
 
-    <T> GenericResponseDTO<T> sendRequest(String url, HttpMethod method, Object payload, String token);
+    <T> GenericResponseDTO<T> sendRequest(String url, HttpMethod method, Object payload, String token, Class<T> responseType);
 }

@@ -16,8 +16,7 @@ import java.io.Serializable;
 public class GenericResponseDTO<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    public String message;
+    private String message;
     private T objectResponse;
-    public int statusCode;
-
+    private int statusCode;
 }

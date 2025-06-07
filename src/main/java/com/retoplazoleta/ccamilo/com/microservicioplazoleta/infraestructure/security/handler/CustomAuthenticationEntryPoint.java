@@ -2,7 +2,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.sec
 
 
 
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.util.ResponseUtils;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;

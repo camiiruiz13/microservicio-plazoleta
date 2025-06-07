@@ -20,5 +20,5 @@ public class User implements Serializable {
     private String celular;
     private String fechaNacimiento;
     private String correo;
-    private RoleDTO rol;
+    private Role rol;
 }
