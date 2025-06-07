@@ -63,7 +63,6 @@ jacocoTestReport {
     }
 
 
-
     afterEvaluate {
         classDirectories.setFrom(
                 files(classDirectories.files.collect {
@@ -75,18 +74,20 @@ jacocoTestReport {
                             '**/mapper/**',
                             '**/util/**',
                             '**/constants/**',
-                            '**/security/handler/CustomAccessDeniedHandler.class',
-                            '**/security/handler/CustomAuthenticationEntryPoint.class',
-                            '**/security/jwt/SimpleGrantedAuthorityJsonCreator.class',
-                            '**/security/jwt/TokenJwtConfig.class',
-                            '**/shared/**',
-                            '**/auth/**',
-                            '**/MicroservicioPlazoletaApplication.class',
+                            '**/security/handler/**',
+                            '**/security/auth/**',
                             '**/exceptionhandler/**',
+                            '**/out/jpa/mapper/**',
+                            '**/out/jpa/entity/**',
+                            '**/shared/**',
+                            '**/security/jwt/TokenJwtConfig.class',
+                            '**/domain/enums/**',
+                            '**/MicroservicioPlazoletaApplication.class'
                     ])
                 })
         )
     }
+
 }
 
 
@@ -130,7 +131,6 @@ tasks.register('openJacocoReport') {
         }
     }
 }
-
 
 
 check.dependsOn jacocoTestCoverageVerification

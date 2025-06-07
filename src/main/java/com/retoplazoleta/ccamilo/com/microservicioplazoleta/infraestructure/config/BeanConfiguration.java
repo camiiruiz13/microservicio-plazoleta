@@ -1,4 +1,4 @@
-package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.configuration;
+package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.config;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
