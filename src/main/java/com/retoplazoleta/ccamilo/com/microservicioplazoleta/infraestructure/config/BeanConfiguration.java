@@ -1,9 +1,11 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.config;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.RestauranteUseCase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.adapter.ApiAdapter;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.impl.GenericAplClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.adapter.RestauranteJpaAdapter;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.mapper.IRestauranteEntityMapper;
@@ -26,8 +28,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    IRestauranteServicePort restauranteServicePort() {
-        return new RestauranteUseCase(restauranteServicePort());
+    IRestauranteServicePort restauranteServicePort(IApiClientPort apiClientPort) {
+        return new RestauranteUseCase(apiClientPort, restaurantePersitencePort());
     }
 
     @Bean
@@ -38,5 +40,10 @@ public class BeanConfiguration {
     @Bean
     IGenericApiClient genericApiClient(RestTemplate restTemplate) {
         return new GenericAplClient(restTemplate);
+    }
+
+    @Bean
+    IApiClientPort iApiClientPort(IGenericApiClient genericApiClient){
+        return new ApiAdapter(genericApiClient);
     }
 }

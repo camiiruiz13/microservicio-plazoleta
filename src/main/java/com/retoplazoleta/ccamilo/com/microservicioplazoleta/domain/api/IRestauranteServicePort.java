@@ -5,4 +5,5 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaur
 public interface IRestauranteServicePort {
 
     void saveRestaurante(Restaurante restaurante);
+    Long idPropietario(String correo, String token);
 }

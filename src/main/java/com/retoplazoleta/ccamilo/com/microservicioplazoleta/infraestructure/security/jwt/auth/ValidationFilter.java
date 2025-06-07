@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.ApiClient.FIND_BY_CORREO_API;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.TOKEN_INVALID;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.TOKEN_VENCIDO;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.util.ResponseUtils.write;
@@ -91,7 +92,7 @@ public class ValidationFilter extends BasicAuthenticationFilter {
     }
 
     private UserDTOResponse consultarUsuarioPorCorreo(String correo, String token) {
-        String url = this.urlUsers + "/buscarPorCorreo/{correo}";
+        String url = this.urlUsers + FIND_BY_CORREO_API;
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         String finalUrl = builder.buildAndExpand(correo).toUriString();
 

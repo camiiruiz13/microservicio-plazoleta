@@ -3,6 +3,8 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RestauranteValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
 import lombok.RequiredArgsConstructor;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
@@ -10,12 +12,18 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.consta
 @RequiredArgsConstructor
 public class RestauranteUseCase implements IRestauranteServicePort {
 
-    private final IRestauranteServicePort restauranteServicePort;
+    private final IApiClientPort apiClientPort;
+    private final IRestaurantePersitencePort restaurantePersitencePort;
 
     @Override
     public void saveRestaurante(Restaurante restaurante) {
         validateRestaurante(restaurante);
-        restauranteServicePort.saveRestaurante(restaurante);
+        restaurantePersitencePort.saveRestaurante(restaurante);
+    }
+
+    @Override
+    public Long idPropietario(String correo, String token) {
+        return apiClientPort.idPropietario(correo, token);
     }
 
     private void validateRestaurante(Restaurante restaurante) {
