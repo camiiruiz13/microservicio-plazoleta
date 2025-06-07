@@ -143,7 +143,8 @@ class ValidationFilterTest {
                 anyString(),
                 eq(HttpMethod.GET),
                 any(),
-                anyString()
+                anyString(),
+                eq(UserDTOResponse.class)
         )).thenAnswer(invocation -> {
             UserDTOResponse userDTO = new UserDTOResponse();
             userDTO.setIdUsuario(1L);
@@ -152,9 +153,9 @@ class ValidationFilterTest {
             roleDTO.setNombre("ADMIN");
             userDTO.setRol(roleDTO);
 
-            GenericResponseDTO<UserDTOResponse> response = new GenericResponseDTO<>();
-            response.setObjectResponse(userDTO);
-            return response;
+            GenericResponseDTO<UserDTOResponse> responseDTO = new GenericResponseDTO<>();
+            responseDTO.setObjectResponse(userDTO);
+            return responseDTO;
         });
 
         TestUtil.invokePrivateMethod(
@@ -181,14 +182,15 @@ class ValidationFilterTest {
                 anyString(),
                 eq(HttpMethod.GET),
                 any(),
-                anyString()
+                anyString(),
+                eq(UserDTOResponse.class)
         )).thenThrow(new RuntimeException("Error personalizado"));
 
-        // Captura el contenido escrito en la respuesta
+
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        // Ejecuta el filtro usando reflexión
+
         TestUtil.invokePrivateMethod(
                 filter,
                 "doFilterInternal",

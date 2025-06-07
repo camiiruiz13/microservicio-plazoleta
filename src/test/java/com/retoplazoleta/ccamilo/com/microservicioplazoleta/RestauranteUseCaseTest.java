@@ -1,11 +1,12 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.RestauranteUseCase;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RestauranteValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -22,7 +23,10 @@ import static org.mockito.Mockito.*;
 class RestauranteUseCaseTest {
 
     @Mock
-    private IRestauranteServicePort restauranteServicePort;
+    private IRestaurantePersitencePort restaurantePersitencePort;
+
+    @Mock
+    private IApiClientPort apiClientPort;
 
     @InjectMocks
     private RestauranteUseCase restauranteUseCase;
@@ -37,8 +41,9 @@ class RestauranteUseCaseTest {
 
         restauranteUseCase.saveRestaurante(restaurante);
 
-        verify(restauranteServicePort).saveRestaurante(restaurante);
+        verify(restaurantePersitencePort).saveRestaurante(restaurante);
     }
+
 
     @Test
     @Order(2)

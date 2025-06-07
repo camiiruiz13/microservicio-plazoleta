@@ -1,5 +1,6 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorClientExeption;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.impl.GenericAplClient;
@@ -25,6 +26,9 @@ class GenericAplClientTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
     @InjectMocks
     private GenericAplClient genericAplClient;
 
@@ -36,13 +40,16 @@ class GenericAplClientTest {
         Object payload = new Object();
         String token = "Bearer token";
 
-        GenericResponseDTO<?> expectedResponse = new GenericResponseDTO<>();
+        ObjectMapper objectMapper = new ObjectMapper(); // 🔹 inyectas tú mismo
+        GenericAplClient client = new GenericAplClient(restTemplate, objectMapper);
+
+        GenericResponseDTO<Object> expectedResponse = new GenericResponseDTO<>();
         ResponseEntity<GenericResponseDTO> response = new ResponseEntity<>(expectedResponse, HttpStatus.OK);
 
         when(restTemplate.exchange(eq(url), eq(method), any(HttpEntity.class), eq(GenericResponseDTO.class)))
                 .thenReturn(response);
 
-        GenericResponseDTO<?> result = genericAplClient.sendRequest(url, method, payload, token);
+        GenericResponseDTO<Object> result = client.sendRequest(url, method, payload, token, Object.class);
 
         assertEquals(expectedResponse, result);
         verify(restTemplate).exchange(eq(url), eq(method), any(HttpEntity.class), eq(GenericResponseDTO.class));
@@ -55,7 +62,7 @@ class GenericAplClientTest {
                 .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
         ErrorClientExeption ex = assertThrows(ErrorClientExeption.class, () ->
-                genericAplClient.sendRequest("url", HttpMethod.GET, null, "token"));
+                genericAplClient.sendRequest("url", HttpMethod.GET, null, "token", Object.class));
 
         assertTrue(ex.getMessage().contains(HTTP_ERROR.getMessage()));
     }
@@ -67,7 +74,7 @@ class GenericAplClientTest {
                 .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
         ErrorClientExeption ex = assertThrows(ErrorClientExeption.class, () ->
-                genericAplClient.sendRequest("url", HttpMethod.GET, null, "token"));
+                genericAplClient.sendRequest("url", HttpMethod.GET, null, "token", Object.class));
 
         assertTrue(ex.getMessage().contains(HTTP_ERROR.getMessage()));
     }
@@ -79,7 +86,7 @@ class GenericAplClientTest {
                 .thenThrow(new ResourceAccessException("Timeout"));
 
         ErrorClientExeption ex = assertThrows(ErrorClientExeption.class, () ->
-                genericAplClient.sendRequest("url", HttpMethod.GET, null, "token"));
+                genericAplClient.sendRequest("url", HttpMethod.GET, null, "token", Object.class));
 
         assertTrue(ex.getMessage().contains(ACCES_EXCEPTION.getMessage()));
     }
@@ -91,7 +98,7 @@ class GenericAplClientTest {
                 .thenThrow(new RestClientException("Error"));
 
         ErrorClientExeption ex = assertThrows(ErrorClientExeption.class, () ->
-                genericAplClient.sendRequest("url", HttpMethod.GET, null, "token"));
+                genericAplClient.sendRequest("url", HttpMethod.GET, null, "token", Object.class));
 
         assertTrue(ex.getMessage().contains(REST_CLIENT_EXCEPTION.getMessage()));
     }
