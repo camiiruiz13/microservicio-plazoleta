@@ -50,7 +50,7 @@ public class RestauranteController {
                                                                                      schema = @Schema(implementation = RestauranteRequest.class)))
                                                                      @RequestBody RestauranteRequest restauranteRequest){
 
-        String token = PREFIX_TOKEN+ request.getHeader(HEADER_AUTHORIZATION);
+        String token =request.getHeader(HEADER_AUTHORIZATION);
         restauranteHandler.saveRestaurante(restauranteRequest.getRequest(), token);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(RESTAURANT_SUCCES.getMessage(), HttpStatus.CREATED),

@@ -127,4 +127,19 @@ class RestauranteUseCaseTest {
                 restauranteUseCase.saveRestaurante(restaurante));
         assertEquals("El teléfono debe tener máximo 13 caracteres y ser numérico. Puede iniciar con +.", ex.getMessage());
     }
+
+    @Test
+    @Order(9)
+    void testIdPropietario_Delegacion() {
+        String correo = "usuario@mail.com";
+        String token = "Bearer abc123";
+
+        when(apiClientPort.idPropietario(correo, token)).thenReturn(10L);
+
+        Long result = restauranteUseCase.idPropietario(correo, token);
+
+        assertEquals(10L, result);
+        verify(apiClientPort).idPropietario(correo, token);
+    }
+
 }
