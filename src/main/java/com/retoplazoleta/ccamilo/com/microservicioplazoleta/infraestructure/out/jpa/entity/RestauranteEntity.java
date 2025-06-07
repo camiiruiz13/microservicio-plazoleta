@@ -32,7 +32,7 @@ public class RestauranteEntity {
     @Column(name = "telefono")
     private String telefono;
 
-    @Column(name = "urlLogo")
+    @Column(name = "url_logo")
     private String urlLogo;
 
     @Column(name = "nit")

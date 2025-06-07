@@ -93,17 +93,21 @@ public class ValidationFilter extends BasicAuthenticationFilter {
 
     private UserDTOResponse consultarUsuarioPorCorreo(String correo, String token) {
         String url = this.urlUsers + FIND_BY_CORREO_API.getMessage();
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
         String finalUrl = builder.buildAndExpand(correo).toUriString();
 
         GenericResponseDTO<UserDTOResponse> response = loginClient.sendRequest(
                 finalUrl,
                 HttpMethod.GET,
                 null,
-                token  );
+                token,
+                UserDTOResponse.class
+        );
 
         return response.getObjectResponse();
     }
+
 
     private boolean isTokenExpired(Date exp) {
         return exp.before(new Date());

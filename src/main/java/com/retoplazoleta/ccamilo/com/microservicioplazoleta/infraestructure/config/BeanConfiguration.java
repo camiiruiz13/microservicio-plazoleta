@@ -1,5 +1,6 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
@@ -38,8 +39,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    IGenericApiClient genericApiClient(RestTemplate restTemplate) {
-        return new GenericAplClient(restTemplate);
+    IGenericApiClient genericApiClient(ObjectMapper objectMapper) {
+        return new GenericAplClient(restTemplate(),objectMapper);
     }
 
     @Bean

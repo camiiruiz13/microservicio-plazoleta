@@ -14,6 +14,7 @@ public enum ErrorException {
     TOKEN_INVALID("Token inválido: " ),
     RESTAURANT_VALIDATION("Error interno en el servidor: " ),
     GENERIC_EXCEPTION("Error interno en el servidor: " ),
+    RESTAURANTE_ROLE_EXCEPTION("Rol incorrecto para crear retaurante " ),
     ACCES_DENIED("Acceso denegado: No tiene permisos para realizar esta operación"),;
 
     private final String message;

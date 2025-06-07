@@ -2,6 +2,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exc
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RestauranteValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorClientExeption;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.RoleException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,8 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructu
 @Slf4j
 public class ControllerAdvisor {
 
-    private final String ERROR = "error";
+    public static final String ERROR = "error";
+
 
     @ExceptionHandler(ErrorClientExeption.class)
     public ResponseEntity<GenericResponseDTO<Void>> handleDomainException(ErrorClientExeption ex) {
@@ -32,6 +34,12 @@ public class ControllerAdvisor {
     public ResponseEntity<GenericResponseDTO<Map<String, Object>>> restauranteDomainException(RestauranteValidationException ex) {
         log.error("Error en la validacion del netocion", ex);
         return new ResponseEntity<>(ResponseUtils.buildResponse(RESTAURANT_VALIDATION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RoleException.class)
+    public ResponseEntity<GenericResponseDTO<Map<String, Object>>> rolePropietarioException(RoleException ex) {
+        log.error("No se puede crear restaurante con rol dioferente a propietario", ex);
+        return new ResponseEntity<>(ResponseUtils.buildResponse(RESTAURANTE_ROLE_EXCEPTION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
