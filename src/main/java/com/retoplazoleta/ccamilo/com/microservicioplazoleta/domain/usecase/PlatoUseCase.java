@@ -17,7 +17,7 @@ public class PlatoUseCase implements IPlatoServicePort {
 
 
     @Override
-    public void savePlato(Plato plato, Long idPropietario) {
+    public void savePlato(Plato plato) {
         validatePlato(plato);
         platoPersistencePort.savePlato(plato);
     }

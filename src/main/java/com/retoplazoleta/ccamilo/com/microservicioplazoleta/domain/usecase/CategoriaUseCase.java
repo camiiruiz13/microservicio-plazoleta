@@ -14,7 +14,7 @@ public class CategoriaUseCase implements ICategoriaServicePort {
     private final ICategoriaPersistencePort categoriaPersistencePort;
 
     @Override
-    public Categoria findCategoriaBy(Long id) {
+    public Categoria findCategoriaByIdCategoria(Long id) {
         Categoria categoria = categoriaPersistencePort.findByIdCategoria(id);
         if (categoria == null)
             throw new CategoriaValidationException(ERROR_CATEGORIA.getMessage());

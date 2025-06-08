@@ -5,8 +5,8 @@ public class SwaggerConstants {
     private SwaggerConstants() {
     }
 
-    public static final String NOMBRE_DESC = "El nombre del restaurante puede contener números, pero no se permiten nombres con sólo números.";
-    public static final String NOMBRE_EXAMPLE = "La fonda de beto";
+    public static final String RESTAURANTE_NOMBRE_DESC = "El nombre del restaurante puede contener números, pero no se permiten nombres con sólo números.";
+    public static final String RESTAURANTE_NOMBRE_EXAMPLE = "La fonda de beto";
 
     public static final String DIRECCION_DESC = "Direccion del restaurante";
     public static final String DIRECCION_EXAMPLE = "AVENIDA LA ESPAÑOLA";
@@ -25,7 +25,26 @@ public class SwaggerConstants {
     public static final String IMAGE_DESC = "Campo para el logo de la imagen";
     public static final String IMAGE_EXAMPLE = "http//:www.images.com";
 
+    public static final String PLATO_NOMBRE_DESC = "Nombre del plato";
+    public static final String PLATO_NOMBRE_EXAMPLE = "Bandeja paisa";
+
+    public static final String PLATO_DESC_DESC = "Descripcion del plato";
+    public static final String PLATO_DESC_EXAMPLE = "Plato compuesto de frijol, chicharron y arroz";
+
+
+    public static final String PLATO_PRECIO_DESC = "Precio del plato en números enteros positivos";
+    public static final String PLATO_PRECIO_EXAMPLE = "25.630";
+
+    public static final String PLATO_ID_RESTAURANTE_DESC = "Id del restaurante";
+    public static final String PLATO_ID_RESTAURANTE_EXAMPLE = "1";
+
+    public static final String PLATO_ID_CATEGORIA_DESC = "Id de la categoria";
+    public static final String PLATO_ID_CATEGORIA_EXAMPLE = "1";
+
     public static final String STRING_TYPE= "string";
+    public static final String NUMBER_TYPE= "number";
+    public static final String FORMAT_DOUBLE = "double";
+    public static final String FORMAT_LONG = "int64";
 
 
     public static final String PATTERN="^\\+?\\d{1,13}$";

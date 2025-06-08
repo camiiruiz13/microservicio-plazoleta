@@ -1,8 +1,11 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.controller;
 
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IRestauranteHandler;
+
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPlatoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.RestauranteRequest;
+
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PlatoRequest;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.auth.AuthenticatedUser;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.EndpointApi;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseUtils;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.SwaggerConstants;
@@ -17,24 +20,30 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.*;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.CONTENT_TYPE;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.HEADER_AUTHORIZATION;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PLATO_SUCCES;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.RESTAURANT_SUCCES;
 
 @RestController
-@RequestMapping(EndpointApi.BASE_PATH_RESTAURANTE)
+@RequestMapping(EndpointApi.BASE_PATH_PLATO)
 @RequiredArgsConstructor
-@Tag(name = SwaggerConstants.TAG_RESTAURANTE, description = SwaggerConstants.TAG_RESTAURANTE_DESC)
-public class RestauranteController {
+@Tag(name = SwaggerConstants.TAG_PLATO, description = SwaggerConstants.TAG_PLATO_DESC)
+public class PlatoController {
 
-    private final IRestauranteHandler restauranteHandler;
+    private final IPlatoHandler platoHandler;
 
-    @PostMapping(EndpointApi.CREATE_RESTAURANTE)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping(EndpointApi.CREATE_PLATO)
+    @PreAuthorize("hasRole('ROLE_PROP')")
     @Operation(
-            summary = SwaggerConstants.OP_CREAR_RESTAURANTE_SUMMARY,
-            description = SwaggerConstants.OP_CREAR_RESTAURANTE_DESC
+            summary = SwaggerConstants.OP_CREAR_PLATO_SUMMARY,
+            description = SwaggerConstants.OP_CREAR_PLATO_DESC
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerConstants.CREATED, description = SwaggerConstants.RESPONSE_201_DESC),
@@ -44,18 +53,18 @@ public class RestauranteController {
             @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
-    public ResponseEntity<GenericResponseDTO<Void>> crearRestaurante(HttpServletRequest request,
-                                                                     @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                                                                             description = SwaggerConstants.CREATE_RESTAURANTE_DESCRIPTION_REQUEST,
+    public ResponseEntity<GenericResponseDTO<Void>> crearPlato(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                                                             description = SwaggerConstants.CREATE_PLATO_DESCRIPTION_REQUEST,
                                                                              content = @Content(
                                                                                      mediaType = CONTENT_TYPE,
-                                                                                     schema = @Schema(implementation = RestauranteRequest.class)))
-                                                                     @RequestBody RestauranteRequest restauranteRequest){
+                                                                                     schema = @Schema(implementation = PlatoRequest.class)))
+                                                                     @RequestBody PlatoRequest platoRequest,
+                                                               @AuthenticationPrincipal AuthenticatedUser user){
 
-        String token =request.getHeader(HEADER_AUTHORIZATION);
-        restauranteHandler.saveRestaurante(restauranteRequest.getRequest(), token);
+
+        platoHandler.savePlato(platoRequest.getRequest(), Long.valueOf(user.getIdUser()));
         return new ResponseEntity<>(
-                ResponseUtils.buildResponse(RESTAURANT_SUCCES.getMessage(), HttpStatus.CREATED),
+                ResponseUtils.buildResponse(PLATO_SUCCES.getMessage(), HttpStatus.CREATED),
                 HttpStatus.CREATED
         );
     }
