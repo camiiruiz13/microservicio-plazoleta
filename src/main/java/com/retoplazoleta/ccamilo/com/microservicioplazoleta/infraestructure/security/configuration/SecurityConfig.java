@@ -1,4 +1,4 @@
-package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.config;
+package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.configuration;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.handler.CustomAccessDeniedHandler;

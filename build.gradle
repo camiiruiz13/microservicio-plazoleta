@@ -70,7 +70,7 @@ jacocoTestReport {
                     fileTree(dir: it, exclude: [
                             '**/dto/**',
                             '**/exception/**',
-                            '**/config/**',
+                            '**/configuration/**',
                             '**/entities/**',
                             '**/documentation/**',
                             '**/mapper/**',
