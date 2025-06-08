@@ -4,4 +4,6 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RestauranteRepository extends JpaRepository<RestauranteEntity, Long> {
+
+    boolean existsByIdPropietarioAndId(Long idPropietario, Long id);
 }
