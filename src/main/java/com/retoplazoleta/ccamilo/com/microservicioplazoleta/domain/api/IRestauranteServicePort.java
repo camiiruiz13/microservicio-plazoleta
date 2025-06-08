@@ -6,5 +6,5 @@ public interface IRestauranteServicePort {
 
     void saveRestaurante(Restaurante restaurante);
     Long idPropietario(String correo, String token);
-    boolean usuarioPropietarioResauarante(Long idPropietario, Long idRewstaurante);
+
 }

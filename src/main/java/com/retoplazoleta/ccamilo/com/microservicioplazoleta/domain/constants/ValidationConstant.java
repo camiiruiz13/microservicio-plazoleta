@@ -12,6 +12,7 @@ public enum ValidationConstant {
     NUMERIC_NIT("El NIT debe contener solo números."),
     CARACTER_TEL("El teléfono debe tener máximo 13 caracteres y ser numérico. Puede iniciar con +."),
     USER_PROPIETARIO("Usuario no propietario del restaurante"),
+    ERROR_USER("El usuario no es propietario del restaurante"),
     MATCHES("^\\d+$"),
     MATCHES_TEL("^\\+?\\d{1,13}$");
 

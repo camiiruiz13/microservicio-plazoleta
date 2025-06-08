@@ -20,8 +20,10 @@ public class RestauranteJpaAdapter implements IRestaurantePersitencePort {
     }
 
     @Override
-    public boolean usuarioPropietarioResauarante(Long idPropietario, Long idRewstaurante) {
-        return repository.existsByIdPropietarioAndId(idPropietario, idRewstaurante);
+    public Restaurante findByIdAndIdPropietario(Long idRestaurante, Long idPropietario) {
+        return repository.findByIdAndIdPropietario(idRestaurante, idPropietario)
+                .map(restauranteEntityMapper::toRestauranteModel)
+                .orElse(null);
     }
 
 

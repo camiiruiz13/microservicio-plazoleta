@@ -26,13 +26,7 @@ public class RestauranteUseCase implements IRestauranteServicePort {
         return apiClientPort.idPropietario(correo, token);
     }
 
-    @Override
-    public boolean usuarioPropietarioResauarante(Long idPropietario, Long idRewstaurante) {
-        if (!restaurantePersitencePort.usuarioPropietarioResauarante(idPropietario, idRewstaurante)) {
-            throw new RestauranteValidationException(USER_PROPIETARIO.getMessage());
-        }
-        return true;
-    }
+
 
     private void validateRestaurante(Restaurante restaurante) {
         if (restaurante.getNombre() == null || restaurante.getNombre().isBlank()) {

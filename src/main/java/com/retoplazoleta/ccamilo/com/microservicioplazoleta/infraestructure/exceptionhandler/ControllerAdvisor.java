@@ -1,5 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exceptionhandler;
 
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.CategoriaValidationException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RestauranteValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorClientExeption;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.RoleException;
@@ -32,7 +34,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(RestauranteValidationException.class)
     public ResponseEntity<GenericResponseDTO<Map<String, Object>>> restauranteDomainException(RestauranteValidationException ex) {
-        log.error("Error en la validacion del netocion", ex);
+        log.error("Error al crear un restaurante", ex);
         return new ResponseEntity<>(ResponseUtils.buildResponse(RESTAURANT_VALIDATION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
@@ -48,6 +50,19 @@ public class ControllerAdvisor {
         return new ResponseEntity<>(ResponseUtils.buildResponse(GENERIC_EXCEPTION.getMessage(), Map.of(ERROR, ex.getMessage()),
                 HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(PlatoValidationException.class)
+    public ResponseEntity<GenericResponseDTO<Map<String, Object>>> platoDomainException(PlatoValidationException ex) {
+        log.error("Error a crear un plato", ex);
+        return new ResponseEntity<>(ResponseUtils.buildResponse(PLATO_VALIDATION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CategoriaValidationException.class)
+    public ResponseEntity<GenericResponseDTO<Map<String, Object>>> categoriaDomainException(CategoriaValidationException ex) {
+        log.error("No existen categorias a registrar", ex);
+        return new ResponseEntity<>(ResponseUtils.buildResponse(CATEGORIA_VALIDATION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+    }
+
 
 
 
