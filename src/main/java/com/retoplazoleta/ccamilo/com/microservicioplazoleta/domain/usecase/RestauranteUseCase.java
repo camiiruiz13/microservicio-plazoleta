@@ -28,6 +28,8 @@ public class RestauranteUseCase implements IRestauranteServicePort {
 
     @Override
     public Restaurante findByIdAndIdPropietario(Long idRestaurante, Long idPropietario) {
+        if (idRestaurante == null)
+            throw new RestauranteValidationException(ID_RESTAURANTE_NULL.getMessage());
         Restaurante restaurante = restaurantePersitencePort.findByIdAndIdPropietario(idRestaurante, idPropietario);
         if (restaurante == null)
             throw new RestauranteValidationException(ERROR_USER.getMessage());

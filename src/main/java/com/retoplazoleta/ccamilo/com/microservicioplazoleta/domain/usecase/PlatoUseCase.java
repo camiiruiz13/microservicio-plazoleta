@@ -27,6 +27,10 @@ public class PlatoUseCase implements IPlatoServicePort {
             throw new PlatoValidationException(NAME_PLATO_EXCEPTION.getMessage());
         }
 
+        if (plato.getPrecio() == null){
+            throw new PlatoValidationException(PRICE_PLATO_NULL_EXCEPTION.getMessage());
+        }
+
         if (plato.getPrecio() <= 0) {
             throw new PlatoValidationException(PRICE_PLATO_EXCEPTION.getMessage());
         }

@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS RESTAURANTES (
     nit VARCHAR(50),
     direccion TEXT,
     telefono VARCHAR(50),
-    urlLogo TEXT,
+    url_Logo TEXT,
     id_propietario BIGINT
     );
 
@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS PLATOS (
     precio NUMERIC(10,2) NOT NULL,
     id_categoria INTEGER,
     id_restaurante INTEGER,
-    disponible BOOLEAN DEFAULT TRUE,
+    activo BOOLEAN DEFAULT TRUE,
+    url_imagen TEXT,
     FOREIGN KEY (id_categoria) REFERENCES categorias(id),
     FOREIGN KEY (id_restaurante) REFERENCES restaurantes(id)
     );
