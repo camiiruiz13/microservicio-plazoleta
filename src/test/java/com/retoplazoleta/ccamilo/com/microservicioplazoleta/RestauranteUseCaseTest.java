@@ -1,5 +1,6 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.RestauranteUseCase;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.ERROR_USER;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.ID_RESTAURANTE_NULL;
@@ -188,6 +191,38 @@ class RestauranteUseCaseTest {
         assertNotNull(resultado);
         assertEquals(restaurante, resultado);
     }
+
+    @Test
+    @Order(13)
+    void listarRestaurantesPaginados_debeRetornarListaPaginada() {
+
+        int page = 0;
+        int size = 2;
+
+        List<Restaurante> restaurantes = List.of(
+                builRestaurante(),
+                builRestaurante()
+        );
+
+        PageResponse<Restaurante> pageResult = PageResponse.<Restaurante>builder()
+                .content(restaurantes)
+                .currentPage(page)
+                .pageSize(size)
+                .totalElements(2)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+
+        when(restaurantePersitencePort.findAllRestaurantes(page, size)).thenReturn(pageResult);
+
+        PageResponse<Restaurante> resultado = restauranteUseCase.findAllRestaurantes(page, size);
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.getContent().size());
+        verify(restaurantePersitencePort).findAllRestaurantes(page, size);
+    }
+
 
     private Restaurante builRestaurante(){
         Restaurante restaurante = new Restaurante();

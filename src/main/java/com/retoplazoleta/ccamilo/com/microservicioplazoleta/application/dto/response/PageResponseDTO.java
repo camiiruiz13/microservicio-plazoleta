@@ -1,16 +1,15 @@
-package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response;
+package com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
 @Getter
 @Builder
 @AllArgsConstructor
-public class PageResponse<T> {
+public class PageResponseDTO<T> {
     private final List<T> content;
     private final int currentPage;
     private final int pageSize;

@@ -3,6 +3,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RestauranteValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,11 @@ public class RestauranteUseCase implements IRestauranteServicePort {
         if (restaurante == null)
             throw new RestauranteValidationException(ERROR_USER.getMessage());
         return restaurante;
+    }
+
+    @Override
+    public PageResponse<Restaurante> findAllRestaurantes(int page, int pageSize) {
+        return restaurantePersitencePort.findAllRestaurantes(page, pageSize);
     }
 
 
