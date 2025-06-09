@@ -65,7 +65,7 @@ class CategoriaUseCaseTest {
 
         when(categoriaPersistencePort.findByIdCategoria(idCategoria)).thenReturn(categoria);
 
-        Categoria resultado = categoriaPersistencePort.findByIdCategoria(idCategoria);
+        Categoria resultado = categoriaUseCase.findCategoriaByIdCategoria(idCategoria);
 
         assertNotNull(resultado);
         assertEquals(categoria, resultado);
