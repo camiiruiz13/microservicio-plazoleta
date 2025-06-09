@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 
+
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categoria;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
@@ -19,9 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
@@ -110,6 +110,125 @@ class PlatoUseCaseTest {
         assertEquals(URL_PLATO_EXCEPTION.getMessage(), ex.getMessage());
     }
 
+    @Test
+    @Order(7)
+    void cuandoIdPlatoEsNull_lanzaExcepcion() {
+
+
+        PlatoValidationException ex = assertThrows(
+                PlatoValidationException.class,
+                () -> platoUseCase.findByIdAndIdRPropietario(null, null)
+        );
+
+        assertEquals(ID_PLATO_NULL.getMessage(), ex.getMessage());
+    }
+
+
+
+    @Test
+    @Order(8)
+    void cuandoExistePlato_retornaPlato() {
+        Long idPlato = 1L;
+        Long idPropietario = 1L;
+
+        Plato plato = builPlato();
+
+        when(platoPersistencePort.findByIdAndIdPropietario(idPlato, idPropietario)).thenReturn(plato);
+
+        Plato resultado = platoUseCase.findByIdAndIdRPropietario(idPlato, idPropietario);
+
+        assertNotNull(resultado);
+        assertEquals(plato, resultado);
+    }
+
+    @Test
+    @Order(9)
+    void updatePlato_CuandoDescripcionYPrecioNoSonNulos_ActualizaAmbos() {
+        Long id = 1L;
+        Long idProp = 100L;
+
+        Plato entrada = new Plato();
+        entrada.setDescripcion("Nuevo");
+        entrada.setPrecio(25.50);
+
+        Plato existente = mockFindByIdAndIdRPropietario(id);
+        when(platoPersistencePort.findByIdAndIdPropietario(id, idProp)).thenReturn(existente);
+
+        platoUseCase.updatePlato(entrada, id, idProp);
+
+        verify(platoPersistencePort).savePlato(argThat(plato ->
+                "Nuevo".equals(plato.getDescripcion()) &&
+                        25.50 == plato.getPrecio()
+        ));
+    }
+
+
+    @Test
+    @Order(10)
+    void updatePlato_CuandoDescripcionEsNullYPrecioNo_ActualizaSoloPrecio() {
+        Long id = 2L;
+        Long idProp = 200L;
+
+        Plato entrada = new Plato();
+        entrada.setDescripcion(null);
+        entrada.setPrecio(30.00);
+
+        Plato existente = mockFindByIdAndIdRPropietario(id);
+        when(platoPersistencePort.findByIdAndIdPropietario(id, idProp)).thenReturn(existente);
+
+        platoUseCase.updatePlato(entrada, id, idProp);
+
+        verify(platoPersistencePort).savePlato(argThat(plato ->
+                "Original".equals(plato.getDescripcion()) &&
+                        30.00 == plato.getPrecio()
+        ));
+    }
+
+
+    @Test
+    @Order(11)
+    void updatePlato_CuandoPrecioEsNullYDescripcionNo_ActualizaSoloDescripcion() {
+        Long id = 3L;
+        Long idProp = 300L;
+
+        Plato entrada = new Plato();
+        entrada.setDescripcion("Actualizado");
+        entrada.setPrecio(null);
+
+        Plato existente = mockFindByIdAndIdRPropietario(id);
+        when(platoPersistencePort.findByIdAndIdPropietario(id, idProp)).thenReturn(existente);
+
+        platoUseCase.updatePlato(entrada, id, idProp);
+
+        verify(platoPersistencePort).savePlato(argThat(plato ->
+                "Actualizado".equals(plato.getDescripcion()) &&
+                        10.00 == plato.getPrecio()
+        ));
+    }
+
+
+    @Test
+    @Order(12)
+    void updatePlato_CuandoAmbosCamposSonNull_NoModificaNada() {
+        Long id = 4L;
+        Long idProp = 400L;
+
+        Plato entrada = new Plato();
+        entrada.setDescripcion(null);
+        entrada.setPrecio(null);
+
+        Plato existente = mockFindByIdAndIdRPropietario(id);
+        when(platoPersistencePort.findByIdAndIdPropietario(id, idProp)).thenReturn(existente);
+
+        platoUseCase.updatePlato(entrada, id, idProp);
+
+        verify(platoPersistencePort).savePlato(argThat(plato ->
+                "Original".equals(plato.getDescripcion()) &&
+                        10.00 == plato.getPrecio()
+        ));
+    }
+
+
 
     Plato builPlato (){
 
@@ -137,6 +256,14 @@ class PlatoUseCaseTest {
         plato.setUrlImagen("http://www.images.com/jugo-mango.jpg");
         plato.setActivo(true);
 
+        return plato;
+    }
+
+    private Plato mockFindByIdAndIdRPropietario(Long id) {
+        Plato plato = new Plato();
+        plato.setId(id);
+        plato.setDescripcion("Original");
+        plato.setPrecio(10.00);
         return plato;
     }
 

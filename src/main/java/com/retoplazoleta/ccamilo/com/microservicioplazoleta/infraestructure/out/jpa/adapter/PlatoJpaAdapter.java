@@ -19,4 +19,13 @@ public class PlatoJpaAdapter  implements IPlatoPersistencePort {
         return platoEntityMapper.toPlatoModel(platoEntity
         );
     }
+
+    @Override
+    public Plato findByIdAndIdPropietario(Long id, Long idPropietario) {
+        return platoRepository.findByIdAndIdPropietario(id, idPropietario)
+                .map(platoEntityMapper::toPlatoModel)
+                .orElse(null);
+    }
+
+
 }

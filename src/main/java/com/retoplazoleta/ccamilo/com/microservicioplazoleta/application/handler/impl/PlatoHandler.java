@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.impl;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPlatoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoRequestMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.ICategoriaServicePort;
@@ -27,5 +28,11 @@ public class PlatoHandler implements IPlatoHandler {
         platoServicePort.savePlato(plato);
 
 
+    }
+
+    @Override
+    public void updatePlato(PlatoDTOUpdate platoDTO, Long idPlato, Long idPropietario) {
+        Plato plato = platoRequestMapper.toPlatoUpdate(platoDTO);
+        platoServicePort.updatePlato(plato, idPlato, idPropietario);
     }
 }

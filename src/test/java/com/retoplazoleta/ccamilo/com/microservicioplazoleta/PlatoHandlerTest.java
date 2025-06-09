@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.impl.PlatoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoRequestMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.ICategoriaServicePort;
@@ -67,5 +68,28 @@ class PlatoHandlerTest {
         verify(restauranteService).findByIdAndIdPropietario(idRestaurante, idPropietario);
         verify(categoriaService).findCategoriaByIdCategoria(idCategoria);
         verify(platoServicePort).savePlato(plato);
+    }
+
+    @Test
+    @Order(2)
+    void updatePlato_deberiaGuardarCorrectamente() {
+
+        Long idPlato = 1L;
+        Long idPropietario = 1L;
+
+
+        PlatoDTOUpdate platoDTO = new PlatoDTOUpdate();
+
+        Plato plato = new Plato();
+
+
+
+        when(platoRequestMapper.toPlatoUpdate(platoDTO)).thenReturn(plato);
+
+
+        platoHandler.updatePlato(platoDTO, idPlato, idPropietario);
+
+        verify(platoRequestMapper).toPlatoUpdate(platoDTO);
+        verify(platoServicePort).updatePlato(plato, idPlato, idPropietario);
     }
 }

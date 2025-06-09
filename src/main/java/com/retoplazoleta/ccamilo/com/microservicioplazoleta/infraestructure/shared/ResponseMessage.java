@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum ResponseMessage {
 
     RESTAURANT_SUCCES("Se ha creado el restaurante exitosamente"),
-    PLATO_SUCCES("Se ha creado el plato exitosamente");
+    PLATO_SUCCES("Se ha creado el plato exitosamente"),
+    PLATO_UPDATE_SUCCES("Se ha actualizado el plato exitosamente");
 
     private final String message;
 }

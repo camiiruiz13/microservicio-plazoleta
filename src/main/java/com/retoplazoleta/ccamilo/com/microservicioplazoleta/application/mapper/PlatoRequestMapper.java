@@ -2,6 +2,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper;
 
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -13,4 +14,5 @@ import org.mapstruct.ReportingPolicy;
 public interface PlatoRequestMapper {
 
     Plato toPlato(PlatoDTO platoDTO);
+    Plato toPlatoUpdate(PlatoDTOUpdate platoDTO);
 }
