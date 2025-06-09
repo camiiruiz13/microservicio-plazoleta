@@ -25,8 +25,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.CONTENT_TYPE;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PLATO_SUCCES;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PLATO_UPDATE_SUCCES;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.*;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.SwaggerConstants.*;
 
 
 @RestController
@@ -100,6 +100,43 @@ public class PlatoController {
                 HttpStatus.OK
         );
     }
+
+    @PutMapping(EndpointApi.DISABLE_PLATO )
+    @PreAuthorize("hasRole('ROLE_PROP')")
+    @Operation(
+            summary = SwaggerConstants.OP_DISABLE_PLATO_DESC,
+            description = SwaggerConstants.OP_DISABLE_PLATO_DESC
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerConstants.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    public ResponseEntity<GenericResponseDTO<Void>> activarDesactivarPlato(@PathVariable("idPlato")
+                                                                     @Parameter(description = EndpointApi.DISABLE_PLATO, required = true)
+                                                                               Long id,
+                                                                           @RequestParam
+                                                                           @Parameter(
+                                                                                   description = OP_DISABLE_DESCRIPTION,
+                                                                                   required = true,
+                                                                                   example = OP_DISABLE_EXAMPLE,
+                                                                                   schema = @Schema(type = BOOLEAN_TYPE, allowableValues = {OP_DISABLE_EXAMPLE_TRUE, OP_DISABLE_EXAMPLE})
+                                                                           )
+                                                                           Boolean activo,
+                                                                     @AuthenticationPrincipal AuthenticatedUser user){
+
+
+        platoHandler.updatePlatoDisable( id, activo, Long.valueOf(user.getIdUser()));
+        return new ResponseEntity<>(
+                ResponseUtils.buildResponse(PLATO.getMessage() + (activo ? HABILITADO.getMessage() : DESHABILITADO.getMessage()) + SUCCES_DISABLE.getMessage(), HttpStatus.OK),
+                HttpStatus.OK
+        );
+    }
+
+
 
 
 

@@ -9,7 +9,11 @@ public enum ResponseMessage {
 
     RESTAURANT_SUCCES("Se ha creado el restaurante exitosamente"),
     PLATO_SUCCES("Se ha creado el plato exitosamente"),
-    PLATO_UPDATE_SUCCES("Se ha actualizado el plato exitosamente");
+    PLATO_UPDATE_SUCCES("Se ha actualizado el plato exitosamente"),
+    PLATO("Plato"),
+    HABILITADO("habilitado"),
+    DESHABILITADO("deshabilitado"),
+    SUCCES_DISABLE(" correctamente.");
 
     private final String message;
 }

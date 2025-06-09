@@ -35,4 +35,9 @@ public class PlatoHandler implements IPlatoHandler {
         Plato plato = platoRequestMapper.toPlatoUpdate(platoDTO);
         platoServicePort.updatePlato(plato, idPlato, idPropietario);
     }
+
+    @Override
+    public void updatePlatoDisable(Long id, Boolean activo, Long idPropietario) {
+        platoServicePort.updatePlatoDisable(id, activo, idPropietario);
+    }
 }

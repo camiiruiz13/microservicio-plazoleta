@@ -32,6 +32,17 @@ public class SwaggerConstants {
             para corregir valores errados o actualizar precios
             """;
 
+    public static final String OP_DISABLE_PLATO_SUMMARY = "Activar inactivar plato";
+    public static final String OP_DISABLE_PLATO_DESC = """
+            Activar/desactivar platos en el menú\s
+            para dejar de ofrecer el producto en el menú
+            """;
+
+    public static final String OP_DISABLE_DESCRIPTION = "Estado del plato (true = activo, false = inactivo)";
+    public static final String OP_DISABLE_EXAMPLE = "false";
+    public static final String OP_DISABLE_EXAMPLE_TRUE = "true";
+    public static final String BOOLEAN_TYPE= "boolean";
+
 
     public static final String UPDATE_PLATO_DESCRIPTION_REQUEST = "Objeto de crear plato";
 

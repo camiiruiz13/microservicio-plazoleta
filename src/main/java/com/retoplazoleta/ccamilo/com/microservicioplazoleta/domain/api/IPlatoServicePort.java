@@ -6,5 +6,6 @@ public interface IPlatoServicePort {
 
      void savePlato(Plato plato);
      void updatePlato(Plato plato, Long id, Long idPropietario);
+     void updatePlatoDisable(Long id, Boolean activo, Long idPropietario);
      Plato findByIdAndIdRPropietario(Long id, Long idProietario);
 }
