@@ -228,6 +228,26 @@ class PlatoUseCaseTest {
         ));
     }
 
+    @Test
+    @Order(13)
+    void updatePlato_Activo() {
+        Long id = 1L;
+        Long idProp = 100L;
+        Boolean activo = Boolean.FALSE;
+
+
+
+        Plato existente = mockFindByIdAndIdRPropietario(id);
+        when(platoPersistencePort.findByIdAndIdPropietario(id, idProp)).thenReturn(existente);
+
+        platoUseCase.updatePlatoDisable(id, activo, idProp);
+
+        verify(platoPersistencePort).savePlato(argThat(plato ->
+                Boolean.FALSE == activo
+        ));
+    }
+
+
 
 
     Plato builPlato (){
@@ -264,6 +284,7 @@ class PlatoUseCaseTest {
         plato.setId(id);
         plato.setDescripcion("Original");
         plato.setPrecio(10.00);
+        plato.setActivo(Boolean.TRUE);
         return plato;
     }
 

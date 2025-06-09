@@ -37,6 +37,13 @@ public class PlatoUseCase implements IPlatoServicePort {
     }
 
     @Override
+    public void updatePlatoDisable(Long id, Boolean activo, Long idPropietario) {
+        Plato platoExistente = findByIdAndIdRPropietario(id, idPropietario);
+        platoExistente.setActivo(activo);
+        platoPersistencePort.savePlato(platoExistente);
+    }
+
+    @Override
     public Plato findByIdAndIdRPropietario(Long id, Long idProietario) {
         Plato plato = platoPersistencePort.findByIdAndIdPropietario(id, idProietario);
         if (plato == null)

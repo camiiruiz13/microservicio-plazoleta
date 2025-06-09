@@ -25,8 +25,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.CONTENT_TYPE;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PLATO_SUCCES;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PLATO_UPDATE_SUCCES;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.*;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.SwaggerConstants.*;
 
 
 @RestController
@@ -101,10 +101,6 @@ public class PlatoController {
         );
     }
 
-<<<<<<< Updated upstream
-
-
-=======
     @PutMapping(EndpointApi.DISABLE_PLATO )
     @PreAuthorize("hasRole('ROLE_PROP')")
     @Operation(
@@ -135,10 +131,13 @@ public class PlatoController {
 
         platoHandler.updatePlatoDisable( id, activo, Long.valueOf(user.getIdUser()));
         return new ResponseEntity<>(
-                ResponseUtils.buildResponse(PLATO.getMessage() + " " + (activo ? HABILITADO.getMessage() : DESHABILITADO.getMessage()) + SUCCES_DISABLE.getMessage(), HttpStatus.OK),
+                ResponseUtils.buildResponse(PLATO.getMessage() + (activo ? HABILITADO.getMessage() : DESHABILITADO.getMessage()) + SUCCES_DISABLE.getMessage(), HttpStatus.OK),
                 HttpStatus.OK
         );
     }
 
->>>>>>> Stashed changes
+
+
+
+
 }

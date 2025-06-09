@@ -8,4 +8,5 @@ public interface IPlatoHandler {
 
     void savePlato(PlatoDTO platoDTO, Long idPropietario);
     void updatePlato(PlatoDTOUpdate platoDTO, Long idPlato, Long idPropietario);
+    void updatePlatoDisable(Long id, Boolean activo, Long idPropietario);
 }

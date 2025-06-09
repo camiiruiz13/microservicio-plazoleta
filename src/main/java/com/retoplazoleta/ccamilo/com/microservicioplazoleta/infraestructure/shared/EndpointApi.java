@@ -7,4 +7,5 @@ public interface EndpointApi {
     String BASE_PATH_PLATO= "/api/v1/plato";
     String CREATE_PLATO = "/guardarPlato";
     String UPDATE_PLATO = "/ActualizarPlato/{idPlato}";
+    String DISABLE_PLATO = "/ActualizarPlato/{idPlato}/estado";
 }

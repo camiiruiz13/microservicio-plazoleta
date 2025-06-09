@@ -92,4 +92,15 @@ class PlatoHandlerTest {
         verify(platoRequestMapper).toPlatoUpdate(platoDTO);
         verify(platoServicePort).updatePlato(plato, idPlato, idPropietario);
     }
+
+    @Test
+    @Order(3)
+    void updatePlatoDisable_deberiaGuardarCorrectamente() {
+
+        Long idPlato = 1L;
+        Long idPropietario = 1L;
+        Boolean enable = Boolean.FALSE;
+        platoHandler.updatePlatoDisable(idPlato, enable, idPropietario);
+        verify(platoServicePort).updatePlatoDisable(idPlato, enable, idPropietario);
+    }
 }
