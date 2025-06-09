@@ -20,6 +20,30 @@ public class PlatoUseCase implements IPlatoServicePort {
         platoPersistencePort.savePlato(plato);
     }
 
+    @Override
+    public void updatePlato(Plato plato, Long id) {
+
+       Plato platoExistente = findById(id);
+
+        if (plato.getDescripcion() != null) {
+            platoExistente.setDescripcion(plato.getDescripcion());
+        }
+        if (plato.getPrecio() != null) {
+            platoExistente.setPrecio(plato.getPrecio());
+        }
+
+        platoPersistencePort.savePlato(platoExistente);
+
+    }
+
+    @Override
+    public Plato findById(Long id) {
+        Plato plato = platoPersistencePort.findById(id);
+        if (plato == null)
+            throw new PlatoValidationException(ID_PLATO_NULL.getMessage());
+        return plato;
+    }
+
     private void validatePlato(Plato plato) {
         if (plato.getNombre() == null || plato.getNombre().isBlank()) {
             throw new PlatoValidationException(NAME_PLATO_EXCEPTION.getMessage());

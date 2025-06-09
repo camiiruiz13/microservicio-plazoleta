@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 
+
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categoria;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
@@ -19,9 +20,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
@@ -108,6 +109,36 @@ class PlatoUseCaseTest {
         PlatoValidationException ex = assertThrows(PlatoValidationException.class, () ->
                 platoUseCase.savePlato(plato));
         assertEquals(URL_PLATO_EXCEPTION.getMessage(), ex.getMessage());
+    }
+
+    @Test
+    @Order(7)
+    void cuandoIdPlatoEsNull_lanzaExcepcion() {
+
+
+        PlatoValidationException ex = assertThrows(
+                PlatoValidationException.class,
+                () -> platoUseCase.findById(null)
+        );
+
+        assertEquals(ID_PLATO_NULL.getMessage(), ex.getMessage());
+    }
+
+
+
+    @Test
+    @Order(8)
+    void cuandoExistePlato_retornaPlato() {
+        Long idPlato = 1L;
+
+        Plato plato = builPlato();
+
+        when(platoPersistencePort.findById(idPlato)).thenReturn(plato);
+
+        Plato resultado = platoUseCase.findById(idPlato);
+
+        assertNotNull(resultado);
+        assertEquals(plato, resultado);
     }
 
 
