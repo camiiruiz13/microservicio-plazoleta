@@ -21,8 +21,8 @@ public class PlatoJpaAdapter  implements IPlatoPersistencePort {
     }
 
     @Override
-    public Plato findById(Long id) {
-        return platoRepository.findById(id)
+    public Plato findByIdAndIdPropietario(Long id, Long idPropietario) {
+        return platoRepository.findByIdAndIdPropietario(id, idPropietario)
                 .map(platoEntityMapper::toPlatoModel)
                 .orElse(null);
     }

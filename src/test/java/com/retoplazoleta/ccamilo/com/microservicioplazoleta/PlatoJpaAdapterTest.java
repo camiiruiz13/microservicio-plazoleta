@@ -58,19 +58,20 @@ class PlatoJpaAdapterTest {
 
     @Test
     @Order(2)
-    void getPlatoById_debeRetornarCategoriaPlatoExisteAdapter() {
+    void getPlatoByIdAndIdPropietario_debeRetornarCategoriaPlatoExisteAdapter() {
 
         Long id = 1L;
+        Long idPropietario = 1L;
         PlatoEntity platoEntity = new PlatoEntity();
         Plato plato = new Plato();
 
-        when(repository.findById(id)).thenReturn(Optional.of(platoEntity));
+        when(repository.findByIdAndIdPropietario(id, idPropietario)).thenReturn(Optional.of(platoEntity));
         when(platoEntityMapper.toPlatoModel(platoEntity)).thenReturn(plato);
 
-        Plato resultado = adapter.findById(id);
+        Plato resultado = adapter.findByIdAndIdPropietario(id, idPropietario);
 
         assertNotNull(resultado);
-        verify(repository).findById(id);
+        verify(repository).findByIdAndIdPropietario(id, idPropietario);
         verify(platoEntityMapper).toPlatoModel(platoEntity);
 
 
@@ -78,14 +79,15 @@ class PlatoJpaAdapterTest {
 
     @Test
     @Order(3)
-    void getPlatooById_debeLanzarExcepcionCuandoNoExisteAdapter() {
+    void getPlatooByAndIdPropietario__debeLanzarExcepcionCuandoNoExisteAdapter() {
         Long id = 1000L;
-        when(repository.findById(id)).thenReturn(Optional.empty());
+        Long idPropietario = 1000L;
+        when(repository.findByIdAndIdPropietario(id, idPropietario)).thenReturn(Optional.empty());
 
-        Plato resultado = adapter.findById(id);
+        Plato resultado = adapter.findByIdAndIdPropietario(id, idPropietario);
 
         assertNull(resultado);
-        verify(repository).findById(id);
+        verify(repository).findByIdAndIdPropietario(id, idPropietario);
         verifyNoInteractions(platoEntityMapper);
     }
 }

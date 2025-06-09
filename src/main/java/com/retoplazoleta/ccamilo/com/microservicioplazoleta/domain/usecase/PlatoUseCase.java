@@ -21,9 +21,9 @@ public class PlatoUseCase implements IPlatoServicePort {
     }
 
     @Override
-    public void updatePlato(Plato plato, Long id) {
+    public void updatePlato(Plato plato, Long id, Long idPropietario) {
 
-       Plato platoExistente = findById(id);
+       Plato platoExistente = findByIdAndIdRPropietario(id, idPropietario);
 
         if (plato.getDescripcion() != null) {
             platoExistente.setDescripcion(plato.getDescripcion());
@@ -37,8 +37,8 @@ public class PlatoUseCase implements IPlatoServicePort {
     }
 
     @Override
-    public Plato findById(Long id) {
-        Plato plato = platoPersistencePort.findById(id);
+    public Plato findByIdAndIdRPropietario(Long id, Long idProietario) {
+        Plato plato = platoPersistencePort.findByIdAndIdPropietario(id, idProietario);
         if (plato == null)
             throw new PlatoValidationException(ID_PLATO_NULL.getMessage());
         return plato;

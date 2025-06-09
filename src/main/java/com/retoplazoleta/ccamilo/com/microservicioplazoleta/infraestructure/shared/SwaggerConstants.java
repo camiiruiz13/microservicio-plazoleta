@@ -26,6 +26,15 @@ public class SwaggerConstants {
     public static final String OP_CREAR_PLATO_DESC = "Crear un nuevo plato en la base de datos con el usuario propietario registrado en el restaurante";
     public static final String CREATE_PLATO_DESCRIPTION_REQUEST = "Objeto de crear plato";
 
+    public static final String OP_UPDATE_PLATO_SUMMARY = "Actualizar plato";
+    public static final String OP_UPDATE_PLATO_DESC = """
+            Actualizar la información de los platos en el menú
+            para corregir valores errados o actualizar precios
+            """;
+
+
+    public static final String UPDATE_PLATO_DESCRIPTION_REQUEST = "Objeto de crear plato";
+
 
     public static final String OK = "200";
     public static final String CREATED = "201";

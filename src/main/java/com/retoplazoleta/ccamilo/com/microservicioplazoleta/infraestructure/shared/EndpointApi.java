@@ -6,4 +6,5 @@ public interface EndpointApi {
     String CREATE_RESTAURANTE = "/guardarRestaurante";
     String BASE_PATH_PLATO= "/api/v1/plato";
     String CREATE_PLATO = "/guardarPlato";
+    String UPDATE_PLATO = "/ActualizarPlato/{idPlato}";
 }

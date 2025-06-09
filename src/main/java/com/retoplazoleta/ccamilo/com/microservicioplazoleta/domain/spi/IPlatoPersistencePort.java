@@ -5,5 +5,5 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 public interface IPlatoPersistencePort {
 
     Plato savePlato(Plato plato);
-    Plato findById(Long id);
+    Plato findByIdAndIdPropietario(Long id, Long idPropietario);
 }
