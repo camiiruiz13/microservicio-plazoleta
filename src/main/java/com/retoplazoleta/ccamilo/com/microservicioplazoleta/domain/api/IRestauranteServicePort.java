@@ -6,4 +6,5 @@ public interface IRestauranteServicePort {
 
     void saveRestaurante(Restaurante restaurante);
     Long idPropietario(String correo, String token);
+    Restaurante findByIdAndIdPropietario(Long idRestaurante, Long idPropietario);
 }

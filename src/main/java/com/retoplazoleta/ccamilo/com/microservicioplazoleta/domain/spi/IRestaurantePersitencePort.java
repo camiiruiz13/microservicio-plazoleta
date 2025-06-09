@@ -5,6 +5,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaur
 public interface IRestaurantePersitencePort {
 
     Restaurante saveRestaurante(Restaurante restaurante);
+    Restaurante findByIdAndIdPropietario(Long idRestaurante, Long idPropietario);
 
 
 }

@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ResponseMessage {
 
-    RESTAURANT_SUCCES("Se ha creado el restaurante exitosamente");
+    RESTAURANT_SUCCES("Se ha creado el restaurante exitosamente"),
+    PLATO_SUCCES("Se ha creado el plato exitosamente");
 
     private final String message;
 }

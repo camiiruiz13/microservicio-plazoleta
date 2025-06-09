@@ -12,7 +12,7 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.u
 @AllArgsConstructor
 public class RestauranteDTO {
 
-    @Schema(description = NOMBRE_DESC, example = NOMBRE_EXAMPLE, type =STRING_TYPE, requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = RESTAURANTE_NOMBRE_DESC, example = RESTAURANTE_NOMBRE_EXAMPLE, type =STRING_TYPE, requiredMode = Schema.RequiredMode.REQUIRED)
     private String nombre;
 
     @Schema(description = DIRECCION_DESC, example = DIRECCION_EXAMPLE, type =STRING_TYPE, requiredMode = Schema.RequiredMode.REQUIRED)

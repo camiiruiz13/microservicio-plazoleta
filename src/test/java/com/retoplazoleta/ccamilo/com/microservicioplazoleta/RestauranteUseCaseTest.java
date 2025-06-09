@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.ERROR_USER;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.ID_RESTAURANTE_NULL;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -140,6 +142,64 @@ class RestauranteUseCaseTest {
 
         assertEquals(10L, result);
         verify(apiClientPort).idPropietario(correo, token);
+    }
+
+    @Test
+    @Order(10)
+    void cuandoIdRestauranteEsNull_lanzaExcepcion() {
+        Long idPropietario = 1L;
+
+        RestauranteValidationException ex = assertThrows(
+                RestauranteValidationException.class,
+                () -> restauranteUseCase.findByIdAndIdPropietario(null, idPropietario)
+        );
+
+        assertEquals(ID_RESTAURANTE_NULL.getMessage(), ex.getMessage());
+    }
+
+    @Test
+    @Order(11)
+    void cuandoRestauranteNoExiste_lanzaExcepcion() {
+        Long idRestaurante = 10L;
+        Long idPropietario = 1L;
+
+        when(restaurantePersitencePort.findByIdAndIdPropietario(idRestaurante, idPropietario)).thenReturn(null);
+
+        RestauranteValidationException ex = assertThrows(
+                RestauranteValidationException.class,
+                () -> restauranteUseCase.findByIdAndIdPropietario(idRestaurante, idPropietario)
+        );
+
+        assertEquals(ERROR_USER.getMessage(), ex.getMessage());
+    }
+
+    @Test
+    @Order(12)
+    void cuandoExisteRestaurante_retornaRestaurante() {
+        Long idRestaurante = 1L;
+        Long idPropietario = 1L;
+
+        Restaurante restaurante = builRestaurante();
+
+        when(restaurantePersitencePort.findByIdAndIdPropietario(idRestaurante, idPropietario)).thenReturn(restaurante);
+
+        Restaurante resultado = restauranteUseCase.findByIdAndIdPropietario(idRestaurante, idPropietario);
+
+        assertNotNull(resultado);
+        assertEquals(restaurante, resultado);
+    }
+
+    private Restaurante builRestaurante(){
+        Restaurante restaurante = new Restaurante();
+        restaurante.setId(1L);
+        restaurante.setNombre("Prueba test");
+        restaurante.setDireccion("Direccion Test");
+        restaurante.setIdPropietario(1L);
+        restaurante.setNit("2563698");
+        restaurante.setTelefono("+573005698325");
+        restaurante.setUrlLogo("http://www.images.com");
+        return restaurante;
+
     }
 
 }

@@ -10,7 +10,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "PEDIDOS")
 public class PedidoEntity {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 

@@ -9,9 +9,12 @@ import lombok.Setter;
 @Entity
 @Table(name = "PLATOS")
 public class PlatoEntity {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -25,7 +28,7 @@ public class PlatoEntity {
     )
     private CategoriaEntity categoria;
 
-    @Column(name = "descripcion")
+    @Column(name = "descripcion", nullable = true)
     private String descripcion;
 
     @Column(name = "precio", nullable = false)
@@ -40,17 +43,18 @@ public class PlatoEntity {
     )
     private RestauranteEntity restaurante;
 
-    @Column(name = "url_imagen")
+    @Column(name = "url_imagen", nullable = false)
     private String urlImagen;
 
-    @Column(name = "activo")
+    @Column(name = "activo", nullable = true)
     private Boolean activo;
 
     @PrePersist
     public void prePersist() {
         if (activo == null) {
-            activo = Boolean.TRUE;
+            activo = true;
         }
     }
+
 
 }

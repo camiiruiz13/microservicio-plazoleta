@@ -19,5 +19,12 @@ public class RestauranteJpaAdapter implements IRestaurantePersitencePort {
         return restauranteEntityMapper.toRestauranteModel(restauranteEntity);
     }
 
+    @Override
+    public Restaurante findByIdAndIdPropietario(Long idRestaurante, Long idPropietario) {
+        return repository.findByIdAndIdPropietario(idRestaurante, idPropietario)
+                .map(restauranteEntityMapper::toRestauranteModel)
+                .orElse(null);
+    }
+
 
 }

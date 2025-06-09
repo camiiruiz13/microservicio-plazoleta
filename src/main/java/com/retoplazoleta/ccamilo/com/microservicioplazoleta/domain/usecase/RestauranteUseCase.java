@@ -26,6 +26,17 @@ public class RestauranteUseCase implements IRestauranteServicePort {
         return apiClientPort.idPropietario(correo, token);
     }
 
+    @Override
+    public Restaurante findByIdAndIdPropietario(Long idRestaurante, Long idPropietario) {
+        if (idRestaurante == null)
+            throw new RestauranteValidationException(ID_RESTAURANTE_NULL.getMessage());
+        Restaurante restaurante = restaurantePersitencePort.findByIdAndIdPropietario(idRestaurante, idPropietario);
+        if (restaurante == null)
+            throw new RestauranteValidationException(ERROR_USER.getMessage());
+        return restaurante;
+    }
+
+
     private void validateRestaurante(Restaurante restaurante) {
         if (restaurante.getNombre() == null || restaurante.getNombre().isBlank()) {
             throw new RestauranteValidationException(REQUIRED_NAME.getMessage());

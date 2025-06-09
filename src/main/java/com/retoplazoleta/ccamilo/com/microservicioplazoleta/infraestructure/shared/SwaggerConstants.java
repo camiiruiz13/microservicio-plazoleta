@@ -12,7 +12,20 @@ public class SwaggerConstants {
             """;
     public static final String OP_CREAR_RESTAURANTE_SUMMARY = "Crear Restaurante";
     public static final String OP_CREAR_RESTAURANTE_DESC = "Crear un nuevo restaurante en la base de datos con rol usuario administrador.";
-    public static final String CREATE_RESTAURANTE_DESCRIPTION_REQUEST = "Crear Restaurante";
+    public static final String CREATE_RESTAURANTE_DESCRIPTION_REQUEST = "Objeto de Crear Restaurante";
+
+
+    public static final String TAG_PLATO = "Plato";
+    public static final String TAG_PLATO_DESC = """
+            El  propietario de un restaurante
+             necesito crear platos para asociarlos al menú de mi restaurante
+             para brindarle diferentes opciones de platos al cliente
+            """;
+
+    public static final String OP_CREAR_PLATO_SUMMARY = "Crear plato";
+    public static final String OP_CREAR_PLATO_DESC = "Crear un nuevo plato en la base de datos con el usuario propietario registrado en el restaurante";
+    public static final String CREATE_PLATO_DESCRIPTION_REQUEST = "Objeto de crear plato";
+
 
     public static final String OK = "200";
     public static final String CREATED = "201";

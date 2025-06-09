@@ -32,7 +32,7 @@ class RestauranteControllerTest {
 
     @Test
     void testCreateRestaurante_Returns201() {
-        // Arrange
+
         RestauranteRequest restauranteRequest = new RestauranteRequest();
         RestauranteDTO dto = new RestauranteDTO();
         dto.setNombre("La fonda de Beto");
@@ -45,15 +45,15 @@ class RestauranteControllerTest {
 
         String token = "Bearer abc.def";
 
-        // Evita PotentialStubbingProblem
+
         when(request.getHeader(eq("Authorization"))).thenReturn(token);
         doNothing().when(restauranteHandler).saveRestaurante(dto, token);
 
-        // Act
+
         ResponseEntity<GenericResponseDTO<Void>> response =
                 controller.crearRestaurante(request, restauranteRequest);
 
-        // Assert
+
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(ResponseMessage.RESTAURANT_SUCCES.getMessage(), response.getBody().getMessage());
         verify(restauranteHandler).saveRestaurante(dto, token);
