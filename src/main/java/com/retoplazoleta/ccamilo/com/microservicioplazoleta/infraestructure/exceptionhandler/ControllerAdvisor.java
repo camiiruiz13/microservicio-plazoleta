@@ -5,6 +5,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.Pla
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RestauranteValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorClientExeption;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.RoleException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.TokenInvalidoException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -44,12 +45,7 @@ public class ControllerAdvisor {
         return new ResponseEntity<>(ResponseUtils.buildResponse(RESTAURANTE_ROLE_EXCEPTION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<GenericResponseDTO<Map<String, Object>>> handleGenericException(Exception ex) {
-        log.error( GENERIC_EXCEPTION.getMessage() + "{}", ex.getMessage(), ex);
-        return new ResponseEntity<>(ResponseUtils.buildResponse(GENERIC_EXCEPTION.getMessage(), Map.of(ERROR, ex.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+
 
     @ExceptionHandler(PlatoValidationException.class)
     public ResponseEntity<GenericResponseDTO<Map<String, Object>>> platoDomainException(PlatoValidationException ex) {
@@ -61,6 +57,14 @@ public class ControllerAdvisor {
     public ResponseEntity<GenericResponseDTO<Map<String, Object>>> categoriaDomainException(CategoriaValidationException ex) {
         log.error("No existen categorias a registrar", ex);
         return new ResponseEntity<>(ResponseUtils.buildResponse(CATEGORIA_VALIDATION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TokenInvalidoException.class)
+    public ResponseEntity<GenericResponseDTO<Map<String, Object>>> handleTokenInvalidException(TokenInvalidoException ex) {
+        return new ResponseEntity<>(
+                ResponseUtils.buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED),
+                HttpStatus.UNAUTHORIZED
+        );
     }
 
 

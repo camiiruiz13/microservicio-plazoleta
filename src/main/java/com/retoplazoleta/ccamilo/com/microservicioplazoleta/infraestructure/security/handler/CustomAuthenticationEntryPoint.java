@@ -20,9 +20,9 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructu
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final String ERROR = "error";
-    private final String CODIGO = "codigo";
-    private final String MENSAJE = "mensaje";
+    private static final String ERROR = "error";
+    private static final String CODIGO = "codigo";
+    private static final String MENSAJE = "mensaje";
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -30,10 +30,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         Map<String, Object> error = new HashMap<>();
         error.put(MENSAJE, TOKEN_INVALID.getMessage());
-        error.put(CODIGO , HttpStatus.FORBIDDEN.value());
+        error.put(CODIGO, HttpStatus.UNAUTHORIZED.value());
         error.put(ERROR, authException.getMessage());
 
 
-        ResponseUtils.write(response, error, HttpStatus.FORBIDDEN.value());
+        ResponseUtils.write(response, error, HttpStatus.UNAUTHORIZED.value());
     }
 }

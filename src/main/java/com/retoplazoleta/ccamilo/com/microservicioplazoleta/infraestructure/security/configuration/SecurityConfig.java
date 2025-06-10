@@ -1,5 +1,6 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.handler.CustomAccessDeniedHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.handler.CustomAuthenticationEntryPoint;
@@ -10,13 +11,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.EndpointApi.BASE_PATH_RESTAURANTE;
+
 
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -24,6 +28,7 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final IGenericApiClient loginClient;
+    private final ObjectMapper objectMapper;
 
     private static final String[] WHITE_LIST_URL = {
             "/swagger-ui/**",
@@ -31,8 +36,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-resources/**",
             "/webjars/**",
-            "/configuration/**",
-            BASE_PATH_RESTAURANTE + "/**"
+            "/configuration/**"
     };
 
 
@@ -44,7 +48,7 @@ public class SecurityConfig {
 
     @Bean
      ValidationFilter jwtValidationFilter() throws Exception {
-        return new ValidationFilter(authenticationManager(), loginClient);
+        return new ValidationFilter(authenticationManager(), loginClient, objectMapper);
     }
 
     @Bean
@@ -56,7 +60,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(ex -> ex.accessDeniedHandler(customAccessDeniedHandler)
                         .authenticationEntryPoint(customAuthenticationEntryPoint))
-                .addFilter(jwtValidationFilter())
+                .addFilterBefore(jwtValidationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .csrf(config -> config.disable())
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
