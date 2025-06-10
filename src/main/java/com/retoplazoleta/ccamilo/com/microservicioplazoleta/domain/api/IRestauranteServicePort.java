@@ -6,7 +6,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.respons
 public interface IRestauranteServicePort {
 
     void saveRestaurante(Restaurante restaurante);
-    Long idPropietario(String correo, String token);
+    Long idPropietario(String correo, String token, Restaurante restaurante);
     Restaurante findByIdAndIdPropietario(Long idRestaurante, Long idPropietario);
     PageResponse<Restaurante> findAllRestaurantes(int page, int pageSize);
 }

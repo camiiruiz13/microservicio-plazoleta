@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.handler.CustomAccessDeniedHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.handler.CustomAuthenticationEntryPoint;
@@ -27,7 +28,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-    private final IGenericApiClient loginClient;
+    private final IApiClientPort apiClientPort;
     private final ObjectMapper objectMapper;
 
     private static final String[] WHITE_LIST_URL = {
@@ -48,7 +49,7 @@ public class SecurityConfig {
 
     @Bean
      ValidationFilter jwtValidationFilter() throws Exception {
-        return new ValidationFilter(authenticationManager(), loginClient, objectMapper);
+        return new ValidationFilter(authenticationManager(), apiClientPort, objectMapper);
     }
 
     @Bean

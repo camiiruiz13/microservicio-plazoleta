@@ -1,6 +1,8 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.RestauranteDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RestauranteDTOPage;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IRestauranteHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.controller.RestauranteController;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
@@ -15,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.RESTAURANT_LIST;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -59,4 +64,41 @@ class RestauranteControllerTest {
         verify(restauranteHandler).saveRestaurante(dto, token);
         verify(request).getHeader("Authorization");
     }
+
+    @Test
+    void testListarRestaurantes_Returns200() {
+        int page = 0;
+        int pageSize = 5;
+
+
+
+        PageResponseDTO<RestauranteDTOPage> pageResponse = PageResponseDTO.<RestauranteDTOPage>builder()
+                .content(List.of(new RestauranteDTOPage()))
+                .totalPages(1)
+                .totalElements(1L)
+                .currentPage(page)
+                .pageSize(pageSize)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+
+
+        GenericResponseDTO<PageResponseDTO<RestauranteDTOPage>> genericResponse =
+                new GenericResponseDTO<>();
+        genericResponse.setMessage(RESTAURANT_LIST.getMessage());
+        genericResponse.setObjectResponse(pageResponse);
+
+        when(restauranteHandler.findAllRestaurantes(page, pageSize)).thenReturn(pageResponse);
+
+
+        ResponseEntity<GenericResponseDTO<PageResponseDTO<RestauranteDTOPage>>> response =
+                controller.listarRestaurantes(page, pageSize);
+
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(RESTAURANT_LIST.getMessage(), response.getBody().getMessage());
+        assertEquals(1, response.getBody().getObjectResponse().getContent().size());
+        verify(restauranteHandler).findAllRestaurantes(page, pageSize);
+    }
+
 }

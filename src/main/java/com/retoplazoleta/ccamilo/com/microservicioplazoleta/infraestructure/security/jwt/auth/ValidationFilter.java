@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.UserDTOResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig;
@@ -39,14 +40,14 @@ public class ValidationFilter extends BasicAuthenticationFilter {
 
 
 
-    private final IGenericApiClient loginClient;
+    private final IApiClientPort apiClientPort;
     private final ObjectMapper objectMapper;
     @Value("${userServices}")
     private  String urlUsers;
 
-    public ValidationFilter(AuthenticationManager authManager, IGenericApiClient loginClient, ObjectMapper objectMapper) {
+    public ValidationFilter(AuthenticationManager authManager, IApiClientPort apiClientPort, ObjectMapper objectMapper) {
         super(authManager);
-        this.loginClient = loginClient;
+        this.apiClientPort = apiClientPort;
         this.objectMapper = objectMapper;
     }
 
@@ -64,6 +65,13 @@ public class ValidationFilter extends BasicAuthenticationFilter {
         try {
             DecodedJWT decodedJWT = JWT.decode(token);
 
+            Date expiration = decodedJWT.getExpiresAt();
+            if (expiration != null && isTokenExpired(expiration)) {
+                write(response, TOKEN_VENCIDO.getMessage(), HttpStatus.UNAUTHORIZED.value());
+                return;
+            }
+
+
             String correo = decodedJWT.getSubject();
             String rawAuthorities = decodedJWT.getClaim("authorities").asString();
 
@@ -76,8 +84,8 @@ public class ValidationFilter extends BasicAuthenticationFilter {
                     .map(roleMap -> new SimpleGrantedAuthority(roleMap.get("authority")))
                     .toList();
 
-            UserDTOResponse usuario = consultarUsuarioPorCorreo(correo, header);
-            Long idUser = usuario.getIdUsuario();
+
+            Long idUser = apiClientPort.idPropietario(correo, token);
             AuthenticatedUser userAuthenticate = new AuthenticatedUser(
                     idUser.toString(),
                     correo,
@@ -96,22 +104,6 @@ public class ValidationFilter extends BasicAuthenticationFilter {
 
     }
 
-    private UserDTOResponse consultarUsuarioPorCorreo(String correo, String token) {
-        String url = this.urlUsers + FIND_BY_CORREO_API.getMessage();
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
-        String finalUrl = builder.buildAndExpand(correo).toUriString();
-
-        GenericResponseDTO<UserDTOResponse> response = loginClient.sendRequest(
-                finalUrl,
-                HttpMethod.GET,
-                null,
-                token,
-                UserDTOResponse.class
-        );
-
-        return response.getObjectResponse();
-    }
 
 
     private boolean isTokenExpired(Date exp) {

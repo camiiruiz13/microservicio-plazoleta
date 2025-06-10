@@ -23,8 +23,8 @@ public class RestauranteUseCase implements IRestauranteServicePort {
     }
 
     @Override
-    public Long idPropietario(String correo, String token) {
-        return apiClientPort.idPropietario(correo, token);
+    public Long idPropietario(String correo, String token, Restaurante restaurante) {
+        return apiClientPort.idPropietario(correo, token, restaurante);
     }
 
     @Override

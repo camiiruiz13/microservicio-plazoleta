@@ -138,14 +138,16 @@ class RestauranteUseCaseTest {
     void testIdPropietario_Delegacion() {
         String correo = "usuario@mail.com";
         String token = "Bearer abc123";
+        Restaurante restaurante = new Restaurante();
 
-        when(apiClientPort.idPropietario(correo, token)).thenReturn(10L);
+        when(apiClientPort.idPropietario(correo, token, restaurante)).thenReturn(10L);
 
-        Long result = restauranteUseCase.idPropietario(correo, token);
+        Long result = restauranteUseCase.idPropietario(correo, token, restaurante);
 
         assertEquals(10L, result);
-        verify(apiClientPort).idPropietario(correo, token);
+        verify(apiClientPort).idPropietario(correo, token, restaurante);
     }
+
 
     @Test
     @Order(10)
