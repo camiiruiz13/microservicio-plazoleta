@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.adapter;
 
 
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.Role;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.User;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
@@ -14,7 +15,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.ApiClient.FIND_BY_CORREO_API;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.RoleCode.ADMIN;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.RESTAURANTE_ROLE_EXCEPTION;
 
 
@@ -28,6 +28,11 @@ public class ApiAdapter implements IApiClientPort {
 
     @Override
     public Long idPropietario(String correo, String token) {
+       return idPropietario(correo, token, null);
+    }
+
+    @Override
+    public Long idPropietario(String correo, String token, Object model) {
         String url = this.urlUsers + FIND_BY_CORREO_API.getMessage();
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
@@ -42,7 +47,7 @@ public class ApiAdapter implements IApiClientPort {
         User userResponse = response.getObjectResponse();
         Role role = userResponse.getRol();
         String roleName = role.getNombre();
-        if (!RoleCode.PROPIETARIO.name().equals(roleName))
+        if ((model !=null && model instanceof Restaurante) && !RoleCode.PROPIETARIO.name().equals(roleName))
             throw new RoleException(RESTAURANTE_ROLE_EXCEPTION.getMessage());
 
         return userResponse.getIdUsuario();

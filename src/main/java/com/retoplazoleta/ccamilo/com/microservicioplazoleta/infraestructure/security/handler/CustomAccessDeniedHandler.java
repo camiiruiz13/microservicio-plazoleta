@@ -1,10 +1,12 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.handler;
 
 
+
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseUtils;
-import jakarta.servlet.ServletException;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -18,20 +20,25 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructu
 
 
 @Component
+@RequiredArgsConstructor
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
-    private final String ERROR = "error";
-    private final String CODIGO = "codigo";
-    private final String RUTA = "ruta";
+
+
+    private static final String ERROR = "error";
+    private static final String CODIGO = "codigo";
+    private static final String RUTA = "ruta";
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response,
+                       AccessDeniedException accessDeniedException) throws IOException {
+
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put(ERROR, ACCES_DENIED.getMessage());
         errorResponse.put(CODIGO, HttpStatus.FORBIDDEN.value());
         errorResponse.put(RUTA, request.getRequestURI());
 
-        ResponseUtils.write(response, errorResponse, HttpStatus.FORBIDDEN.value());
 
+        ResponseUtils.write(response, errorResponse, HttpStatus.FORBIDDEN.value());
     }
 }

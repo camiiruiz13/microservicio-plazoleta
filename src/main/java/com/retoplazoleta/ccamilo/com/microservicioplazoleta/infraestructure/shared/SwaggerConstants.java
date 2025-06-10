@@ -14,6 +14,10 @@ public class SwaggerConstants {
     public static final String OP_CREAR_RESTAURANTE_DESC = "Crear un nuevo restaurante en la base de datos con rol usuario administrador.";
     public static final String CREATE_RESTAURANTE_DESCRIPTION_REQUEST = "Objeto de Crear Restaurante";
 
+    public static final String OP_LISTAR_RESTAURANTE_SUMMARY = "Listar restaurantes";
+    public static final String OP_LISTAR_RESTAURANTE_DESC = "Listar los restaurantes disponibles\n" +
+            "para poder elegir en cual deseo ordenar un plato";
+
 
     public static final String TAG_PLATO = "Plato";
     public static final String TAG_PLATO_DESC = """
@@ -62,4 +66,10 @@ public class SwaggerConstants {
     public static final String RESPONSE_403_DESC = "Acceso denegado: no tiene permisos suficientes.";
     public static final String RESPONSE_404_DESC = "Recurso no encontrado.";
     public static final String RESPONSE_500_DESC = "Error interno del servidor.";
+
+    public static final String PAGE_DESCRIPTION = "Número de página (empezando desde 0)";
+    public static final String PAGE_SIZE_DESCRIPTION = "Tamaño de página";
+    public static final String PAGE = "0";
+    public static final String NAME_PAGE =  "page";
+    public static final String PAGE_SIZE = "10";
 }

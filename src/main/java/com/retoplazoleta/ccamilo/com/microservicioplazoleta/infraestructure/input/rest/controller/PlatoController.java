@@ -68,7 +68,7 @@ public class PlatoController {
     }
 
     @PutMapping(EndpointApi.UPDATE_PLATO)
-    @PreAuthorize("hasRole('ROLE_PROP')")
+    @PreAuthorize("hasAuthority('ROLE_PROPIETARIO')")
     @Operation(
             summary = SwaggerConstants.OP_UPDATE_PLATO_SUMMARY,
             description = SwaggerConstants.OP_UPDATE_PLATO_DESC
@@ -102,7 +102,7 @@ public class PlatoController {
     }
 
     @PutMapping(EndpointApi.DISABLE_PLATO )
-    @PreAuthorize("hasRole('ROLE_PROP')")
+    @PreAuthorize("hasAuthority('ROLE_PROPIETARIO')")
     @Operation(
             summary = SwaggerConstants.OP_DISABLE_PLATO_DESC,
             description = SwaggerConstants.OP_DISABLE_PLATO_DESC
