@@ -7,6 +7,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring",
+        uses = CategoriaResponseMapper.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE
 )
