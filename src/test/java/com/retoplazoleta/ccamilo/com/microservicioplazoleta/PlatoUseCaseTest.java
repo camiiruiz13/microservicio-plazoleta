@@ -6,6 +6,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.Pla
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categoria;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PlatoUseCase;
 import org.junit.jupiter.api.MethodOrderer;
@@ -18,6 +19,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -245,6 +248,39 @@ class PlatoUseCaseTest {
         verify(platoPersistencePort).savePlato(argThat(plato ->
                 Boolean.FALSE == activo
         ));
+    }
+
+    @Test
+    @Order(14)
+    void listarPlatosPorRestaurantesPaginados_debeRetornarListaPaginada() {
+
+        int page = 0;
+        int size = 2;
+        Long idRestaurante = 1L;
+        Long idCategoria = 1L;
+
+        List<Plato> platos = List.of(
+                builPlato (),
+                builPlato ()
+        );
+
+        PageResponse<Plato> pageResult = PageResponse.<Plato>builder()
+                .content(platos)
+                .currentPage(page)
+                .pageSize(size)
+                .totalElements(2)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+
+        when(platoPersistencePort.findByPlatoByRestaurantes(idRestaurante, idCategoria, page, size)).thenReturn(pageResult);
+
+        PageResponse<Plato> resultado = platoUseCase.findByPlatoByRestaurantes(idRestaurante,idCategoria, page, size);
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.getContent().size());
+        verify(platoPersistencePort).findByPlatoByRestaurantes(idRestaurante, idCategoria, page, size);
     }
 
 
