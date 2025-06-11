@@ -52,7 +52,7 @@ public class PlatoJpaAdapter  implements IPlatoPersistencePort {
                 .hasPrevious(platosPaginados.hasPrevious())
                 .build();
     }
-    
+
 
 
 }

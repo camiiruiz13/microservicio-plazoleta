@@ -2,8 +2,12 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PlatoDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPlatoHandler;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PageResponseMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoRequestMapper;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoResponseMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.ICategoriaServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
@@ -19,6 +23,7 @@ public class PlatoHandler implements IPlatoHandler {
     private final IRestauranteServicePort restauranteService;
     private final IPlatoServicePort platoServicePort;
     private final PlatoRequestMapper platoRequestMapper;
+    private final PlatoResponseMapper platoResponseMapper;
 
     @Override
     public void savePlato(PlatoDTO platoDTO, Long idPropietario) {
@@ -39,5 +44,13 @@ public class PlatoHandler implements IPlatoHandler {
     @Override
     public void updatePlatoDisable(Long id, Boolean activo, Long idPropietario) {
         platoServicePort.updatePlatoDisable(id, activo, idPropietario);
+    }
+
+    @Override
+    public PageResponseDTO<PlatoDTOResponse> findByPlatoByRestaurantes(Long idRestaurante, Long idCategoria, int page, int pageSize) {
+        return PageResponseMapper.toResponseDTO(
+                platoServicePort.findByPlatoByRestaurantes(idRestaurante, idCategoria, page, pageSize),
+                platoResponseMapper::toPlatoDTo
+        );
     }
 }
