@@ -3,8 +3,11 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categoria;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.adapter.PlatoJpaAdapter;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity.PlatoEntity;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity.RestauranteEntity;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.mapper.IPlatoEntityMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.repositories.PlatoRepository;
 import org.junit.jupiter.api.*;
@@ -13,11 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
+import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -90,4 +95,42 @@ class PlatoJpaAdapterTest {
         verify(repository).findByIdAndIdPropietario(id, idPropietario);
         verifyNoInteractions(platoEntityMapper);
     }
+
+    @Test
+    @Order(4)
+    void findAllPlatoPage_deberiaRetornarPageResponseCorrecto() {
+        int page = 0;
+        int size = 2;
+        Long idRestaurante = 1L;
+        Long idCategoria = 1L;
+
+        PlatoEntity entity = new PlatoEntity();
+        Plato model = new Plato();
+
+        Page<PlatoEntity> pageMock = new PageImpl<>(
+                Collections.singletonList(entity),
+                PageRequest.of(page, size),
+                5
+        );
+
+        when(repository.findPlatosPorRestauranteYCategoria(eq(idRestaurante), eq(idCategoria), any(Pageable.class)))
+                .thenReturn(pageMock);
+        when(platoEntityMapper.toPlatoModelList(anyList()))
+                .thenReturn(Collections.singletonList(model));
+
+        PageResponse<Plato> response = adapter.findByPlatoByRestaurantes(idRestaurante, idCategoria, page, size);
+
+        assertEquals(1, response.getContent().size());
+        assertEquals(model, response.getContent().get(0));
+        assertEquals(0, response.getCurrentPage());
+        assertEquals(2, response.getPageSize());
+        assertEquals(5, response.getTotalElements());
+        assertEquals(3, response.getTotalPages());
+        assertTrue(response.isHasNext());
+        assertFalse(response.isHasPrevious());
+
+        verify(repository).findPlatosPorRestauranteYCategoria(eq(idRestaurante), eq(idCategoria), any(Pageable.class));
+        verify(platoEntityMapper).toPlatoModelList(anyList());
+    }
+
 }

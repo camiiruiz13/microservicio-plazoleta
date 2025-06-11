@@ -2,14 +2,19 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PlatoDTOResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RestauranteDTOPage;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.impl.PlatoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoRequestMapper;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoResponseMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.ICategoriaServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categoria;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -19,6 +24,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -36,6 +45,9 @@ class PlatoHandlerTest {
 
     @Mock
     private PlatoRequestMapper platoRequestMapper;
+
+    @Mock
+    private PlatoResponseMapper platoResponseMapper;
 
     @InjectMocks
     private PlatoHandler platoHandler;
@@ -102,5 +114,49 @@ class PlatoHandlerTest {
         Boolean enable = Boolean.FALSE;
         platoHandler.updatePlatoDisable(idPlato, enable, idPropietario);
         verify(platoServicePort).updatePlatoDisable(idPlato, enable, idPropietario);
+    }
+
+    @Test
+    @Order(4)
+    void testFindAllPlatosByRestaurantes() {
+        int page = 0;
+        int size = 2;
+        Long idRestaurante = 1L;
+        Long idCategoria = 1L;
+
+
+        Plato plato = new Plato();
+        PlatoDTOResponse platoDTOPage = new PlatoDTOResponse();
+
+
+        PageResponse<Plato> pageResponse = PageResponse.<Plato>builder()
+                .content(List.of(plato))
+                .totalPages(1)
+                .totalElements(1L)
+                .currentPage(page)
+                .pageSize(size)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+
+
+        when(platoServicePort.findByPlatoByRestaurantes(idRestaurante, idCategoria, page, size)).thenReturn(pageResponse);
+        when(platoResponseMapper.toPlatoDTo(plato)).thenReturn(platoDTOPage);
+
+
+        PageResponseDTO<PlatoDTOResponse> result = platoHandler.findByPlatoByRestaurantes(idRestaurante, idCategoria, page, size);
+
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalPages());
+        assertEquals(1, result.getTotalElements());
+        assertEquals(page, result.getCurrentPage());
+        assertEquals(size, result.getPageSize());
+        assertEquals(1, result.getContent().size());
+        assertEquals(platoDTOPage, result.getContent().get(0));
+
+
+        verify(platoServicePort).findByPlatoByRestaurantes(idRestaurante, idCategoria, page, size);
+        verify(platoResponseMapper).toPlatoDTo(plato);
     }
 }

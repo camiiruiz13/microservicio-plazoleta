@@ -2,6 +2,8 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PlatoDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPlatoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.controller.PlatoController;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
@@ -23,7 +25,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PLATO_LIST;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -106,6 +109,45 @@ class PlatoControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedMessage, response.getBody().getMessage());
         verify(platoHandler).updatePlatoDisable(idPlato, activo, Long.valueOf(user.getIdUser()));
+    }
+
+    @Test
+    @Order(4)
+    void testListaPlatos_Returns200() {
+        int page = 0;
+        int pageSize = 5;
+        Long idRestaurante = 1L;
+        Long idCategoria = 1L;
+
+
+
+        PageResponseDTO<PlatoDTOResponse> pageResponse = PageResponseDTO.<PlatoDTOResponse>builder()
+                .content(List.of(new PlatoDTOResponse()))
+                .totalPages(1)
+                .totalElements(1L)
+                .currentPage(page)
+                .pageSize(pageSize)
+                .hasNext(false)
+                .hasPrevious(false)
+                .build();
+
+
+        GenericResponseDTO<PageResponseDTO<PlatoDTOResponse>> genericResponse =
+                new GenericResponseDTO<>();
+        genericResponse.setMessage(PLATO_LIST.getMessage());
+        genericResponse.setObjectResponse(pageResponse);
+
+        when(platoHandler.findByPlatoByRestaurantes(idRestaurante, idCategoria, page, pageSize)).thenReturn(pageResponse);
+
+
+        ResponseEntity<GenericResponseDTO<PageResponseDTO<PlatoDTOResponse>>> response =
+                controller.listarPlatos(idRestaurante, idCategoria, page, pageSize);
+
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(PLATO_LIST.getMessage(), response.getBody().getMessage());
+        assertEquals(1, response.getBody().getObjectResponse().getContent().size());
+        verify(platoHandler).findByPlatoByRestaurantes(idRestaurante, idCategoria, page, pageSize);
     }
 
 

@@ -3,6 +3,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
 import lombok.RequiredArgsConstructor;
 
@@ -49,6 +50,11 @@ public class PlatoUseCase implements IPlatoServicePort {
         if (plato == null)
             throw new PlatoValidationException(ID_PLATO_NULL.getMessage());
         return plato;
+    }
+
+    @Override
+    public PageResponse<Plato> findByPlatoByRestaurantes(Long idRestaurante, Long idCategoria, int page, int pageSize) {
+        return platoPersistencePort.findByPlatoByRestaurantes(idRestaurante,idCategoria,page,pageSize);
     }
 
     private void validatePlato(Plato plato) {

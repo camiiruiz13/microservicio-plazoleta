@@ -5,6 +5,8 @@ public class SwaggerConstants {
     private SwaggerConstants() {
     }
 
+    public static final String EXAMPLES_ID = "1";
+
     public static final String TAG_RESTAURANTE = "Restaurante";
     public static final String TAG_RESTAURANTE_DESC = """
              Crear en el sistema los restaurantes
@@ -49,6 +51,13 @@ public class SwaggerConstants {
 
 
     public static final String UPDATE_PLATO_DESCRIPTION_REQUEST = "Objeto de crear plato";
+
+    public static final String OP_LISTAR_PLATO_SUMMARY = "Listar plato";
+    public static final String OP_LISTAR_PLATO_DESC = """
+            Listar el menú de cada restaurante al que le doy clic
+            para poder solicitar el plato de mi preferencia
+            """;
+    public static final String OP_FILTER_ID_CATEGORIA = "ID de la categoría para filtrar los platos. Si se omite, se listan todas las categorías.";
 
 
     public static final String OK = "200";
