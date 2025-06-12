@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PlatoRepository extends JpaRepository<PlatoEntity, Long> {
@@ -35,5 +36,13 @@ public interface PlatoRepository extends JpaRepository<PlatoEntity, Long> {
             @Param("idCategoria") Long idCategoria,
             Pageable pageable
     );
+
+    @Query("""
+                SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END
+                FROM PlatoEntity p
+                WHERE p.id IN :idsPlatos AND p.restaurante.id <> :idRestaurante
+            """)
+    boolean existsByIdInAndRestaurante_IdNot(@Param("idsPlatos") List<Long> idsPlatos,
+                                             @Param("idRestaurante") Long idRestaurante);
 
 }

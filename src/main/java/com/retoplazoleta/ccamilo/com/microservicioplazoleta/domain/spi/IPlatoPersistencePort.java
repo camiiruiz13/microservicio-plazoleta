@@ -9,4 +9,5 @@ public interface IPlatoPersistencePort {
     Plato findByIdAndIdPropietario(Long id, Long idPropietario);
     PageResponse<Plato> findByPlatoByRestaurantes(Long idRestaurante, Long idCategoria, int page, int pageSize);
 
+
 }

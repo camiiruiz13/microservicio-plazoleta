@@ -6,6 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {IPlatoEntityMapper.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
@@ -17,4 +19,9 @@ public interface PedidoPlatoEntityMapper {
     @Mapping(target = "id.idPedido", source = "idPedido")
     @Mapping(target = "id.idPlato", source = "idPlato")
     PedidoPlatoEntity toEntity(PedidoPlato model);
+
+    List<PedidoPlato> toModelList(List<PedidoPlatoEntity> entityList);
+
+    List<PedidoPlatoEntity> toEntityList(List<PedidoPlato> modelList);
+
 }
