@@ -1,6 +1,6 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model;
 
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.enums.EstadoPedido;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

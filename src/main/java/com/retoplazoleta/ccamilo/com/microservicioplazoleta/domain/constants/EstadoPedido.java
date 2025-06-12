@@ -1,9 +1,10 @@
-package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.enums;
+package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants;
+
 
 public enum EstadoPedido {
 
     PENDIENTE,
-    PREPARANDO,
+    EN_PREPARACION,
     ENTREGADO,
     CANCELADO
 }

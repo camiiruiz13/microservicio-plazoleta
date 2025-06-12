@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.ICategoriaServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.ICategoriaPersistencePort;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.*;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.CategoriaUseCase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PlatoUseCase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.RestauranteUseCase;
@@ -15,14 +12,11 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.adapter.ApiAdapter;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.impl.GenericAplClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.adapter.CategoriaJpaAdapter;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.adapter.PedidoJpaAdapter;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.adapter.PlatoJpaAdapter;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.adapter.RestauranteJpaAdapter;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.mapper.ICategoriaEntityMapper;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.mapper.IPlatoEntityMapper;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.mapper.IRestauranteEntityMapper;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.repositories.CategoriaRepository;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.repositories.PlatoRepository;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.repositories.RestauranteRepository;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.mapper.*;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,12 +26,17 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class BeanConfiguration {
 
+
     private  final ICategoriaEntityMapper categoriaEntityMapper;
     private final CategoriaRepository categoriaRepository;
     private final IPlatoEntityMapper platoEntityMapper;
     private final PlatoRepository platoRepository;
     private final RestauranteRepository repository;
     private final IRestauranteEntityMapper entityMapper;
+    private final PedidoRepository pedidoRepository;
+    private final IPedidoEntityMapper pedidoEntityMapper;
+    private final PedidoPlatoRepository pedidoPlatoRepository;
+    private final PedidoPlatoEntityMapper pedidoPlatoEntityMapper;
 
     @Bean
     IRestaurantePersitencePort restaurantePersitencePort() {
@@ -83,6 +82,14 @@ public class BeanConfiguration {
     IPlatoServicePort platoServicePort(){
         return new PlatoUseCase(platoPersistencePort());
     }
+
+    @Bean
+    IPedidoPersistencePort pedidoPersistencePort(){
+        return new PedidoJpaAdapter( pedidoRepository, pedidoEntityMapper, pedidoPlatoRepository, pedidoPlatoEntityMapper);
+
+    }
+
+
 
 
 

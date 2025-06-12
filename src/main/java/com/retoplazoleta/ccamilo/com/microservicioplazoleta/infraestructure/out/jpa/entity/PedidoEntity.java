@@ -1,6 +1,6 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity;
 
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.enums.EstadoPedido;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
