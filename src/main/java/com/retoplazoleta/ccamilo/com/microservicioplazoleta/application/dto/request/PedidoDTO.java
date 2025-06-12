@@ -20,4 +20,7 @@ public class PedidoDTO {
 
     @Schema(description = PLATOS, requiredMode = Schema.RequiredMode.REQUIRED)
     private List<PedidoPlatoDTO> platos;
+
+    @Schema(hidden = true)
+    private Long idCliente;
 }

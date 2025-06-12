@@ -4,5 +4,5 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.requ
 
 public interface IPedidoHandler {
 
-    void savePedido(PedidoDTO pedidoDTO, Long idCliente);
+    void savePedido(PedidoDTO pedidoDTO);
 }

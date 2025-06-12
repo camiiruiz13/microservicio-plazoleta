@@ -41,7 +41,7 @@ public class PlatoController {
     private final IPlatoHandler platoHandler;
 
     @PostMapping(EndpointApi.CREATE_PLATO)
-    @PreAuthorize("hasRole('ROLE_PROP')")
+    @PreAuthorize("hasRole('ROLE_PROPIETARIO')")
     @Operation(
             summary = SwaggerConstants.OP_CREAR_PLATO_SUMMARY,
             description = SwaggerConstants.OP_CREAR_PLATO_DESC

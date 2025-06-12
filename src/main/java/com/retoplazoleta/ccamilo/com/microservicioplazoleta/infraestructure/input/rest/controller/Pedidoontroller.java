@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.controller;
 
 
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPedidoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoRequest;
@@ -57,8 +58,9 @@ public class Pedidoontroller {
                                                                @RequestBody PedidoRequest pedidoRequest,
                                                                @AuthenticationPrincipal AuthenticatedUser user) {
 
-
-        pedidoHandler.savePedido(pedidoRequest.getRequest(), Long.valueOf(user.getIdUser()));
+        PedidoDTO pedidoDTO = pedidoRequest.getRequest();
+        pedidoDTO.setIdCliente(Long.valueOf(user.getIdUser()));
+        pedidoHandler.savePedido(pedidoDTO);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PEDIDO_SUCCES.getMessage(), HttpStatus.CREATED),
                 HttpStatus.CREATED

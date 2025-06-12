@@ -87,13 +87,13 @@ public class BeanConfiguration {
 
     @Bean
     IPedidoPersistencePort pedidoPersistencePort(){
-        return new PedidoJpaAdapter( pedidoRepository, pedidoEntityMapper, pedidoPlatoRepository, pedidoPlatoEntityMapper, platoRepository);
+        return new PedidoJpaAdapter( pedidoRepository, pedidoEntityMapper, pedidoPlatoRepository, pedidoPlatoEntityMapper, platoEntityMapper);
 
     }
 
     @Bean
     IPedidoServicePort pedidoServicePort(){
-        return new PedidoUseCase(pedidoPersistencePort());
+        return new PedidoUseCase(pedidoPersistencePort(), platoPersistencePort());
     }
 
 

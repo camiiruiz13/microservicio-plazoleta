@@ -19,9 +19,8 @@ public class PedidoHandler implements IPedidoHandler {
 
 
     @Override
-    public void savePedido(PedidoDTO pedidoDTO, Long idCliente) {
+    public void savePedido(PedidoDTO pedidoDTO) {
         Pedido pedido = pedidoRequestMapper.toPedido(pedidoDTO);
-        pedido.setIdCliente(idCliente);
         pedidoServicePort.savePedido(pedido);
     }
 }

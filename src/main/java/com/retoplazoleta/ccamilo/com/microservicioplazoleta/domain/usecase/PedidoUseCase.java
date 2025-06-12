@@ -4,10 +4,13 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoSe
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PedidoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPedidoPersistencePort;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
 
@@ -15,6 +18,8 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.consta
 public class PedidoUseCase implements IPedidoServicePort {
 
     private final IPedidoPersistencePort pedidoPersistencePort;
+
+    private final IPlatoPersistencePort platoPersistencePort;
 
 
     @Override
@@ -36,7 +41,17 @@ public class PedidoUseCase implements IPedidoServicePort {
                 .map(PedidoPlato::getIdPlato)
                 .toList();
 
-        if (pedidoPersistencePort.existsPlatosOfRestaurant(idsPlatos, idRestaurante)) {
+        List<Plato> platos = idsPlatos.stream()
+                .map(id -> {
+                    Plato plato = platoPersistencePort.findById(id);
+                    if (plato == null) {
+                        throw new PedidoValidationException(ID_PLATO_PEDIDO_NULL.getMessage() + id );
+                    }
+                    return plato;
+                })
+                .toList();
+
+        if (platoPersistencePort.existsPlatosOfRestaurant(idsPlatos, idRestaurante)) {
             throw new PedidoValidationException(PEDIDO_PLATO_RESTAURANTE.getMessage());
         }
 
@@ -44,6 +59,6 @@ public class PedidoUseCase implements IPedidoServicePort {
 
         pedidoPlatos.forEach(pp -> pp.setIdPedido(pedidoGuardado.getId()));
 
-        pedidoPersistencePort.savePedidoPlatos(pedidoPlatos);
+        pedidoPersistencePort.savePedidoPlatos(pedidoPlatos, pedidoGuardado, platos);
     }
 }

@@ -15,6 +15,7 @@ public enum ValidationConstant {
     ID_RESTAURANTE_NULL("El id del restaurante no puede ser nulo"),
     ID_CATEGORIA_NULL("El id del categoria no puede ser nulo"),
     ID_PLATO_NULL("No exite el plato a modifificar , registre uno"),
+    ID_PLATO_PEDIDO_NULL("No exite el plato para crear pedido , registre uno"),
     ERROR_USER("El usuario no es propietario del restaurante"),
     ERROR_CATEGORIA("La categoria no existe"),
     NAME_PLATO_EXCEPTION("El nombre del plato es obligatorio"),

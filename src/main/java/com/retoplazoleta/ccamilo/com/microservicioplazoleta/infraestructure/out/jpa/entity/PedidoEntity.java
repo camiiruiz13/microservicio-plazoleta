@@ -46,8 +46,11 @@ public class PedidoEntity {
 
 
     @PrePersist
-    public void asignarFecha() {
+    public void prePersist() {
         this.fecha = LocalDate.now();
+        if (this.estado == null) {
+            this.estado = EstadoPedido.PENDIENTE;
+        }
     }
 
 
