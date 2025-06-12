@@ -1,6 +1,5 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Embeddable
-public class PedidoPlatoId {
+public class PedidoPlatoIdEmbeded {
 
     private Long idPedido;
     private Long idPlato;

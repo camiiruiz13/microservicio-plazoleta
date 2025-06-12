@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -20,7 +24,7 @@ public class PedidoEntity {
     private Long idCliente;
 
     @Column(name = "fecha")
-    private String fecha;
+    private LocalDate fecha;
 
     @Enumerated(EnumType.STRING)
     private EstadoPedido estado;
@@ -36,5 +40,14 @@ public class PedidoEntity {
             foreignKey = @ForeignKey(name = "fk_pedido_restaurante")
     )
     private RestauranteEntity restaurante;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PedidoPlatoEntity> platos = new ArrayList<>();
+
+    @PrePersist
+    public void asignarFecha() {
+        this.fecha = LocalDate.now();
+    }
+
 
 }

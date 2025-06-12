@@ -16,7 +16,7 @@ public class PedidoPlatoEntity {
 
 
     @EmbeddedId
-    private PedidoPlatoId id;
+    private PedidoPlatoIdEmbeded id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idPedido")

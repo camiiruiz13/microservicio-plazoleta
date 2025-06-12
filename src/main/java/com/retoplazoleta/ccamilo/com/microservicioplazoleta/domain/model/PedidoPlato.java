@@ -15,4 +15,5 @@ public class PedidoPlato {
     private Long idPedido;
     private Long idPlato;
     private Integer cantidad;
+
 }
