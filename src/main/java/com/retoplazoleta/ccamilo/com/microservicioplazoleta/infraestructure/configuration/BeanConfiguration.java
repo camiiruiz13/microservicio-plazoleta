@@ -85,7 +85,7 @@ public class BeanConfiguration {
 
     @Bean
     IPedidoPersistencePort pedidoPersistencePort(){
-        return new PedidoJpaAdapter( pedidoRepository, pedidoEntityMapper, pedidoPlatoRepository, pedidoPlatoEntityMapper);
+        return new PedidoJpaAdapter( pedidoRepository, pedidoEntityMapper, pedidoPlatoRepository, pedidoPlatoEntityMapper, platoRepository);
 
     }
 
