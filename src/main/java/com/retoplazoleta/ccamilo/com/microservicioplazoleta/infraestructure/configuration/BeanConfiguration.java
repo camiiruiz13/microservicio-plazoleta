@@ -2,10 +2,12 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.con
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.ICategoriaServicePort;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.*;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.CategoriaUseCase;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PedidoUseCase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PlatoUseCase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.RestauranteUseCase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
@@ -87,6 +89,11 @@ public class BeanConfiguration {
     IPedidoPersistencePort pedidoPersistencePort(){
         return new PedidoJpaAdapter( pedidoRepository, pedidoEntityMapper, pedidoPlatoRepository, pedidoPlatoEntityMapper, platoRepository);
 
+    }
+
+    @Bean
+    IPedidoServicePort pedidoServicePort(){
+        return new PedidoUseCase(pedidoPersistencePort());
     }
 
 

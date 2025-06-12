@@ -11,6 +11,7 @@ public enum ResponseMessage {
     RESTAURANT_LIST("Se listan los restaurantes"),
     PLATO_LIST("Se listan los platos correctamente"),
     PLATO_SUCCES("Se ha creado el plato exitosamente"),
+    PEDIDO_SUCCES("Se ha creado el pedido exitosamente"),
     PLATO_UPDATE_SUCCES("Se ha actualizado el plato exitosamente"),
     PLATO("Plato"),
     HABILITADO("habilitado"),

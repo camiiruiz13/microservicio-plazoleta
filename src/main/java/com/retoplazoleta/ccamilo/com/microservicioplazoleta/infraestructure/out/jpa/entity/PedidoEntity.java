@@ -41,8 +41,9 @@ public class PedidoEntity {
     )
     private RestauranteEntity restaurante;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PedidoPlatoEntity> platos = new ArrayList<>();
+    @OneToMany(mappedBy = "pedido")
+    private List<PedidoPlatoEntity> platos;
+
 
     @PrePersist
     public void asignarFecha() {

@@ -3,7 +3,6 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.inp
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PlatoDTOResponse;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RestauranteDTOPage;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPlatoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 

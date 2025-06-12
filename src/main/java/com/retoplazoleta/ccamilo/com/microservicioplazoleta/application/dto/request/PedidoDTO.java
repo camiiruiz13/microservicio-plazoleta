@@ -19,5 +19,5 @@ public class PedidoDTO {
     private Long idRestaurante;
 
     @Schema(description = PLATOS, requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<PedidoDTO> platos;
+    private List<PedidoPlatoDTO> platos;
 }

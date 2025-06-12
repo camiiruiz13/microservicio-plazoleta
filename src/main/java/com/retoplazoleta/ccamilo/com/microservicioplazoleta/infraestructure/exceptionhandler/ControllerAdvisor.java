@@ -74,6 +74,13 @@ public class ControllerAdvisor {
         return new ResponseEntity<>(ResponseUtils.buildResponse(PEDIDO_VALIDATION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<GenericResponseDTO<Map<String, Object>>>handleGeneric(Exception ex) {
+        log.error("Error interno del sistema.", ex);
+        return new ResponseEntity<>(ResponseUtils.buildResponse(ERROR_EXCEPTION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 
 
 
