@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exceptionhandler;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.CategoriaValidationException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PedidoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RestauranteValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorClientExeption;
@@ -65,6 +66,12 @@ public class ControllerAdvisor {
                 ResponseUtils.buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED),
                 HttpStatus.UNAUTHORIZED
         );
+    }
+
+    @ExceptionHandler(PedidoValidationException.class)
+    public ResponseEntity<GenericResponseDTO<Map<String, Object>>> pedidoDomainException(PedidoValidationException ex) {
+        log.error("No existen categorias a registrar", ex);
+        return new ResponseEntity<>(ResponseUtils.buildResponse(PEDIDO_VALIDATION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
 

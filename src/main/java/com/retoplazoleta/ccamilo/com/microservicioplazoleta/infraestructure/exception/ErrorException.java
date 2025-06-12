@@ -15,6 +15,7 @@ public enum ErrorException {
     RESTAURANT_VALIDATION("Error en el registro de restaurante: " ),
     PLATO_VALIDATION("Error en el registrar el plato en el restaurante: " ),
     CATEGORIA_VALIDATION("No existe categorias para registrar: " ),
+    PEDIDO_VALIDATION("Error al registrar pedidos: " ),
     GENERIC_EXCEPTION("Error interno en el servidor: " ),
     RESTAURANTE_ROLE_EXCEPTION("Rol incorrecto para crear retaurante " ),
     ACCES_DENIED("Acceso denegado: No tiene permisos para realizar esta operación"),;
