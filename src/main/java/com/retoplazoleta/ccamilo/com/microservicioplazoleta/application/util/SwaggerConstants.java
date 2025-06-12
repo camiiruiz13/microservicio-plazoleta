@@ -38,6 +38,15 @@ public class SwaggerConstants {
     public static final String PLATO_ID_RESTAURANTE_DESC = "Id del restaurante";
     public static final String PLATO_ID_RESTAURANTE_EXAMPLE = "1";
 
+    public static final String PLATO_ID_DESC = "Id del plato";
+    public static final String PLATO_ID_EXAMPLE = "1";
+
+    public static final String CANTIDAD_DESC = "Cantidad de platos";
+    public static final String CANTIDAD_EXAMPLE = "10";
+
+    public static final String PLATOS =
+            "Lista de platos con su cantidad.";
+
     public static final String PLATO_ID_CATEGORIA_DESC = "Id de la categoria";
     public static final String PLATO_ID_CATEGORIA_EXAMPLE = "1";
 
@@ -45,6 +54,7 @@ public class SwaggerConstants {
     public static final String NUMBER_TYPE= "number";
     public static final String FORMAT_DOUBLE = "double";
     public static final String FORMAT_LONG = "int64";
+    public static final String FORMAT_INTEGER = "int32";
 
 
     public static final String PATTERN="^\\+?\\d{1,13}$";

@@ -32,7 +32,7 @@ public class PlatoDTO {
     @Schema(description = PLATO_ID_RESTAURANTE_DESC, example = PLATO_ID_RESTAURANTE_EXAMPLE, type =NUMBER_TYPE, format = FORMAT_LONG, requiredMode = Schema.RequiredMode.REQUIRED)
     private Long idRestaurante;
 
-    @Schema(description = PLATO_ID_CATEGORIA_DESC, example = PLATO_ID_CATEGORIA_EXAMPLE, type =NUMBER_TYPE, format = FORMAT_LONG, requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = CANTIDAD_DESC, example = CANTIDAD_EXAMPLE, type =NUMBER_TYPE, format = FORMAT_INTEGER, requiredMode = Schema.RequiredMode.REQUIRED)
     private Long idCategoria;
 
 }
