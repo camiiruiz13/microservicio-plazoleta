@@ -2,6 +2,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 
 
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.CategoriaValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categoria;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
@@ -302,6 +303,52 @@ class PlatoUseCaseTest {
         assertEquals(2, resultado.getContent().size());
         verify(platoPersistencePort).findByPlatoByRestaurantes(idRestaurante, idCategoria, page, size);
     }
+
+    @Test
+    @Order(15)
+    void cuandoIdCategoriaEsNull_lanzaExcepcion() {
+
+
+        CategoriaValidationException ex = assertThrows(
+                CategoriaValidationException.class,
+                () -> platoUseCase.findCategoriaByIdCategoria(null)
+        );
+
+        assertEquals(ID_CATEGORIA_NULL.getMessage(), ex.getMessage());
+    }
+
+    @Test
+    @Order(16)
+    void cuandoCategoriaNoExiste_lanzaExcepcion() {
+        Long idCategoria = 10L;
+
+        when(categoriaPort.findByIdCategoria(idCategoria)).thenReturn(null);
+
+        CategoriaValidationException ex = assertThrows(
+                CategoriaValidationException.class,
+                () -> platoUseCase.findCategoriaByIdCategoria(idCategoria)
+        );
+
+        assertEquals(ERROR_CATEGORIA.getMessage(), ex.getMessage());
+    }
+
+
+    @Test
+    @Order(17)
+    void cuandoExisteCategoria_retornaCategoria() {
+        Long idCategoria = 1L;
+
+        Plato plato = builPlato();
+        Categoria categoria = plato.getCategoria();
+
+        when(categoriaPort.findByIdCategoria(idCategoria)).thenReturn(categoria);
+
+        Categoria resultado = platoUseCase.findCategoriaByIdCategoria(idCategoria);
+
+        assertNotNull(resultado);
+        assertEquals(categoria, resultado);
+    }
+
 
 
 
