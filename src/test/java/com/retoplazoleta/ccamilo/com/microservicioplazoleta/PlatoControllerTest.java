@@ -42,10 +42,6 @@ class PlatoControllerTest {
     @Test
     @Order(1)
     void crearPlato_Retorna201_CuandoRequestEsValida() {
-        // Arrange
-        PlatoDTO dto = new PlatoDTO();
-        PlatoRequest request = new PlatoRequest();
-        request.setRequest(dto);
 
 
 
@@ -55,12 +51,17 @@ class PlatoControllerTest {
         );
 
 
+        PlatoDTO dto = new PlatoDTO();
+        dto.setIdPropietario(Long.valueOf(user.getIdUser()));
+        PlatoRequest request = new PlatoRequest();
+        request.setRequest(dto);
+
         ResponseEntity<GenericResponseDTO<Void>> response = controller.crearPlato(request, user);
 
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(ResponseMessage.PLATO_SUCCES.getMessage(), response.getBody().getMessage());
-        verify(platoHandler).savePlato(dto, Long.valueOf(user.getIdUser()));
+        verify(platoHandler).savePlato(dto);
     }
 
     @Test

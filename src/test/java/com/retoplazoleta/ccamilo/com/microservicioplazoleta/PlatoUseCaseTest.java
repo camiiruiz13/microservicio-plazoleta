@@ -7,7 +7,9 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categor
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.ICategoriaPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PlatoUseCase;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -31,7 +33,14 @@ import static org.mockito.Mockito.*;
 class PlatoUseCaseTest {
 
     @Mock
+    private ICategoriaPersistencePort categoriaPort;
+
+
+    @Mock
     private IPlatoPersistencePort platoPersistencePort;
+
+    @Mock
+    private IRestaurantePersitencePort restaurantePort;
 
 
 
@@ -41,8 +50,19 @@ class PlatoUseCaseTest {
     @Test
     @Order(1)
     void testSavePlato_Valid() {
+        Categoria cat = new Categoria();
+        cat.setId(1L);
+        Restaurante rest = new Restaurante();
+        rest.setId(2L);
+        rest.setIdPropietario(10L);
 
         Plato plato = builPlato ();
+
+        when(categoriaPort.findByIdCategoria(anyLong())).thenReturn(cat);
+        when(restaurantePort.findByIdAndIdPropietario(anyLong(), anyLong()))
+                .thenReturn(rest);
+
+        when(platoPersistencePort.savePlato(any(Plato.class))).thenReturn(plato);
 
         platoUseCase.savePlato(plato);
 

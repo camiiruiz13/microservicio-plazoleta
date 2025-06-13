@@ -8,7 +8,6 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoRequestMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoResponseMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categoria;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
@@ -32,11 +31,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PlatoHandlerTest {
 
-    @Mock
-    private ICategoriaServicePort categoriaService;
 
-    @Mock
-    private IRestauranteServicePort restauranteService;
 
     @Mock
     private IPlatoServicePort platoServicePort;
@@ -68,15 +63,11 @@ class PlatoHandlerTest {
         Categoria categoria = new Categoria();
 
         when(platoRequestMapper.toPlato(platoDTO)).thenReturn(plato);
-        when(restauranteService.findByIdAndIdPropietario(idRestaurante, idPropietario)).thenReturn(restaurante);
-        when(categoriaService.findCategoriaByIdCategoria(idCategoria)).thenReturn(categoria);
 
 
-        platoHandler.savePlato(platoDTO, idPropietario);
+        platoHandler.savePlato(platoDTO);
 
         verify(platoRequestMapper).toPlato(platoDTO);
-        verify(restauranteService).findByIdAndIdPropietario(idRestaurante, idPropietario);
-        verify(categoriaService).findCategoriaByIdCategoria(idCategoria);
         verify(platoServicePort).savePlato(plato);
     }
 
