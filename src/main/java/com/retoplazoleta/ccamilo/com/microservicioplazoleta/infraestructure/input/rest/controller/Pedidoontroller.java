@@ -50,13 +50,13 @@ public class Pedidoontroller {
             @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
-    public ResponseEntity<GenericResponseDTO<Void>> crearPlato(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+    public ResponseEntity<GenericResponseDTO<Void>> crearPedido(@io.swagger.v3.oas.annotations.parameters.RequestBody(
                                                                        description = SwaggerConstants.CREATE_PEDIDO_DESCRIPTION_REQUEST,
                                                                        content = @Content(
                                                                                mediaType = CONTENT_TYPE,
                                                                                schema = @Schema(implementation = PedidoRequest.class)))
                                                                @RequestBody PedidoRequest pedidoRequest,
-                                                               @AuthenticationPrincipal AuthenticatedUser user) {
+                                                                @AuthenticationPrincipal AuthenticatedUser user) {
 
         PedidoDTO pedidoDTO = pedidoRequest.getRequest();
         pedidoDTO.setIdCliente(Long.valueOf(user.getIdUser()));

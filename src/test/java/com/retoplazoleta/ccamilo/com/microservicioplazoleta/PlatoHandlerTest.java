@@ -49,7 +49,7 @@ class PlatoHandlerTest {
     @Order(1)
     void savePlato_deberiaGuardarCorrectamente() {
 
-        Long idPropietario = 1L;
+
         Long idRestaurante = 10L;
         Long idCategoria = 5L;
 
@@ -59,8 +59,7 @@ class PlatoHandlerTest {
 
         Plato plato = new Plato();
 
-        Restaurante restaurante = new Restaurante();
-        Categoria categoria = new Categoria();
+
 
         when(platoRequestMapper.toPlato(platoDTO)).thenReturn(plato);
 
