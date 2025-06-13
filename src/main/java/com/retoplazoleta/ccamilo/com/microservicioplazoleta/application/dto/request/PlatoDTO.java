@@ -35,4 +35,7 @@ public class PlatoDTO {
     @Schema(description = CANTIDAD_DESC, example = CANTIDAD_EXAMPLE, type =NUMBER_TYPE, format = FORMAT_INTEGER, requiredMode = Schema.RequiredMode.REQUIRED)
     private Long idCategoria;
 
+    @Schema(hidden = true)
+    private Long idPropietario;
+
 }

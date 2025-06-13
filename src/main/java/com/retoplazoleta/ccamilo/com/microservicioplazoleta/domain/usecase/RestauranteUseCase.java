@@ -17,8 +17,9 @@ public class RestauranteUseCase implements IRestauranteServicePort {
     private final IRestaurantePersitencePort restaurantePersitencePort;
 
     @Override
-    public void saveRestaurante(Restaurante restaurante) {
+    public void saveRestaurante(Restaurante restaurante, String correo, String token) {
         validateRestaurante(restaurante);
+        restaurante.setIdPropietario(idPropietario(correo,token,restaurante));
         restaurantePersitencePort.saveRestaurante(restaurante);
     }
 
@@ -27,15 +28,7 @@ public class RestauranteUseCase implements IRestauranteServicePort {
         return apiClientPort.idPropietario(correo, token, restaurante);
     }
 
-    @Override
-    public Restaurante findByIdAndIdPropietario(Long idRestaurante, Long idPropietario) {
-        if (idRestaurante == null)
-            throw new RestauranteValidationException(ID_RESTAURANTE_NULL.getMessage());
-        Restaurante restaurante = restaurantePersitencePort.findByIdAndIdPropietario(idRestaurante, idPropietario);
-        if (restaurante == null)
-            throw new RestauranteValidationException(ERROR_USER.getMessage());
-        return restaurante;
-    }
+
 
     @Override
     public PageResponse<Restaurante> findAllRestaurantes(int page, int pageSize) {

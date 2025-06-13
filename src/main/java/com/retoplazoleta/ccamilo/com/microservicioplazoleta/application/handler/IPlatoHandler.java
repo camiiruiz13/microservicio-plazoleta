@@ -8,7 +8,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.resp
 
 public interface IPlatoHandler {
 
-    void savePlato(PlatoDTO platoDTO, Long idPropietario);
+    void savePlato(PlatoDTO platoDTO);
     void updatePlato(PlatoDTOUpdate platoDTO, Long idPlato, Long idPropietario);
     void updatePlatoDisable(Long id, Boolean activo, Long idPropietario);
     PageResponseDTO<PlatoDTOResponse> findByPlatoByRestaurantes(Long idRestaurante, Long idCategoria, int page, int pageSize);

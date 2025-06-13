@@ -5,6 +5,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.requ
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring",
@@ -13,6 +14,9 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface PlatoRequestMapper {
 
-    Plato toPlato(PlatoDTO platoDTO);
+    @Mapping(target = "categoria.id", source = "idCategoria")
+    @Mapping(target = "restaurante.id", source = "idRestaurante")
+    @Mapping(target = "restaurante.idPropietario", source = "idPropietario")
+    Plato toPlato(PlatoDTO dto);
     Plato toPlatoUpdate(PlatoDTOUpdate platoDTO);
 }

@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.controller;
 
 
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PlatoDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPlatoHandler;
@@ -62,8 +63,9 @@ public class PlatoController {
                                                                @RequestBody PlatoRequest platoRequest,
                                                                @AuthenticationPrincipal AuthenticatedUser user) {
 
-
-        platoHandler.savePlato(platoRequest.getRequest(), Long.valueOf(user.getIdUser()));
+        PlatoDTO platoDTO = platoRequest.getRequest();
+        platoDTO.setIdPropietario(Long.valueOf(user.getIdUser()));
+        platoHandler.savePlato(platoDTO);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PLATO_SUCCES.getMessage(), HttpStatus.CREATED),
                 HttpStatus.CREATED

@@ -25,8 +25,7 @@ public class RestauranteHandler implements IRestauranteHandler {
     @Override
     public void saveRestaurante(RestauranteDTO restauranteDTO, String token) {
         Restaurante restaurante = restauranteRequestMapper.toRestaurante(restauranteDTO);
-        restaurante.setIdPropietario(restauranteServicePort.idPropietario(restauranteDTO.getCorreo(), token, restaurante));
-        restauranteServicePort.saveRestaurante(restaurante);
+        restauranteServicePort.saveRestaurante(restaurante, restauranteDTO.getCorreo(), token);
     }
 
     @Override

@@ -1,12 +1,10 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.ICategoriaServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.*;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.CategoriaUseCase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PedidoUseCase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PlatoUseCase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.RestauranteUseCase;
@@ -70,10 +68,7 @@ public class BeanConfiguration {
         return new CategoriaJpaAdapter(categoriaEntityMapper,categoriaRepository);
     }
 
-    @Bean
-    ICategoriaServicePort categoriaServicePort(){
-        return new CategoriaUseCase(categoriaPersistencePort());
-    }
+
 
     @Bean
     IPlatoPersistencePort platoPersistencePort(){
@@ -82,7 +77,7 @@ public class BeanConfiguration {
 
     @Bean
     IPlatoServicePort platoServicePort(){
-        return new PlatoUseCase(platoPersistencePort());
+        return new PlatoUseCase(categoriaPersistencePort(), platoPersistencePort(), restaurantePersitencePort());
     }
 
     @Bean

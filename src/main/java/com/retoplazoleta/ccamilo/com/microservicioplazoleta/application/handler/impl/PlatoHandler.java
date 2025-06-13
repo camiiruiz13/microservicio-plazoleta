@@ -8,9 +8,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PageResponseMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoRequestMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoResponseMapper;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.ICategoriaServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,20 +17,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PlatoHandler implements IPlatoHandler {
 
-    private final ICategoriaServicePort categoriaService;
-    private final IRestauranteServicePort restauranteService;
+
     private final IPlatoServicePort platoServicePort;
     private final PlatoRequestMapper platoRequestMapper;
     private final PlatoResponseMapper platoResponseMapper;
 
     @Override
-    public void savePlato(PlatoDTO platoDTO, Long idPropietario) {
+    public void savePlato(PlatoDTO platoDTO) {
         Plato plato = platoRequestMapper.toPlato(platoDTO);
-        plato.setRestaurante(restauranteService.findByIdAndIdPropietario(platoDTO.getIdRestaurante(), idPropietario));
-        plato.setCategoria(categoriaService.findCategoriaByIdCategoria(platoDTO.getIdCategoria()));
         platoServicePort.savePlato(plato);
-
-
     }
 
     @Override
