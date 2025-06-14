@@ -1,10 +1,12 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoServicePort;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PedidoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPedidoPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
 import lombok.RequiredArgsConstructor;
@@ -60,5 +62,10 @@ public class PedidoUseCase implements IPedidoServicePort {
         pedidoPlatos.forEach(pp -> pp.setIdPedido(pedidoGuardado.getId()));
 
         pedidoPersistencePort.savePedidoPlatos(pedidoPlatos, pedidoGuardado, platos);
+    }
+
+    @Override
+    public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, int page, int pageSize) {
+        return null;
     }
 }
