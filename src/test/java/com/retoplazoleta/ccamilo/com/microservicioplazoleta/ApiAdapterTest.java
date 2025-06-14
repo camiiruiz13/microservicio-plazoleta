@@ -6,7 +6,10 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exce
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.adapter.ApiAdapter;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,6 +22,7 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructu
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
 class ApiAdapterTest {
 
@@ -28,7 +32,46 @@ class ApiAdapterTest {
     @InjectMocks
     private ApiAdapter apiAdapter;
 
+
     @Test
+    @Order(1)
+    void idPropietario_SinModel_LlamaSobrecargaCorrectamente() {
+        String correo = "test@correo.com";
+        String token = "token123";
+        Long expectedId = 99L;
+
+        Role role = new Role();
+        role.setNombre("CLIENTE");
+
+        User user = new User();
+        user.setIdUsuario(expectedId);
+        user.setRol(role);
+
+        GenericResponseDTO<User> response = new GenericResponseDTO<>();
+        response.setObjectResponse(user);
+
+        ReflectionTestUtils.setField(apiAdapter, "urlUsers", "http://test.com");
+
+        String urlEsperada = "http://test.com" + FIND_BY_CORREO_API.getMessage().replace("{correo}", correo);
+
+        when(loginClient.sendRequest(
+                eq(urlEsperada),
+                eq(HttpMethod.GET),
+                isNull(),
+                eq(token),
+                eq(User.class))
+        ).thenReturn(response);
+
+
+        Long resultado = apiAdapter.idPropietario(correo, token);
+
+        assertEquals(expectedId, resultado);
+    }
+
+
+
+    @Test
+    @Order(2)
     void idPropietario_CuandoModelEsNullYNoEsPropietario_NoLanzaExcepcion() {
         String correo = "user@email.com";
         String token = "token321";
@@ -62,6 +105,7 @@ class ApiAdapterTest {
     }
 
     @Test
+    @Order(3)
     void idPropietario_CuandoModelNoEsRestauranteYNoEsPropietario_NoLanzaExcepcion() {
         String correo = "otro@email.com";
         String token = "tokenXYZ";
@@ -96,6 +140,7 @@ class ApiAdapterTest {
     }
 
     @Test
+    @Order(4)
     void idPropietario_CuandoModelEsRestauranteYNoEsPropietario_LanzaExcepcion() {
         String correo = "noowner@correo.com";
         String token = "token123";
