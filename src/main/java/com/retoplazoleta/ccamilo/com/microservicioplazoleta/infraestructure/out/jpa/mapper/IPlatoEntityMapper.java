@@ -16,4 +16,5 @@ public interface IPlatoEntityMapper {
     PlatoEntity toPlatontity(Plato plato);
     Plato toPlatoModel(PlatoEntity platoEntity);
     List<Plato> toPlatoModelList(List<PlatoEntity> platoEntities);
+    List<PlatoEntity> toPlatoEntities(List<Plato> platos);
 }

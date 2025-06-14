@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -132,5 +133,66 @@ class PlatoJpaAdapterTest {
         verify(repository).findPlatosPorRestauranteYCategoria(eq(idRestaurante), eq(idCategoria), any(Pageable.class));
         verify(platoEntityMapper).toPlatoModelList(anyList());
     }
+
+    @Test
+    @Order(5)
+    void getPlatooByIdNull() {
+        Long id = 1L;
+        when(repository.findById(id)).thenReturn(Optional.empty());
+
+        Plato resultado = adapter.findById(id);
+
+        assertNull(resultado);
+        verify(repository).findById(id);
+        verifyNoInteractions(platoEntityMapper);
+    }
+
+    @Test
+    @Order(6)
+    void getPlatoById() {
+
+        Long id = 1L;
+        PlatoEntity platoEntity = new PlatoEntity();
+        Plato plato = new Plato();
+
+        when(repository.findById(id)).thenReturn(Optional.of(platoEntity));
+        when(platoEntityMapper.toPlatoModel(platoEntity)).thenReturn(plato);
+
+        Plato resultado = adapter.findById(id);
+
+        assertNotNull(resultado);
+        verify(repository).findById(id);
+        verify(platoEntityMapper).toPlatoModel(platoEntity);
+
+    }
+
+    @Test
+    @Order(7)
+    void existsPlatosOfRestaurant_devuelveTrueCuandoExistePlatoDeOtroRestaurante() {
+        List<Long> idsPlatos = List.of(1L, 2L, 3L);
+        Long idRestaurante = 10L;
+
+        when(repository.existsByIdInAndRestaurante_IdNot(idsPlatos, idRestaurante)).thenReturn(true);
+
+        boolean result = adapter.existsPlatosOfRestaurant(idsPlatos, idRestaurante);
+
+        assertTrue(result);
+        verify(repository).existsByIdInAndRestaurante_IdNot(idsPlatos, idRestaurante);
+    }
+
+    @Test
+    @Order(8)
+    void existsPlatosOfRestaurant_devuelveFalseCuandoTodosSonDelRestaurante() {
+        List<Long> idsPlatos = List.of(4L, 5L);
+        Long idRestaurante = 20L;
+
+        when(repository.existsByIdInAndRestaurante_IdNot(idsPlatos, idRestaurante)).thenReturn(false);
+
+        boolean result = adapter.existsPlatosOfRestaurant(idsPlatos, idRestaurante);
+
+        assertFalse(result);
+        verify(repository).existsByIdInAndRestaurante_IdNot(idsPlatos, idRestaurante);
+    }
+
 
 }

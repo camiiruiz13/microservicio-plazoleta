@@ -43,8 +43,12 @@ class RestauranteUseCaseTest {
         restaurante.setNombre("Mi Restaurante");
         restaurante.setNit("123456");
         restaurante.setTelefono("+573001112233");
+        String token = "Bearer token";
+        String correo = "user@example.com";
+        Long propietarioId = 123L;
 
-        restauranteUseCase.saveRestaurante(restaurante);
+        when(apiClientPort.idPropietario(correo, token, restaurante)).thenReturn(propietarioId);
+        restauranteUseCase.saveRestaurante(restaurante,correo, token);
 
         verify(restaurantePersitencePort).saveRestaurante(restaurante);
     }
@@ -55,9 +59,13 @@ class RestauranteUseCaseTest {
     void testNombreNull_LanzaExcepcion() {
         Restaurante restaurante = new Restaurante();
         restaurante.setNombre(null);
+        String token = "Bearer token";
+        String correo = "user@example.com";
+
+
 
         RestauranteValidationException ex = assertThrows(RestauranteValidationException.class, () ->
-                restauranteUseCase.saveRestaurante(restaurante));
+                restauranteUseCase.saveRestaurante(restaurante,correo, token));
         assertEquals("El nombre es obligatorio.", ex.getMessage());
     }
 
@@ -66,9 +74,12 @@ class RestauranteUseCaseTest {
     void testNombreVacio_LanzaExcepcion() {
         Restaurante restaurante = new Restaurante();
         restaurante.setNombre("   ");
+        String token = "Bearer token";
+        String correo = "user@example.com";
+
 
         RestauranteValidationException ex = assertThrows(RestauranteValidationException.class, () ->
-                restauranteUseCase.saveRestaurante(restaurante));
+                restauranteUseCase.saveRestaurante(restaurante,correo, token));
         assertEquals("El nombre es obligatorio.", ex.getMessage());
     }
 
@@ -77,9 +88,12 @@ class RestauranteUseCaseTest {
     void testNombreSoloNumeros_LanzaExcepcion() {
         Restaurante restaurante = new Restaurante();
         restaurante.setNombre("123456");
+        String token = "Bearer token";
+        String correo = "user@example.com";
+
 
         RestauranteValidationException ex = assertThrows(RestauranteValidationException.class, () ->
-                restauranteUseCase.saveRestaurante(restaurante));
+                restauranteUseCase.saveRestaurante(restaurante,correo, token));
         assertEquals("El nombre no puede estar compuesto solo por números.", ex.getMessage());
     }
 
@@ -89,9 +103,12 @@ class RestauranteUseCaseTest {
         Restaurante restaurante = new Restaurante();
         restaurante.setNombre("Valido");
         restaurante.setNit(null);
+        String token = "Bearer token";
+        String correo = "user@example.com";
+
 
         RestauranteValidationException ex = assertThrows(RestauranteValidationException.class, () ->
-                restauranteUseCase.saveRestaurante(restaurante));
+                restauranteUseCase.saveRestaurante(restaurante,correo, token));
         assertEquals("El NIT debe contener solo números.", ex.getMessage());
     }
 
@@ -101,9 +118,12 @@ class RestauranteUseCaseTest {
         Restaurante restaurante = new Restaurante();
         restaurante.setNombre("Valido");
         restaurante.setNit("ABC123");
+        String token = "Bearer token";
+        String correo = "user@example.com";
+
 
         RestauranteValidationException ex = assertThrows(RestauranteValidationException.class, () ->
-                restauranteUseCase.saveRestaurante(restaurante));
+                restauranteUseCase.saveRestaurante(restaurante,correo, token));
         assertEquals("El NIT debe contener solo números.", ex.getMessage());
     }
 
@@ -114,9 +134,12 @@ class RestauranteUseCaseTest {
         restaurante.setNombre("Valido");
         restaurante.setNit("123456");
         restaurante.setTelefono(null);
+        String token = "Bearer token";
+        String correo = "user@example.com";
+
 
         RestauranteValidationException ex = assertThrows(RestauranteValidationException.class, () ->
-                restauranteUseCase.saveRestaurante(restaurante));
+                restauranteUseCase.saveRestaurante(restaurante,correo, token));
         assertEquals("El teléfono debe tener máximo 13 caracteres y ser numérico. Puede iniciar con +.", ex.getMessage());
     }
 
@@ -126,10 +149,12 @@ class RestauranteUseCaseTest {
         Restaurante restaurante = new Restaurante();
         restaurante.setNombre("Valido");
         restaurante.setNit("123456");
-        restaurante.setTelefono("12345678901234"); // 14 caracteres, inválido
+        restaurante.setTelefono("12345678901234");
+        String token = "Bearer token";
+        String correo = "user@example.com";
 
         RestauranteValidationException ex = assertThrows(RestauranteValidationException.class, () ->
-                restauranteUseCase.saveRestaurante(restaurante));
+                restauranteUseCase.saveRestaurante(restaurante,correo, token));
         assertEquals("El teléfono debe tener máximo 13 caracteres y ser numérico. Puede iniciar con +.", ex.getMessage());
     }
 
@@ -149,53 +174,12 @@ class RestauranteUseCaseTest {
     }
 
 
+
+
+
+
     @Test
     @Order(10)
-    void cuandoIdRestauranteEsNull_lanzaExcepcion() {
-        Long idPropietario = 1L;
-
-        RestauranteValidationException ex = assertThrows(
-                RestauranteValidationException.class,
-                () -> restauranteUseCase.findByIdAndIdPropietario(null, idPropietario)
-        );
-
-        assertEquals(ID_RESTAURANTE_NULL.getMessage(), ex.getMessage());
-    }
-
-    @Test
-    @Order(11)
-    void cuandoRestauranteNoExiste_lanzaExcepcion() {
-        Long idRestaurante = 10L;
-        Long idPropietario = 1L;
-
-        when(restaurantePersitencePort.findByIdAndIdPropietario(idRestaurante, idPropietario)).thenReturn(null);
-
-        RestauranteValidationException ex = assertThrows(
-                RestauranteValidationException.class,
-                () -> restauranteUseCase.findByIdAndIdPropietario(idRestaurante, idPropietario)
-        );
-
-        assertEquals(ERROR_USER.getMessage(), ex.getMessage());
-    }
-
-    @Test
-    @Order(12)
-    void cuandoExisteRestaurante_retornaRestaurante() {
-        Long idRestaurante = 1L;
-        Long idPropietario = 1L;
-
-        Restaurante restaurante = builRestaurante();
-
-        when(restaurantePersitencePort.findByIdAndIdPropietario(idRestaurante, idPropietario)).thenReturn(restaurante);
-
-        Restaurante resultado = restauranteUseCase.findByIdAndIdPropietario(idRestaurante, idPropietario);
-
-        assertNotNull(resultado);
-        assertEquals(restaurante, resultado);
-    }
-
-    @Test
-    @Order(13)
     void listarRestaurantesPaginados_debeRetornarListaPaginada() {
 
         int page = 0;

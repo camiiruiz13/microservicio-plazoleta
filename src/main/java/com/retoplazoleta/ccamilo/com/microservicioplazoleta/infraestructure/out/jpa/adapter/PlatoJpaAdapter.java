@@ -34,6 +34,13 @@ public class PlatoJpaAdapter  implements IPlatoPersistencePort {
     }
 
     @Override
+    public Plato findById(Long id) {
+        return platoRepository.findById(id)
+                .map(platoEntityMapper::toPlatoModel)
+                .orElse(null);
+    }
+
+    @Override
     public PageResponse<Plato> findByPlatoByRestaurantes(Long idRestaurante, Long idCategoria, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
 
@@ -51,6 +58,11 @@ public class PlatoJpaAdapter  implements IPlatoPersistencePort {
                 .hasNext(platosPaginados.hasNext())
                 .hasPrevious(platosPaginados.hasPrevious())
                 .build();
+    }
+
+    @Override
+    public boolean existsPlatosOfRestaurant(List<Long> idsPlatos, Long idRestaurante) {
+        return platoRepository.existsByIdInAndRestaurante_IdNot(idsPlatos, idRestaurante);
     }
 
 

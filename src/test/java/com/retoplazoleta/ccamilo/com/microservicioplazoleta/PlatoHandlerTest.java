@@ -4,13 +4,10 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.requ
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PlatoDTOUpdate;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PlatoDTOResponse;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.RestauranteDTOPage;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.impl.PlatoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoRequestMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.PlatoResponseMapper;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.ICategoriaServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categoria;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
@@ -34,11 +31,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PlatoHandlerTest {
 
-    @Mock
-    private ICategoriaServicePort categoriaService;
 
-    @Mock
-    private IRestauranteServicePort restauranteService;
 
     @Mock
     private IPlatoServicePort platoServicePort;
@@ -56,7 +49,7 @@ class PlatoHandlerTest {
     @Order(1)
     void savePlato_deberiaGuardarCorrectamente() {
 
-        Long idPropietario = 1L;
+
         Long idRestaurante = 10L;
         Long idCategoria = 5L;
 
@@ -66,19 +59,14 @@ class PlatoHandlerTest {
 
         Plato plato = new Plato();
 
-        Restaurante restaurante = new Restaurante();
-        Categoria categoria = new Categoria();
+
 
         when(platoRequestMapper.toPlato(platoDTO)).thenReturn(plato);
-        when(restauranteService.findByIdAndIdPropietario(idRestaurante, idPropietario)).thenReturn(restaurante);
-        when(categoriaService.findCategoriaByIdCategoria(idCategoria)).thenReturn(categoria);
 
 
-        platoHandler.savePlato(platoDTO, idPropietario);
+        platoHandler.savePlato(platoDTO);
 
         verify(platoRequestMapper).toPlato(platoDTO);
-        verify(restauranteService).findByIdAndIdPropietario(idRestaurante, idPropietario);
-        verify(categoriaService).findCategoriaByIdCategoria(idCategoria);
         verify(platoServicePort).savePlato(plato);
     }
 

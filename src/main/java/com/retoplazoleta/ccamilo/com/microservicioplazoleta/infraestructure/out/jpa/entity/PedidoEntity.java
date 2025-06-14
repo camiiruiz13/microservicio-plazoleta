@@ -1,9 +1,13 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity;
 
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.enums.EstadoPedido;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,7 +24,7 @@ public class PedidoEntity {
     private Long idCliente;
 
     @Column(name = "fecha")
-    private String fecha;
+    private LocalDate fecha;
 
     @Enumerated(EnumType.STRING)
     private EstadoPedido estado;
@@ -36,5 +40,18 @@ public class PedidoEntity {
             foreignKey = @ForeignKey(name = "fk_pedido_restaurante")
     )
     private RestauranteEntity restaurante;
+
+    @OneToMany(mappedBy = "pedido")
+    private List<PedidoPlatoEntity> platos;
+
+
+    @PrePersist
+    public void prePersist() {
+        this.fecha = LocalDate.now();
+        if (this.estado == null) {
+            this.estado = EstadoPedido.PENDIENTE;
+        }
+    }
+
 
 }

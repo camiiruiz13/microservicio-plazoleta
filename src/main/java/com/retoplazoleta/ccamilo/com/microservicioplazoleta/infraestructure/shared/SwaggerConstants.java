@@ -59,6 +59,17 @@ public class SwaggerConstants {
             """;
     public static final String OP_FILTER_ID_CATEGORIA = "ID de la categoría para filtrar los platos. Si se omite, se listan todas las categorías.";
 
+    public static final String TAG_PEDIDO = "Plato";
+    public static final String TAG_PEDIDO_DESC = """
+            Solicitar los platos de mi preferencia
+            para que puedan prepararlos y traerlos a mi mesa
+            """;
+
+    public static final String OP_CREAR_PEDIDO_SUMMARY = "Crear pedido";
+    public static final String OP_CREAR_PEDIDO_DESC = "Crear pedido para solicitar platos de mi preferencia";
+    public static final String CREATE_PEDIDO_DESCRIPTION_REQUEST = "Objeto de crear pedido";
+
+
 
     public static final String OK = "200";
     public static final String CREATED = "201";

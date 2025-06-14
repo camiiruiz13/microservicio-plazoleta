@@ -44,24 +44,19 @@ class RestauranteHandlerTest {
     @Test
     @Order(1)
     void testSaveRestaurante() {
-
         RestauranteDTO dto = new RestauranteDTO();
-        dto.setNombre("Mi Restaurante");
-        dto.setNit("123456");
-        dto.setTelefono("+573001112233");
-        dto.setCorreo("usuario@mail.com");
+        dto.setCorreo("correo@test.com");
 
-        Restaurante restauranteMapped = new Restaurante();
-        when(restauranteRequestMapper.toRestaurante(dto)).thenReturn(restauranteMapped);
-        when(restauranteServicePort.idPropietario(dto.getCorreo(), "Bearer token", restauranteMapped))
-                .thenReturn(1L);
+        Restaurante restaurante = new Restaurante();
+        when(restauranteRequestMapper.toRestaurante(dto)).thenReturn(restaurante);
 
+        String token = "Bearer token";
+        doNothing().when(restauranteServicePort).saveRestaurante(restaurante, dto.getCorreo(), token);
 
-        restauranteHandler.saveRestaurante(dto, "Bearer token");
+        restauranteHandler.saveRestaurante(dto, token);
 
         verify(restauranteRequestMapper).toRestaurante(dto);
-        verify(restauranteServicePort).idPropietario(dto.getCorreo(), "Bearer token", restauranteMapped);
-        verify(restauranteServicePort).saveRestaurante(restauranteMapped);
+        verify(restauranteServicePort).saveRestaurante(restaurante, dto.getCorreo(), token);
     }
 
     @Test

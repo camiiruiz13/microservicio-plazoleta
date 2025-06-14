@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exceptionhandler;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.CategoriaValidationException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PedidoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RestauranteValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorClientExeption;
@@ -66,6 +67,19 @@ public class ControllerAdvisor {
                 HttpStatus.UNAUTHORIZED
         );
     }
+
+    @ExceptionHandler(PedidoValidationException.class)
+    public ResponseEntity<GenericResponseDTO<Map<String, Object>>> pedidoDomainException(PedidoValidationException ex) {
+        log.error("No existen categorias a registrar", ex);
+        return new ResponseEntity<>(ResponseUtils.buildResponse(PEDIDO_VALIDATION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<GenericResponseDTO<Map<String, Object>>>handleGeneric(Exception ex) {
+        log.error("Error interno del sistema.", ex);
+        return new ResponseEntity<>(ResponseUtils.buildResponse(ERROR_EXCEPTION.getMessage(),Map.of(ERROR, ex.getMessage()),  HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
 
 

@@ -2,12 +2,16 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 
 
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.CategoriaValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RestauranteValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Categoria;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.ICategoriaPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IRestaurantePersitencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PlatoUseCase;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -31,7 +35,14 @@ import static org.mockito.Mockito.*;
 class PlatoUseCaseTest {
 
     @Mock
+    private ICategoriaPersistencePort categoriaPort;
+
+
+    @Mock
     private IPlatoPersistencePort platoPersistencePort;
+
+    @Mock
+    private IRestaurantePersitencePort restaurantePort;
 
 
 
@@ -41,8 +52,19 @@ class PlatoUseCaseTest {
     @Test
     @Order(1)
     void testSavePlato_Valid() {
+        Categoria cat = new Categoria();
+        cat.setId(1L);
+        Restaurante rest = new Restaurante();
+        rest.setId(2L);
+        rest.setIdPropietario(10L);
 
         Plato plato = builPlato ();
+
+        when(categoriaPort.findByIdCategoria(anyLong())).thenReturn(cat);
+        when(restaurantePort.findByIdAndIdPropietario(anyLong(), anyLong()))
+                .thenReturn(rest);
+
+        when(platoPersistencePort.savePlato(any(Plato.class))).thenReturn(plato);
 
         platoUseCase.savePlato(plato);
 
@@ -282,6 +304,122 @@ class PlatoUseCaseTest {
         assertEquals(2, resultado.getContent().size());
         verify(platoPersistencePort).findByPlatoByRestaurantes(idRestaurante, idCategoria, page, size);
     }
+
+    @Test
+    @Order(15)
+    void cuandoIdCategoriaEsNull_lanzaExcepcion() {
+
+
+        CategoriaValidationException ex = assertThrows(
+                CategoriaValidationException.class,
+                () -> platoUseCase.findCategoriaByIdCategoria(null)
+        );
+
+        assertEquals(ID_CATEGORIA_NULL.getMessage(), ex.getMessage());
+    }
+
+    @Test
+    @Order(16)
+    void cuandoCategoriaNoExiste_lanzaExcepcion() {
+        Long idCategoria = 10L;
+
+        when(categoriaPort.findByIdCategoria(idCategoria)).thenReturn(null);
+
+        CategoriaValidationException ex = assertThrows(
+                CategoriaValidationException.class,
+                () -> platoUseCase.findCategoriaByIdCategoria(idCategoria)
+        );
+
+        assertEquals(ERROR_CATEGORIA.getMessage(), ex.getMessage());
+    }
+
+
+    @Test
+    @Order(17)
+    void cuandoExisteCategoria_retornaCategoria() {
+        Long idCategoria = 1L;
+
+        Plato plato = builPlato();
+        Categoria categoria = plato.getCategoria();
+
+        when(categoriaPort.findByIdCategoria(idCategoria)).thenReturn(categoria);
+
+        Categoria resultado = platoUseCase.findCategoriaByIdCategoria(idCategoria);
+
+        assertNotNull(resultado);
+        assertEquals(categoria, resultado);
+    }
+
+    @Test
+    @Order(18)
+    void cuandoIdRestauranteEsNull_lanzaExcepcion() {
+        Long idPropietario = 1L;
+
+        RestauranteValidationException ex = assertThrows(
+                RestauranteValidationException.class,
+                () -> platoUseCase.findByIdAndIdPropietario(null, idPropietario)
+        );
+
+        assertEquals(ID_RESTAURANTE_NULL.getMessage(), ex.getMessage());
+    }
+
+    @Test
+    @Order(19)
+    void cuandoRestauranteNoExiste_lanzaExcepcion() {
+        Long idRestaurante = 10L;
+        Long idPropietario = 1L;
+
+        when(restaurantePort.findByIdAndIdPropietario(idRestaurante, idPropietario)).thenReturn(null);
+
+        RestauranteValidationException ex = assertThrows(
+                RestauranteValidationException.class,
+                () -> platoUseCase.findByIdAndIdPropietario(idRestaurante, idPropietario)
+        );
+
+        assertEquals(ERROR_USER.getMessage(), ex.getMessage());
+    }
+
+
+    @Test
+    @Order(20)
+    void cuandoExisteRestaurante_retornaRestaurante() {
+        Long idRestaurante = 1L;
+        Long idPropietario = 1L;
+
+        Plato plato = builPlato();
+        Restaurante restaurante = plato.getRestaurante();
+
+        when(restaurantePort.findByIdAndIdPropietario(idRestaurante, idPropietario)).thenReturn(restaurante);
+
+        Restaurante resultado = platoUseCase.findByIdAndIdPropietario(idRestaurante, idPropietario);
+
+        assertNotNull(resultado);
+        assertEquals(restaurante, resultado);
+    }
+
+    @Test
+    @Order(21)
+    void updatePlato_CuandoDescripcionYPrecioMenorA0_ActualizaAmbos() {
+        Long id = 1L;
+        Long idProp = 100L;
+
+        Plato entrada = new Plato();
+        entrada.setDescripcion("Nuevo");
+        entrada.setPrecio(-25.50);
+
+        Plato existente = mockFindByIdAndIdRPropietario(id);
+        when(platoPersistencePort.findByIdAndIdPropietario(id, idProp)).thenReturn(existente);
+
+
+
+        PlatoValidationException ex = assertThrows(PlatoValidationException.class, () ->
+                platoUseCase.updatePlato(entrada, id, idProp));
+        assertEquals(PRICE_PLATO_EXCEPTION.getMessage(), ex.getMessage());
+    }
+
+
+
+
 
 
 
