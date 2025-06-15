@@ -58,6 +58,7 @@ public class SwaggerConstants {
             para poder solicitar el plato de mi preferencia
             """;
     public static final String OP_FILTER_ID_CATEGORIA = "ID de la categoría para filtrar los platos. Si se omite, se listan todas las categorías.";
+    public static final String OP_FILTER_ID_RESTAURANTE = "ID del restaurante para listar su menú";
 
     public static final String TAG_PEDIDO = "Plato";
     public static final String TAG_PEDIDO_DESC = """
