@@ -3,6 +3,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PedidoValidationException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RefactorException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
@@ -65,6 +66,22 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
+    public void updatePedido(Long idPedido, Pedido pedido) {
+
+        Pedido pedidoExistente = findById(idPedido);
+
+        if (pedidoExistente.getEstado() == EstadoPedido.PENDIENTE && pedidoExistente.getIdChef() == null){
+            pedidoExistente.setIdChef(pedido.getIdChef());
+            pedidoExistente.setEstado(pedido.getEstado());
+        }
+
+
+        pedidoPersistencePort.savePedido(pedidoExistente);
+
+
+    }
+
+    @Override
     public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, Long idChef, int page, int pageSize) {
 
         PageResponse<Pedido> result = null;
@@ -86,5 +103,13 @@ public class PedidoUseCase implements IPedidoServicePort {
 
         }
         return result;
+    }
+
+    @Override
+    public Pedido findById(Long id) {
+        Pedido pedido = pedidoPersistencePort.findById(id);
+        if (pedido == null)
+            throw new RefactorException(ID_PEDIDO_NULL, id);
+        return pedido;
     }
 }

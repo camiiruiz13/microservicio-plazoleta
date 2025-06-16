@@ -10,4 +10,5 @@ public interface IPedidoServicePort {
     void updatePedido(Long idPedido,  Pedido pedido);
 
     PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante,Long idChef, int page, int pageSize);
+    Pedido findById(Long id);
 }
