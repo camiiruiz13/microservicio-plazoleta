@@ -13,6 +13,9 @@ import java.util.List;
 public interface PedidoRepository extends JpaRepository<PedidoEntity, Long> {
 
     boolean existsByIdClienteAndEstadoIn(Long idCliente, List<EstadoPedido> estados);
+
+    Page<PedidoEntity> findByEstadoAndRestaurante_Id(EstadoPedido estado, Long idRestaurante, Pageable pageable);
+
     @Query("""
     SELECT p FROM PedidoEntity p
     WHERE p.estado = :estado

@@ -3,6 +3,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PedidoValidationException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RefactorException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
@@ -12,7 +13,6 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPer
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.Objects;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
 
@@ -47,7 +47,7 @@ public class PedidoUseCase implements IPedidoServicePort {
                 .map(id -> {
                     Plato plato = platoPersistencePort.findById(id);
                     if (plato == null) {
-                        throw new PedidoValidationException(ID_PLATO_PEDIDO_NULL.getMessage() + id );
+                        throw new PedidoValidationException(ID_PLATO_PEDIDO_NULL.getMessage() + id);
                     }
                     return plato;
                 })
@@ -65,7 +65,26 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante,Long idChef, int page, int pageSize) {
-        return pedidoPersistencePort.findByEstadoAndRestauranteId(estado,idRestaurante, idChef,page,pageSize);
+    public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, Long idChef, int page, int pageSize) {
+
+        PageResponse<Pedido> result = null;
+
+        if (estado == EstadoPedido.PENDIENTE) {
+
+            result = pedidoPersistencePort.findByEstadoAndRestauranteId(estado, idRestaurante, page, pageSize);
+
+            if (result == null || result.getContent() == null || result.getContent().isEmpty()) {
+                throw new RefactorException(PEDIDO_RESTAURANTE, idRestaurante);
+            }
+
+        } else {
+            result = pedidoPersistencePort.findByEstadoAndRestauranteIdChef(estado, idRestaurante, idChef, page, pageSize);
+
+            if (result == null || result.getContent() == null || result.getContent().isEmpty()) {
+                throw new RefactorException(USER_NOT_RESTAURANT, idChef);
+            }
+
+        }
+        return result;
     }
 }
