@@ -9,7 +9,10 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.inpu
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.RestauranteRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage;
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,6 +26,7 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructu
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
 class RestauranteControllerTest {
 
@@ -36,6 +40,7 @@ class RestauranteControllerTest {
     private RestauranteController controller;
 
     @Test
+    @Order(1)
     void testCreateRestaurante_Returns201() {
 
         RestauranteRequest restauranteRequest = new RestauranteRequest();
@@ -66,6 +71,7 @@ class RestauranteControllerTest {
     }
 
     @Test
+    @Order(2)
     void testListarRestaurantes_Returns200() {
         int page = 0;
         int pageSize = 5;

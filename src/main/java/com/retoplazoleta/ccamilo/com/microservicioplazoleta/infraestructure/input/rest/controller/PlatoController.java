@@ -157,7 +157,7 @@ public class PlatoController {
     })
     public ResponseEntity<GenericResponseDTO<PageResponseDTO<PlatoDTOResponse>>> listarPlatos(
             @PathVariable("idRestaurante")
-            @Parameter(description = "ID del restaurante para listar su menú", required = true, example = "1")
+            @Parameter(description = OP_FILTER_ID_RESTAURANTE, required = true, example = EXAMPLES_ID)
             Long idRestaurante,
 
             @Parameter(

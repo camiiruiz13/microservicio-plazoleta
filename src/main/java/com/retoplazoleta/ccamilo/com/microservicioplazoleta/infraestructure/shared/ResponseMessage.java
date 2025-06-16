@@ -9,6 +9,7 @@ public enum ResponseMessage {
 
     RESTAURANT_SUCCES("Se ha creado el restaurante exitosamente"),
     RESTAURANT_LIST("Se listan los restaurantes"),
+    PEDIDO_LIST("Se listan los pedidos exitosamente"),
     PLATO_LIST("Se listan los platos correctamente"),
     PLATO_SUCCES("Se ha creado el plato exitosamente"),
     PEDIDO_SUCCES("Se ha creado el pedido exitosamente"),

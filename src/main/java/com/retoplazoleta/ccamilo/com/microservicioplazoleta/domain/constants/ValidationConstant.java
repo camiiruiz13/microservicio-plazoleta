@@ -26,6 +26,8 @@ public enum ValidationConstant {
     PEDIDO_NO_EXITS("El pedido no contiene platos."),
     PEDIDO_PROCESS("El cliente ya tiene un pedido en proceso."),
     PEDIDO_PLATO_RESTAURANTE("El plato no pertence al restaurante"),
+    PEDIDO_RESTAURANTE("El pedido no pertenece al restaurante. Restaurante ID: "),
+    USER_NOT_RESTAURANT("El empleado no pertenece al restaurante. Empleado ID: "),
     MATCHES("^\\d+$"),
     MATCHES_TEL("^\\+?\\d{1,13}$");
 
