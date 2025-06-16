@@ -8,5 +8,5 @@ public interface IPedidoServicePort {
 
     void savePedido(Pedido pedido);
 
-    PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, int page, int pageSize);
+    PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante,Long idChef, int page, int pageSize);
 }

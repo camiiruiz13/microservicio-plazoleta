@@ -54,11 +54,11 @@ public class Pedidoontroller {
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
     public ResponseEntity<GenericResponseDTO<Void>> crearPedido(@io.swagger.v3.oas.annotations.parameters.RequestBody(
-                                                                       description = SwaggerConstants.CREATE_PEDIDO_DESCRIPTION_REQUEST,
-                                                                       content = @Content(
-                                                                               mediaType = CONTENT_TYPE,
-                                                                               schema = @Schema(implementation = PedidoRequest.class)))
-                                                               @RequestBody PedidoRequest pedidoRequest,
+                                                                        description = SwaggerConstants.CREATE_PEDIDO_DESCRIPTION_REQUEST,
+                                                                        content = @Content(
+                                                                                mediaType = CONTENT_TYPE,
+                                                                                schema = @Schema(implementation = PedidoRequest.class)))
+                                                                @RequestBody PedidoRequest pedidoRequest,
                                                                 @AuthenticationPrincipal AuthenticatedUser user) {
 
         PedidoDTO pedidoDTO = pedidoRequest.getRequest();
@@ -71,7 +71,7 @@ public class Pedidoontroller {
     }
 
 
-       @GetMapping(EndpointApi.LIST_PEDIDOS_BY_ESTADO)
+    @GetMapping(EndpointApi.LIST_PEDIDOS_BY_ESTADO)
     @PreAuthorize("hasAuthority('ROLE_EMPLEADO')")
     @Operation(
             summary = SwaggerConstants.OP_LISTAR_RESTAURANTE_SUMMARY,
@@ -86,26 +86,26 @@ public class Pedidoontroller {
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
     public ResponseEntity<GenericResponseDTO<PageResponseDTO<PedidoDTOResponse>>> listaDePedidosPorEstado(
-               @PathVariable("estado")
-               @Parameter(
-                       description = OP_ESTADODISABLE_DESCRIPTION,
-                       required = true,
-                       example = DESC_PENDIENTE,
-                       schema = @Schema(type = STRING_TYPE, allowableValues = {DESC_PENDIENTE,
-                               DESC_EN_PREPARACION,
-                               DESC_ENTREGADO,
-                               DESC_CANCELADO,
-                               DESC_LISTO})
-               )
-               String estado,
+            @PathVariable("estado")
+            @Parameter(
+                    description = OP_ESTADODISABLE_DESCRIPTION,
+                    required = true,
+                    example = DESC_PENDIENTE,
+                    schema = @Schema(type = STRING_TYPE, allowableValues = {DESC_PENDIENTE,
+                            DESC_EN_PREPARACION,
+                            DESC_ENTREGADO,
+                            DESC_CANCELADO,
+                            DESC_LISTO})
+            )
+            String estado,
 
-               @PathVariable("idRestaurante")
-               @Parameter(description = OP_FILTER_ID_RESTAURANTE, required = true, example = EXAMPLES_ID)
-               Long idRestaurante,
+            @PathVariable("idRestaurante")
+            @Parameter(description = OP_FILTER_ID_RESTAURANTE, required = true, example = EXAMPLES_ID)
+            Long idRestaurante,
 
             @Parameter(
                     in = ParameterIn.QUERY,
-                    description = PAGE_DESCRIPTION ,
+                    description = PAGE_DESCRIPTION,
                     example = PAGE
             )
             @RequestParam(defaultValue = PAGE) int page,
@@ -113,21 +113,17 @@ public class Pedidoontroller {
             @Parameter(
                     in = ParameterIn.QUERY,
                     description = PAGE_SIZE_DESCRIPTION,
-                   example = PAGE_SIZE
+                    example = PAGE_SIZE
             )
-            @RequestParam(defaultValue = PAGE_SIZE) int pageSize
+            @RequestParam(defaultValue = PAGE_SIZE) int pageSize,
+            @AuthenticationPrincipal AuthenticatedUser user
     ) {
         return new ResponseEntity<>(
-                ResponseUtils.buildResponse(PEDIDO_LIST.getMessage(), pedidoHandler.findByEstadoAndRestauranteId(estado, idRestaurante, page, pageSize),
+                ResponseUtils.buildResponse(PEDIDO_LIST.getMessage(), pedidoHandler.findByEstadoAndRestauranteId(estado , idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize),
                         HttpStatus.OK),
                 HttpStatus.OK
         );
     }
-
-
-
-
-
 
 
 }
