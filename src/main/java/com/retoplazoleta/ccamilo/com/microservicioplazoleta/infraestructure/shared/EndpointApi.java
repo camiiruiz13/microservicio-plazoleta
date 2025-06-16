@@ -12,4 +12,5 @@ public interface EndpointApi {
     String UPDATE_PLATO = "/ActualizarPlato/{idPlato}";
     String DISABLE_PLATO = "/ActualizarPlato/{idPlato}/estado";
     String CREATE_PEDIDOS = "/crearPedidos";
+    String LIST_PEDIDOS_BY_ESTADO = "/obtenerPedido/{estado}/restaurante/{idRestaurante}";
 }

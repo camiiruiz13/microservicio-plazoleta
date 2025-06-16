@@ -45,9 +45,17 @@ public class SwaggerConstants {
             """;
 
     public static final String OP_DISABLE_DESCRIPTION = "Estado del plato (true = activo, false = inactivo)";
+    public static final String OP_ESTADODISABLE_DESCRIPTION = "Estados del pedido solicitado";
     public static final String OP_DISABLE_EXAMPLE = "false";
     public static final String OP_DISABLE_EXAMPLE_TRUE = "true";
     public static final String BOOLEAN_TYPE= "boolean";
+    public static final String STRING_TYPE= "string";
+
+    public static final String DESC_PENDIENTE ="PENDIENTE";
+    public static final String DESC_EN_PREPARACION = "EN_PREPARACION";
+    public static final String DESC_ENTREGADO= "ENTREGADO";
+    public static final String DESC_CANCELADO = "CANCELADO";
+    public static final String DESC_LISTO = "CANCELADO";
 
 
     public static final String UPDATE_PLATO_DESCRIPTION_REQUEST = "Objeto de crear plato";

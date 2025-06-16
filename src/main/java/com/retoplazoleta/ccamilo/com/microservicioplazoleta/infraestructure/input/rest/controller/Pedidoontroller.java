@@ -27,6 +27,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.CONTENT_TYPE;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PEDIDO_LIST;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PEDIDO_SUCCES;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.SwaggerConstants.*;
 
@@ -70,8 +71,8 @@ public class Pedidoontroller {
     }
 
 
-       @GetMapping(EndpointApi.FIND_ALL_RESTAURANTE)
-    @PreAuthorize("hasAuthority('ROLE_CLIENTE')")
+       @GetMapping(EndpointApi.LIST_PEDIDOS_BY_ESTADO)
+    @PreAuthorize("hasAuthority('ROLE_EMPLEADO')")
     @Operation(
             summary = SwaggerConstants.OP_LISTAR_RESTAURANTE_SUMMARY,
             description = SwaggerConstants.OP_LISTAR_RESTAURANTE_DESC
@@ -85,9 +86,23 @@ public class Pedidoontroller {
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
     public ResponseEntity<GenericResponseDTO<PageResponseDTO<PedidoDTOResponse>>> listaDePedidosPorEstado(
+               @PathVariable("estado")
+               @Parameter(
+                       description = OP_ESTADODISABLE_DESCRIPTION,
+                       required = true,
+                       example = DESC_PENDIENTE,
+                       schema = @Schema(type = STRING_TYPE, allowableValues = {DESC_PENDIENTE,
+                               DESC_EN_PREPARACION,
+                               DESC_ENTREGADO,
+                               DESC_CANCELADO,
+                               DESC_LISTO})
+               )
+               String estado,
+
                @PathVariable("idRestaurante")
                @Parameter(description = OP_FILTER_ID_RESTAURANTE, required = true, example = EXAMPLES_ID)
                Long idRestaurante,
+
             @Parameter(
                     in = ParameterIn.QUERY,
                     description = PAGE_DESCRIPTION ,
@@ -103,7 +118,7 @@ public class Pedidoontroller {
             @RequestParam(defaultValue = PAGE_SIZE) int pageSize
     ) {
         return new ResponseEntity<>(
-                ResponseUtils.buildResponse(RESTAURANT_LIST.getMessage(), pedidoHandler.findByEstadoAndRestauranteId(estado, idRestaurante, page, pageSize),
+                ResponseUtils.buildResponse(PEDIDO_LIST.getMessage(), pedidoHandler.findByEstadoAndRestauranteId(estado, idRestaurante, page, pageSize),
                         HttpStatus.OK),
                 HttpStatus.OK
         );

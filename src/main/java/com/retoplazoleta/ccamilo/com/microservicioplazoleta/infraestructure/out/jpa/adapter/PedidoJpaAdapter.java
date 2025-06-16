@@ -71,7 +71,7 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
     @Override
     public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<PedidoEntity> pedidoPaginados = pedidoRepository.findByEstadoAndRestauranteIdEntities(estado, idRestaurante, pageable);
+        Page<PedidoEntity> pedidoPaginados = pedidoRepository.findByEstadoAndRestaurante_Id(estado, idRestaurante, pageable);
         List<Pedido> pedidos = pedidoEntityMapper.toModelList(pedidoPaginados.getContent());
         return PageResponse.<Pedido>builder()
                 .content(pedidos)
