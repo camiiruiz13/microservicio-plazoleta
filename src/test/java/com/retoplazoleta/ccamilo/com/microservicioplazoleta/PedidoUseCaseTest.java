@@ -2,10 +2,12 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PedidoValidationException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RefactorException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPedidoPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PedidoUseCase;
@@ -18,13 +20,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido.ENTREGADO;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido.PENDIENTE;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -132,6 +135,81 @@ class PedidoUseCaseTest {
                 () -> useCase.savePedido(pedido));
 
         assertEquals(PEDIDO_PLATO_RESTAURANTE.getMessage(), ex.getMessage());
+    }
+
+    @Test
+    @Order(6)
+    void findByEstadoAndRestauranteId_pendiente_conPedidos_deberiaRetornarPagina() {
+        Long idRestaurante = 1L;
+        int page = 0;
+        int pageSize = 10;
+
+        List<Pedido> pedidos = List.of(new Pedido());
+        PageResponse<Pedido> response = PageResponse.<Pedido>builder()
+                .content(pedidos)
+                .build();
+
+        when(pedidoPersistence.findByEstadoAndRestauranteId(
+                eq(PENDIENTE), eq(idRestaurante), eq(page), eq(pageSize))
+        ).thenReturn(response);
+
+        PageResponse<Pedido> result = useCase.findByEstadoAndRestauranteId(
+               PENDIENTE, idRestaurante, null, page, pageSize
+        );
+
+        assertEquals(pedidos, result.getContent());
+    }
+
+    @Test
+    void findByEstadoAndRestauranteId_pendiente_sinPedidos_deberiaLanzarExcepcion() {
+        Long idRestaurante = 1L;
+
+        when(pedidoPersistence.findByEstadoAndRestauranteId(
+                eq(PENDIENTE), eq(idRestaurante), anyInt(), anyInt())
+        ).thenReturn(PageResponse.<Pedido>builder().content(Collections.emptyList()).build());
+
+        RefactorException exception = assertThrows(RefactorException.class, () ->
+                useCase.findByEstadoAndRestauranteId(PENDIENTE, idRestaurante, null, 0, 10)
+        );
+
+        assertTrue(exception.getMessage().contains(PEDIDO_RESTAURANTE.getMessage()));
+    }
+
+    @Test
+    void findByEstadoAndRestauranteId_otroEstado_conPedidos_deberiaRetornarPagina() {
+        Long idRestaurante = 1L;
+        Long idChef = 99L;
+
+        List<Pedido> pedidos = List.of(new Pedido());
+        PageResponse<Pedido> response = PageResponse.<Pedido>builder()
+                .content(pedidos)
+                .build();
+
+        when(pedidoPersistence.findByEstadoAndRestauranteIdChef(
+                eq(ENTREGADO), eq(idRestaurante), eq(idChef), anyInt(), anyInt())
+        ).thenReturn(response);
+
+        PageResponse<Pedido> result = useCase.findByEstadoAndRestauranteId(
+                ENTREGADO, idRestaurante, idChef, 0, 10
+        );
+
+        assertEquals(pedidos, result.getContent());
+    }
+
+    @Test
+    void findByEstadoAndRestauranteId_otroEstado_sinPedidos_deberiaLanzarExcepcion() {
+        Long idRestaurante = 1L;
+        Long idChef = 99L;
+
+        when(pedidoPersistence.findByEstadoAndRestauranteIdChef(
+                eq(ENTREGADO), eq(idRestaurante), eq(idChef), anyInt(), anyInt())
+        ).thenReturn(PageResponse.<Pedido>builder().content(Collections.emptyList()).build());
+
+        RefactorException exception = assertThrows(RefactorException.class, () ->
+                useCase.findByEstadoAndRestauranteId(ENTREGADO, idRestaurante, idChef, 0, 10)
+        );
+
+        assertTrue(exception.getMessage().contains(USER_NOT_RESTAURANT.getMessage()));
     }
 
 
