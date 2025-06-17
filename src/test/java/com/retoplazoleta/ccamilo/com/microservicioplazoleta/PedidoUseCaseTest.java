@@ -23,8 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.List;
 
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido.ENTREGADO;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido.PENDIENTE;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido.*;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -161,6 +160,7 @@ class PedidoUseCaseTest {
     }
 
     @Test
+    @Order(7)
     void findByEstadoAndRestauranteId_pendiente_sinPedidos_deberiaLanzarExcepcion() {
         Long idRestaurante = 1L;
 
@@ -176,6 +176,7 @@ class PedidoUseCaseTest {
     }
 
     @Test
+    @Order(8)
     void findByEstadoAndRestauranteId_otroEstado_conPedidos_deberiaRetornarPagina() {
         Long idRestaurante = 1L;
         Long idChef = 99L;
@@ -197,6 +198,7 @@ class PedidoUseCaseTest {
     }
 
     @Test
+    @Order(9)
     void findByEstadoAndRestauranteId_otroEstado_sinPedidos_deberiaLanzarExcepcion() {
         Long idRestaurante = 1L;
         Long idChef = 99L;
@@ -210,6 +212,99 @@ class PedidoUseCaseTest {
         );
 
         assertTrue(exception.getMessage().contains(USER_NOT_RESTAURANT.getMessage()));
+    }
+
+    @Test
+    @Order(10)
+    void updatePedido_asignarChefYEstadoCuandoPendienteYSinChef() {
+
+        Long pedidoId = 1L;
+        Pedido existente = buildPedido();
+        existente.setEstado(PENDIENTE);
+        existente.setId(1L);
+        Pedido update = buildPedido();
+        update.setEstado(EN_PREPARACION);
+        update.setIdChef(10L);
+        update.setRestaurante(null);
+        update.setPlatos(null);
+
+        when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
+
+        useCase.updatePedido(pedidoId, "empleado@email.com", update);
+
+        assertEquals(update.getIdChef(), existente.getIdChef());
+        assertEquals(EN_PREPARACION, existente.getEstado());
+        verify(pedidoPersistence).savePedido(existente);
+    }
+
+    @Test
+    @Order(11)
+    void updatePedido_errorCuandoChefEsNullYEstadoNoEsPendiente() {
+
+        Long pedidoId = 1L;
+        Pedido existente = buildPedido();
+        existente.setEstado(EN_PREPARACION);
+        Pedido update = buildPedido();
+        update.setEstado(ENTREGADO);
+        update.setRestaurante(null);
+
+
+        when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
+
+        RefactorException ex = assertThrows(RefactorException.class, () ->
+                useCase.updatePedido(pedidoId, "empleado@email.com", update)
+        );
+
+        assertTrue(ex.getMessage().contains(EMPLEADO_PLATO_RESTAURANTE.getMessage()));
+    }
+
+
+    @Test
+    @Order(12)
+    void updatePedido_errorCuandoChefNoCoincide() {
+
+        Long pedidoId = 1L;
+        Pedido existente = buildPedido();
+        existente.setEstado(EN_PREPARACION);
+        existente.setId(1L);
+        existente.setIdChef(1L);
+        Pedido update = buildPedido();
+        update.setEstado(ENTREGADO);
+        update.setIdChef(10L);
+        update.setRestaurante(null);
+        update.setPlatos(null);
+
+        when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
+
+        RefactorException ex = assertThrows(RefactorException.class, () ->
+                useCase.updatePedido(pedidoId, "empleado@email.com", update)
+        );
+
+        assertTrue(ex.getMessage().contains(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage()));
+    }
+
+    @Test
+    @Order(13)
+    void updatePedido_cambiaEstadoSiChefCoincide() {
+
+
+        Long pedidoId = 1L;
+        Pedido existente = buildPedido();
+        existente.setEstado(EN_PREPARACION);
+        existente.setId(1L);
+        existente.setIdChef(10L);
+        Pedido update = buildPedido();
+        update.setEstado(LISTO);
+        update.setIdChef(10L);
+        update.setRestaurante(null);
+        update.setPlatos(null);
+
+        when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
+
+        useCase.updatePedido(pedidoId, "empleado@email.com", update);
+
+        assertEquals(LISTO, existente.getEstado());
+        verify(pedidoPersistence).savePedido(existente);
     }
 
 
