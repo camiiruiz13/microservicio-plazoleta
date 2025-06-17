@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.impl.PedidoHandler;
@@ -102,6 +103,19 @@ class PedidoHandlerTest {
 
         verify(pedidoServicePort).findByEstadoAndRestauranteId(PENDIENTE, idRestaurante, idChef, page, pageSize);
         verify(pedidoResponseMapper).toResponse(pedido);
+    }
+
+    @Test
+    @Order(3)
+    void updatePedido_deberiaGuardarCorrectamente() {
+        Long idPedido = 1L;
+        PedidoUpdateDTO pedidoDTO = new PedidoUpdateDTO();
+        Pedido pedido = new Pedido();
+        when(pedidoRequestMapper.toPedidoUpdate(pedidoDTO)).thenReturn(pedido);
+        pedidoHandler.updatePedido(idPedido, pedidoDTO);
+        verify(pedidoRequestMapper).toPedidoUpdate(pedidoDTO);
+        verify(pedidoServicePort).updatePedido(idPedido,pedidoDTO.getCorreoEmpleado(),pedido);
+
     }
 
 }
