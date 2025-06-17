@@ -18,6 +18,7 @@ public interface IPedidoPersistencePort {
 
     PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante,  int page, int pageSize);
     PageResponse<Pedido> findByEstadoAndRestauranteIdChef(EstadoPedido estado, Long idRestaurante, Long idChef, int page, int pageSize);
+    Pedido findById(Long id);
 
 
 

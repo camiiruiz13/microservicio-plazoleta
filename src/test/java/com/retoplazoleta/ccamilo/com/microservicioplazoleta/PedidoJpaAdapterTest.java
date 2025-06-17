@@ -22,6 +22,7 @@ import org.springframework.data.domain.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -231,6 +232,25 @@ class PedidoJpaAdapterTest {
 
         verify(pedidoEntityMapper).toModelList(Collections.singletonList(entity));
 
+
+    }
+
+    @Test
+    @Order(7)
+    void getPedidoById() {
+
+        Long id = 1L;
+        PedidoEntity pedidoEntity = new PedidoEntity();
+        Pedido pedido = new Pedido();
+
+        when(pedidoRepository.findById(id)).thenReturn(Optional.of(pedidoEntity));
+        when(pedidoEntityMapper.toModel(pedidoEntity)).thenReturn(pedido);
+
+        Pedido resultado = adapter.findById(id);
+
+        assertNotNull(resultado);
+        verify(pedidoRepository).findById(id);
+        verify(pedidoEntityMapper).toModel(pedidoEntity);
 
     }
 }

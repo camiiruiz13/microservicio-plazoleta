@@ -3,6 +3,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PedidoValidationException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RefactorException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
@@ -65,6 +66,32 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
+    public void updatePedido(Long idPedido, String correoEmpleado, Pedido pedido) {
+
+        Pedido pedidoExistente = findById(idPedido);
+
+        EstadoPedido estadoActual = pedidoExistente.getEstado();
+        EstadoPedido nuevoEstado = pedido.getEstado();
+
+        if (estadoActual == EstadoPedido.PENDIENTE && pedidoExistente.getIdChef() == null) {
+            pedidoExistente.setIdChef(pedido.getIdChef());
+            pedidoExistente.setEstado(nuevoEstado);
+        } else if (pedidoExistente.getIdChef() == null) {
+            throw new RefactorException(EMPLEADO_PLATO_RESTAURANTE, pedido.getIdChef());
+        } else {
+            if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
+                throw new RefactorException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE, pedido.getIdChef());
+            pedidoExistente.setEstado(nuevoEstado);
+
+        }
+
+
+        pedidoPersistencePort.savePedido(pedidoExistente);
+
+
+    }
+
+    @Override
     public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, Long idChef, int page, int pageSize) {
 
         PageResponse<Pedido> result = null;
@@ -86,5 +113,13 @@ public class PedidoUseCase implements IPedidoServicePort {
 
         }
         return result;
+    }
+
+    @Override
+    public Pedido findById(Long id) {
+        Pedido pedido = pedidoPersistencePort.findById(id);
+        if (pedido == null)
+            throw new RefactorException(ID_PEDIDO_NULL, id);
+        return pedido;
     }
 }

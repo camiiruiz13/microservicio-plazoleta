@@ -101,5 +101,12 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
 
     }
 
+    @Override
+    public Pedido findById(Long id) {
+        return pedidoRepository.findById(id)
+                .map(pedidoEntityMapper::toModel)
+                .orElse(null);
+    }
+
 
 }

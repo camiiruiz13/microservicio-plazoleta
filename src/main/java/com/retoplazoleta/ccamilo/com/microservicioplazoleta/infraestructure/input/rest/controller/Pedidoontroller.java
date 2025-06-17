@@ -2,11 +2,13 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.inp
 
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPedidoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoRequest;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoUpdateRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.auth.AuthenticatedUser;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.EndpointApi;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseUtils;
@@ -27,8 +29,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.CONTENT_TYPE;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PEDIDO_LIST;
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.PEDIDO_SUCCES;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.*;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.SwaggerConstants.*;
 
 @RestController
@@ -121,6 +122,41 @@ public class Pedidoontroller {
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PEDIDO_LIST.getMessage(), pedidoHandler.findByEstadoAndRestauranteId(estado , idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize),
                         HttpStatus.OK),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping(EndpointApi.UPDATE_PEDIDOS)
+    @PreAuthorize("hasAuthority('ROLE_EMPLEADO')")
+    @Operation(
+            summary = OP_UPDATE_PEDIDO_SUMMARY,
+            description = OP_UPDATE_PEDIDO_DESC
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    public ResponseEntity<GenericResponseDTO<Void>> actualizarPedido(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                                                        description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
+                                                                        content = @Content(
+                                                                                mediaType = CONTENT_TYPE,
+                                                                                schema = @Schema(implementation = PedidoUpdateRequest.class)))
+                                                                         @PathVariable
+                                                                         @Parameter(description = OP_FILTER_ID_PEDIDO, required = true, example = EXAMPLES_ID)
+                                                                         Long id,
+                                                                @RequestBody PedidoUpdateRequest pedidoRequest,
+                                                                @AuthenticationPrincipal AuthenticatedUser user) {
+
+        PedidoUpdateDTO pedidoDTO = pedidoRequest.getRequest();
+        pedidoDTO.setIdChef(Long.valueOf(user.getIdUser()));
+        pedidoDTO.setCorreoEmpleado(user.getUsername());
+        pedidoHandler.updatePedido(id, pedidoDTO);
+        return new ResponseEntity<>(
+                ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),
                 HttpStatus.OK
         );
     }
