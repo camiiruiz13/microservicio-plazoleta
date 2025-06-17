@@ -7,7 +7,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.respons
 public interface IPedidoServicePort {
 
     void savePedido(Pedido pedido);
-    void updatePedido(Long idPedido,  Pedido pedido);
+    void updatePedido(Long idPedido, String correoEmpleado, Pedido pedido);
 
     PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante,Long idChef, int page, int pageSize);
     Pedido findById(Long id);

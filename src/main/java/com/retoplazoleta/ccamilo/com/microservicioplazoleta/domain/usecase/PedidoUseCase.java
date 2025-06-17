@@ -66,13 +66,23 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public void updatePedido(Long idPedido, Pedido pedido) {
+    public void updatePedido(Long idPedido, String correoEmpleado, Pedido pedido) {
 
         Pedido pedidoExistente = findById(idPedido);
 
-        if (pedidoExistente.getEstado() == EstadoPedido.PENDIENTE && pedidoExistente.getIdChef() == null){
+        EstadoPedido estadoActual = pedidoExistente.getEstado();
+        EstadoPedido nuevoEstado = pedido.getEstado();
+
+        if (estadoActual == EstadoPedido.PENDIENTE && pedidoExistente.getIdChef() == null) {
             pedidoExistente.setIdChef(pedido.getIdChef());
-            pedidoExistente.setEstado(pedido.getEstado());
+            pedidoExistente.setEstado(nuevoEstado);
+        } else if (pedidoExistente.getIdChef() == null) {
+            throw new RefactorException(EMPLEADO_PLATO_RESTAURANTE, pedido.getIdChef());
+        } else {
+            if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
+                throw new RefactorException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE, pedido.getIdChef());
+            pedidoExistente.setEstado(nuevoEstado);
+
         }
 
 
