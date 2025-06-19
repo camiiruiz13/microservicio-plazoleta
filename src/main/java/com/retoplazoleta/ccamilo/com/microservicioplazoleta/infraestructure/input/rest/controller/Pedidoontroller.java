@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.CONTENT_TYPE;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.HEADER_AUTHORIZATION;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.*;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.SwaggerConstants.*;
 
@@ -140,7 +142,8 @@ public class Pedidoontroller {
             @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
-    public ResponseEntity<GenericResponseDTO<Void>> actualizarPedido(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+    public ResponseEntity<GenericResponseDTO<Void>> actualizarPedido(HttpServletRequest request,
+                                                                     @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                                                         description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
                                                                         content = @Content(
                                                                                 mediaType = CONTENT_TYPE,
@@ -148,13 +151,14 @@ public class Pedidoontroller {
                                                                          @PathVariable
                                                                          @Parameter(description = OP_FILTER_ID_PEDIDO, required = true, example = EXAMPLES_ID)
                                                                          Long id,
-                                                                @RequestBody PedidoUpdateRequest pedidoRequest,
-                                                                @AuthenticationPrincipal AuthenticatedUser user) {
+                                                                     @RequestBody PedidoUpdateRequest pedidoRequest,
+                                                                     @AuthenticationPrincipal AuthenticatedUser user) {
 
+        String token =request.getHeader(HEADER_AUTHORIZATION);
         PedidoUpdateDTO pedidoDTO = pedidoRequest.getRequest();
         pedidoDTO.setIdChef(Long.valueOf(user.getIdUser()));
         pedidoDTO.setCorreoEmpleado(user.getUsername());
-        pedidoHandler.updatePedido(id, pedidoDTO);
+        pedidoHandler.updatePedido(id, pedidoDTO, token);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),
                 HttpStatus.OK

@@ -8,7 +8,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.resp
 public interface IPedidoHandler {
 
     void savePedido(PedidoDTO pedidoDTO);
-    void updatePedido(Long idPedido, PedidoUpdateDTO pedidoDTO);
+    void updatePedido(Long idPedido, PedidoUpdateDTO pedidoDTO, String token);
 
     PageResponseDTO<PedidoDTOResponse> findByEstadoAndRestauranteId(String estado, Long idRestaurante, Long idChef, int page, int pageSize);
 }

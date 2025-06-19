@@ -9,6 +9,8 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.User;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPedidoPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,8 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.consta
 
 @RequiredArgsConstructor
 public class PedidoUseCase implements IPedidoServicePort {
+
+    private final IApiClientPort apiClientPort;
 
     private final IPedidoPersistencePort pedidoPersistencePort;
 
@@ -66,7 +70,7 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public void updatePedido(Long idPedido, String correoEmpleado, Pedido pedido) {
+    public void updatePedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) {
 
         Pedido pedidoExistente = findById(idPedido);
 
@@ -81,6 +85,13 @@ public class PedidoUseCase implements IPedidoServicePort {
         } else {
             if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
                 throw new RefactorException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE, pedido.getIdChef());
+            if (estadoActual == EstadoPedido.LISTO) {
+                String pinSeguridad = crearPinSeguridad();
+                User user =  apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
+                apiClientPort.notificarUser(user.getCelular(),pinSeguridad,token);
+                pedidoExistente.setPinSeguridad(pinSeguridad);
+            }
+
             pedidoExistente.setEstado(nuevoEstado);
 
         }
@@ -122,4 +133,10 @@ public class PedidoUseCase implements IPedidoServicePort {
             throw new RefactorException(ID_PEDIDO_NULL, id);
         return pedido;
     }
+
+    private String crearPinSeguridad() {
+        int pin = (int) (Math.random() * 10_000);
+        return String.format("%04d", pin);
+    }
+
 }
