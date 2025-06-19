@@ -29,8 +29,8 @@ import java.util.List;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +40,7 @@ class PedidoControllerTest {
     private IPedidoHandler pedidoHandler;
 
     @Mock
-    private HttpServletRequest httpServletRequest;
+    private HttpServletRequest request;
 
     @InjectMocks
     private Pedidoontroller controller;
@@ -48,7 +48,6 @@ class PedidoControllerTest {
     @Test
     @Order(1)
     void crearPedido_Retorna201_CuandoRequestEsValida() {
-
 
 
         AuthenticatedUser user = new AuthenticatedUser(
@@ -69,6 +68,7 @@ class PedidoControllerTest {
         assertEquals(ResponseMessage.PEDIDO_SUCCES.getMessage(), response.getBody().getMessage());
         verify(pedidoHandler).savePedido(dto);
     }
+
     @Test
     @Order(2)
     void testListarPedidosRestaurante_Returns200() {
@@ -81,8 +81,6 @@ class PedidoControllerTest {
                 "1", "carlos@mail.com", null,
                 List.of(new SimpleGrantedAuthority("ROLE_EMPLEADO"))
         );
-
-
 
 
         PageResponseDTO<PedidoDTOResponse> pageResponse = PageResponseDTO.<PedidoDTOResponse>builder()
@@ -101,45 +99,49 @@ class PedidoControllerTest {
         genericResponse.setMessage(PEDIDO_LIST.getMessage());
         genericResponse.setObjectResponse(pageResponse);
 
-        when(pedidoHandler.findByEstadoAndRestauranteId(estado , idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize)).thenReturn(pageResponse);
+        when(pedidoHandler.findByEstadoAndRestauranteId(estado, idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize)).thenReturn(pageResponse);
 
 
         ResponseEntity<GenericResponseDTO<PageResponseDTO<PedidoDTOResponse>>> response =
-                controller.listaDePedidosPorEstado(estado, idRestaurante,  page, pageSize, user);
+                controller.listaDePedidosPorEstado(estado, idRestaurante, page, pageSize, user);
 
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(PEDIDO_LIST.getMessage(), response.getBody().getMessage());
         assertEquals(1, response.getBody().getObjectResponse().getContent().size());
-        verify(pedidoHandler).findByEstadoAndRestauranteId(estado , idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize);
+        verify(pedidoHandler).findByEstadoAndRestauranteId(estado, idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize);
     }
 
     @Test
     @Order(3)
     void actualizarPedido_Retorna200_CuandoRequestEsValida() {
 
-        Long idPedido = 10L;
-        String token = "Bearer token";
-
         AuthenticatedUser user = new AuthenticatedUser(
                 "10", "empleado@email.com", null,
                 List.of(new SimpleGrantedAuthority("ROLE_EMPLEADO"))
         );
 
-
+        Long idPedido = 1L;
+        PedidoUpdateRequest pedidoRequest = new PedidoUpdateRequest();
         PedidoUpdateDTO dto = new PedidoUpdateDTO();
+        dto.setIdRestaurante(1L);
+        dto.setEstado("EN_PREPARACION");
         dto.setIdChef(Long.valueOf(user.getIdUser()));
-        PedidoUpdateRequest request = new PedidoUpdateRequest();
-        request.setRequest(dto);
+        pedidoRequest.setRequest(dto);
 
-        ResponseEntity<GenericResponseDTO<Void>> response = controller.actualizarPedido(httpServletRequest, idPedido, request, user);
+        String token = "Bearer abc.def";
 
+        when(request.getHeader(eq("Authorization"))).thenReturn(token);
+        doNothing().when(pedidoHandler).updatePedido(idPedido, dto, token);
+
+        ResponseEntity<GenericResponseDTO<Void>> response =
+                controller.actualizarPedido(request, idPedido, pedidoRequest, user);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(PEDIDO_UPDATE_SUCCES.getMessage(), response.getBody().getMessage());
         verify(pedidoHandler).updatePedido(idPedido,dto, token);
-    }
 
+    }
 
 
 }
