@@ -12,6 +12,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.inpu
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoUpdateRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.auth.AuthenticatedUser;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,9 @@ class PedidoControllerTest {
 
     @Mock
     private IPedidoHandler pedidoHandler;
+
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private Pedidoontroller controller;
@@ -115,6 +119,7 @@ class PedidoControllerTest {
     void actualizarPedido_Retorna200_CuandoRequestEsValida() {
 
         Long idPedido = 10L;
+        String token = "Bearer token";
 
         AuthenticatedUser user = new AuthenticatedUser(
                 "10", "empleado@email.com", null,
@@ -127,12 +132,12 @@ class PedidoControllerTest {
         PedidoUpdateRequest request = new PedidoUpdateRequest();
         request.setRequest(dto);
 
-        ResponseEntity<GenericResponseDTO<Void>> response = controller.actualizarPedido(idPedido, request, user);
+        ResponseEntity<GenericResponseDTO<Void>> response = controller.actualizarPedido(httpServletRequest, idPedido, request, user);
 
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(PEDIDO_UPDATE_SUCCES.getMessage(), response.getBody().getMessage());
-        verify(pedidoHandler).updatePedido(idPedido,dto);
+        verify(pedidoHandler).updatePedido(idPedido,dto, token);
     }
 
 

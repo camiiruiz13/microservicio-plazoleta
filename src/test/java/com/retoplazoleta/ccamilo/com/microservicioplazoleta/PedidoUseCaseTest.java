@@ -8,6 +8,8 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoP
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.User;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPedidoPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PedidoUseCase;
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,11 +39,19 @@ import static org.mockito.Mockito.when;
 class PedidoUseCaseTest {
 
     @Mock
+    private IApiClientPort apiClientPort;
+
+    @Mock
     private IPedidoPersistencePort pedidoPersistence;
+
     @Mock
     private IPlatoPersistencePort platoPersistence;
     @InjectMocks
     private PedidoUseCase useCase;
+
+    @Captor
+    ArgumentCaptor<String> pinCaptor;
+
 
     @Test
     @Order(1)
@@ -219,6 +231,7 @@ class PedidoUseCaseTest {
     void updatePedido_asignarChefYEstadoCuandoPendienteYSinChef() {
 
         Long pedidoId = 1L;
+        String token = "Bearer token";
         Pedido existente = buildPedido();
         existente.setEstado(PENDIENTE);
         existente.setId(1L);
@@ -230,7 +243,7 @@ class PedidoUseCaseTest {
 
         when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
 
-        useCase.updatePedido(pedidoId, "empleado@email.com", update);
+        useCase.updatePedido(pedidoId, "empleado@email.com", update,token);
 
         assertEquals(update.getIdChef(), existente.getIdChef());
         assertEquals(EN_PREPARACION, existente.getEstado());
@@ -242,6 +255,7 @@ class PedidoUseCaseTest {
     void updatePedido_errorCuandoChefEsNullYEstadoNoEsPendiente() {
 
         Long pedidoId = 1L;
+        String token = "Bearer token";
         Pedido existente = buildPedido();
         existente.setEstado(EN_PREPARACION);
         Pedido update = buildPedido();
@@ -252,7 +266,7 @@ class PedidoUseCaseTest {
         when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
 
         RefactorException ex = assertThrows(RefactorException.class, () ->
-                useCase.updatePedido(pedidoId, "empleado@email.com", update)
+                useCase.updatePedido(pedidoId, "empleado@email.com", update, token)
         );
 
         assertTrue(ex.getMessage().contains(EMPLEADO_PLATO_RESTAURANTE.getMessage()));
@@ -264,6 +278,7 @@ class PedidoUseCaseTest {
     void updatePedido_errorCuandoChefNoCoincide() {
 
         Long pedidoId = 1L;
+        String token = "Bearer token";
         Pedido existente = buildPedido();
         existente.setEstado(EN_PREPARACION);
         existente.setId(1L);
@@ -277,7 +292,7 @@ class PedidoUseCaseTest {
         when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
 
         RefactorException ex = assertThrows(RefactorException.class, () ->
-                useCase.updatePedido(pedidoId, "empleado@email.com", update)
+                useCase.updatePedido(pedidoId, "empleado@email.com", update, token)
         );
 
         assertTrue(ex.getMessage().contains(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage()));
@@ -285,11 +300,11 @@ class PedidoUseCaseTest {
 
     @Test
     @Order(13)
-    void updatePedido_cambiaEstadoSiChefCoincide() {
-
+    void updatePedidoListo_cambiaEstadoSiChefCoincide() {
 
         Long pedidoId = 1L;
         Pedido existente = buildPedido();
+        String token = "Bearer token";
         existente.setEstado(EN_PREPARACION);
         existente.setId(1L);
         existente.setIdChef(10L);
@@ -298,18 +313,47 @@ class PedidoUseCaseTest {
         update.setIdChef(10L);
         update.setRestaurante(null);
         update.setPlatos(null);
+        User userMock = buildValidUser();
 
         when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
+        when(apiClientPort.findByIdCUser(existente.getIdCliente(), token)).thenReturn(userMock);
 
-        useCase.updatePedido(pedidoId, "empleado@email.com", update);
+        useCase.updatePedido(pedidoId, "empleado@email.com", update, token);
 
         assertEquals(LISTO, existente.getEstado());
         verify(pedidoPersistence).savePedido(existente);
+
+        verify(apiClientPort).notificarUser(
+                eq(userMock.getCelular()),
+                pinCaptor.capture(),
+                eq(token)
+        );
+
+      
+    }
+
+
+    @Test
+    @Order(14)
+    void testCrearPinSeguridadViaReflection() throws Exception {
+
+
+        String pin = TestUtil.invokePrivateMethod(
+                useCase,
+                "crearPinSeguridad",
+                String.class,
+                new Class<?>[]{}
+        );
+
+        assertNotNull(pin);
+        assertEquals(4, pin.length());
+        assertTrue(pin.matches("\\d{4}"));
     }
 
 
 
-    private Pedido buildPedido() {
+
+private Pedido buildPedido() {
 
         Restaurante restaurante = new Restaurante();
         restaurante.setId(1L);
@@ -328,8 +372,6 @@ class PedidoUseCaseTest {
 
 
     }
-
-
 
     private List<PedidoPlato> builPedidoPlatos(){
 
@@ -350,6 +392,18 @@ class PedidoUseCaseTest {
         return platos;
 
     }
+
+    private User buildValidUser() {
+        User user = new User();
+        user.setIdUsuario(1L);
+        user.setNombre("Test");
+        user.setApellido("Test");
+        user.setNumeroDocumento("123456");
+        user.setCelular("+573001112233");
+        user.setCorreo("test@correo.com");
+        return user;
+    }
+
 
 
 }

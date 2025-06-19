@@ -109,12 +109,13 @@ class PedidoHandlerTest {
     @Order(3)
     void updatePedido_deberiaGuardarCorrectamente() {
         Long idPedido = 1L;
+        String token = "Bearer token";
         PedidoUpdateDTO pedidoDTO = new PedidoUpdateDTO();
         Pedido pedido = new Pedido();
         when(pedidoRequestMapper.toPedidoUpdate(pedidoDTO)).thenReturn(pedido);
-        pedidoHandler.updatePedido(idPedido, pedidoDTO);
+        pedidoHandler.updatePedido(idPedido, pedidoDTO, token);
         verify(pedidoRequestMapper).toPedidoUpdate(pedidoDTO);
-        verify(pedidoServicePort).updatePedido(idPedido,pedidoDTO.getCorreoEmpleado(),pedido);
+        verify(pedidoServicePort).updatePedido(idPedido,pedidoDTO.getCorreoEmpleado(),pedido, token);
 
     }
 

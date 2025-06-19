@@ -85,21 +85,16 @@ public class PedidoUseCase implements IPedidoServicePort {
         } else {
             if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
                 throw new RefactorException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE, pedido.getIdChef());
-            if (estadoActual == EstadoPedido.LISTO) {
+            if (nuevoEstado == EstadoPedido.LISTO) {
                 String pinSeguridad = crearPinSeguridad();
                 User user =  apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
                 apiClientPort.notificarUser(user.getCelular(),pinSeguridad,token);
                 pedidoExistente.setPinSeguridad(pinSeguridad);
             }
-
             pedidoExistente.setEstado(nuevoEstado);
 
         }
-
-
         pedidoPersistencePort.savePedido(pedidoExistente);
-
-
     }
 
     @Override
