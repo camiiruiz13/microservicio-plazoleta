@@ -8,7 +8,6 @@ public interface IPedidoServicePort {
 
     void savePedido(Pedido pedido);
     void updatePedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) ;
-
-    PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante,Long idChef, int page, int pageSize);
+    PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, int page, int pageSize);
     Pedido findById(Long id);
 }

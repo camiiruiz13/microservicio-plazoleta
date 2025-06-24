@@ -129,8 +129,67 @@ class PedidoUseCaseTest {
 
     }
 
+    @Test
+    @Order(6)
+    void findByEstadoAndRestauranteId_pendiente_conPedidos_deberiaRetornarPagina() {
+        Long idRestaurante = 1L;
+        int page = 0;
+        int pageSize = 10;
 
-private Pedido buildPedido() {
+        List<Pedido> pedidos = List.of(new Pedido());
+        PageResponse<Pedido> response = PageResponse.<Pedido>builder()
+                .content(pedidos)
+                .build();
+
+        when(pedidoPersistence.findByEstadoAndRestauranteId(
+                eq(PENDIENTE), eq(idRestaurante), eq(page), eq(pageSize))
+        ).thenReturn(response);
+
+        PageResponse<Pedido> result = useCase.findByEstadoAndRestauranteId(
+                PENDIENTE, idRestaurante,  page, pageSize
+        );
+
+        assertEquals(pedidos, result.getContent());
+    }
+
+    @Test
+    @Order(7)
+    void findByEstadoAndRestauranteId_pendiente_sinPedidos_deberiaLanzarExcepcion() {
+        Long idRestaurante = 1L;
+
+        when(pedidoPersistence.findByEstadoAndRestauranteId(
+                eq(PENDIENTE), eq(idRestaurante), anyInt(), anyInt())
+        ).thenReturn(PageResponse.<Pedido>builder().content(Collections.emptyList()).build());
+
+        RefactorException exception = assertThrows(RefactorException.class, () ->
+                useCase.findByEstadoAndRestauranteId(PENDIENTE, idRestaurante, 0, 10)
+        );
+
+        assertTrue(exception.getMessage().contains(PEDIDO_RESTAURANTE.getMessage()));
+    }
+
+
+    @Test
+    @Order(8)
+    void findByIdPedido_Retorna_pedido() {
+        Pedido pedido = buildPedido();
+        when(pedidoPersistence.findById(1L)).thenReturn(pedido);
+        Pedido result = useCase.findById(1L);
+        assertEquals(pedido, result);
+    }
+
+    @Test
+    @Order(9)
+    void findByIdPedido_Retorna_null() {
+        when(pedidoPersistence.findById(1L)).thenReturn(null);
+        RefactorException ex = assertThrows(RefactorException.class,
+                () -> useCase.findById(1L));
+        assertEquals(ID_PEDIDO_NULL.getMessage() + 1L, ex.getMessage());
+    }
+
+
+
+    private Pedido buildPedido() {
 
         Restaurante restaurante = new Restaurante();
         restaurante.setId(1L);

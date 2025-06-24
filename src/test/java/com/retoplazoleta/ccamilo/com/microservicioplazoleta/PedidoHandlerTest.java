@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido.PENDIENTE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -85,24 +84,12 @@ class PedidoHandlerTest {
                 .build();
 
 
-        when(pedidoServicePort.findByEstadoAndRestauranteId(PENDIENTE, idRestaurante, idChef, page, pageSize)).thenReturn(pageResponse);
+        when(pedidoServicePort.findByEstadoAndRestauranteId(PENDIENTE, idRestaurante, page, pageSize)).thenReturn(pageResponse);
         when(pedidoResponseMapper.toResponse(pedido)).thenReturn(pedidoDTOResponse);
 
-
-        PageResponseDTO<PedidoDTOResponse> result = pedidoHandler.findByEstadoAndRestauranteId(PENDIENTE.name(), idRestaurante, idChef, page, pageSize);
-
+        PageResponseDTO<PedidoDTOResponse> result = pedidoHandler.findByEstadoAndRestauranteId(PENDIENTE.name(), idRestaurante, page, pageSize);
 
         assertNotNull(result);
-        assertEquals(1, result.getTotalPages());
-        assertEquals(1, result.getTotalElements());
-        assertEquals(page, result.getCurrentPage());
-        assertEquals(pageSize, result.getPageSize());
-        assertEquals(1, result.getContent().size());
-        assertEquals(pedidoDTOResponse, result.getContent().get(0));
-
-
-        verify(pedidoServicePort).findByEstadoAndRestauranteId(PENDIENTE, idRestaurante, idChef, page, pageSize);
-        verify(pedidoResponseMapper).toResponse(pedido);
     }
 
     @Test

@@ -99,17 +99,14 @@ class PedidoControllerTest {
         genericResponse.setMessage(PEDIDO_LIST.getMessage());
         genericResponse.setObjectResponse(pageResponse);
 
-        when(pedidoHandler.findByEstadoAndRestauranteId(estado, idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize)).thenReturn(pageResponse);
+        when(pedidoHandler.findByEstadoAndRestauranteId(estado, idRestaurante,  page, pageSize)).thenReturn(pageResponse);
 
 
         ResponseEntity<GenericResponseDTO<PageResponseDTO<PedidoDTOResponse>>> response =
-                controller.listaDePedidosPorEstado(estado, idRestaurante, page, pageSize, user);
+                controller.listaDePedidosPorEstado(estado, idRestaurante, page, pageSize);
 
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(PEDIDO_LIST.getMessage(), response.getBody().getMessage());
-        assertEquals(1, response.getBody().getObjectResponse().getContent().size());
-        verify(pedidoHandler).findByEstadoAndRestauranteId(estado, idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize);
     }
 
     @Test

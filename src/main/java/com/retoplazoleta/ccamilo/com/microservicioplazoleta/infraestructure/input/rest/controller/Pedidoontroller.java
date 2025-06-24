@@ -118,11 +118,10 @@ public class Pedidoontroller {
                     description = PAGE_SIZE_DESCRIPTION,
                     example = PAGE_SIZE
             )
-            @RequestParam(defaultValue = PAGE_SIZE) int pageSize,
-            @AuthenticationPrincipal AuthenticatedUser user
+            @RequestParam(defaultValue = PAGE_SIZE) int pageSize
     ) {
         return new ResponseEntity<>(
-                ResponseUtils.buildResponse(PEDIDO_LIST.getMessage(), pedidoHandler.findByEstadoAndRestauranteId(estado , idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize),
+                ResponseUtils.buildResponse(PEDIDO_LIST.getMessage(), pedidoHandler.findByEstadoAndRestauranteId(estado , idRestaurante,  page, pageSize),
                         HttpStatus.OK),
                 HttpStatus.OK
         );

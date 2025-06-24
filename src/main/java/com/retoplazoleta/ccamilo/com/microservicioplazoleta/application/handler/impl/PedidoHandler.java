@@ -38,9 +38,9 @@ public class PedidoHandler implements IPedidoHandler {
     }
 
     @Override
-    public PageResponseDTO<PedidoDTOResponse> findByEstadoAndRestauranteId(String estado, Long idRestaurante,  Long idChef, int page, int pageSize) {
+    public PageResponseDTO<PedidoDTOResponse> findByEstadoAndRestauranteId(String estado, Long idRestaurante, int page, int pageSize) {
         return PageResponseMapper.toResponseDTO(
-                pedidoServicePort.findByEstadoAndRestauranteId(EstadoPedido.valueOf(estado), idRestaurante, idChef, page, pageSize),
+                pedidoServicePort.findByEstadoAndRestauranteId(EstadoPedido.valueOf(estado), idRestaurante,page, pageSize),
                 pedidoResponseMapper::toResponse
 
         );

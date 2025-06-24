@@ -90,7 +90,7 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, Long idChef, int page, int pageSize) {
+    public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante,  int page, int pageSize) {
 
         PageResponse<Pedido> result = pedidoPersistencePort.findByEstadoAndRestauranteId(estado, idRestaurante, page, pageSize);
 
