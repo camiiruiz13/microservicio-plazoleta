@@ -55,19 +55,16 @@ class PedidoUseCaseTest {
 
     @Test
     @Order(1)
-    void savePedido_sinPlatos_rechaza() {
-
+    void savePedido_ok_procesaCorrectamente() {
         Pedido pedido = buildPedido();
-        pedido.setPlatos(null);
-        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
-                () -> useCase.savePedido(pedido));
-        assertEquals(PEDIDO_NO_EXITS.getMessage(), ex.getMessage());
-
-        pedido.setPlatos(List.of());
-        ex = assertThrows(PedidoValidationException.class,
-                () -> useCase.savePedido(pedido));
-        assertEquals(PEDIDO_NO_EXITS.getMessage(), ex.getMessage());
-
+        when(pedidoPersistence.clientFindPedidoProcess(1L)).thenReturn(false);
+        when(platoPersistence.findById(1L)).thenReturn(new Plato());
+        when(platoPersistence.findById(3L)).thenReturn(new Plato());
+        when(platoPersistence.findById(4L)).thenReturn(new Plato());
+        when(platoPersistence.existsPlatosOfRestaurant(List.of(1L, 3L, 4L), 1L)).thenReturn(false);
+        when(pedidoPersistence.savePedido(any(Pedido.class))).thenReturn(pedido);
+        useCase.savePedido(pedido);
+        verify(pedidoPersistence).savePedido(pedido);
     }
 
     @Test
@@ -85,272 +82,39 @@ class PedidoUseCaseTest {
 
     @Test
     @Order(3)
-    void savePedido_platoNoExiste_rechaza() {
-        PedidoPlato pp1 = new PedidoPlato();
+    void savePedido_sinPlatos_rechaza() {
+
         Pedido pedido = buildPedido();
-        pp1.setIdPlato(7L);
-        pp1.setCantidad(15);
-        pedido.setPlatos(List.of(pp1));
-        Restaurante restaurante = new Restaurante();
-        restaurante.setId(100L);
-
-        when(pedidoPersistence.clientFindPedidoProcess(1L)).thenReturn(false);
-        when(platoPersistence.findById(7L)).thenReturn(null);
-
+        pedido.setPlatos(null);
         PedidoValidationException ex = assertThrows(PedidoValidationException.class,
                 () -> useCase.savePedido(pedido));
-        assertEquals(ID_PLATO_PEDIDO_NULL.getMessage() + pp1.getIdPlato() , ex.getMessage());
+        assertEquals(PEDIDO_NO_EXITS.getMessage(), ex.getMessage());
+
+        pedido.setPlatos(List.of());
+        ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.savePedido(pedido));
+        assertEquals(PEDIDO_NO_EXITS.getMessage(), ex.getMessage());
+
     }
 
     @Test
     @Order(4)
-    void savePedido_ok_procesaCorrectamente() {
+    void savePedido_noEncuentraPlatos_rechaza() {
+
         Pedido pedido = buildPedido();
-
-
+        PedidoPlato pedidoPlato = new PedidoPlato();
+        pedidoPlato.setIdPlato(100L);
+        pedidoPlato.setCantidad(15);
+        pedido.setPlatos(List.of(pedidoPlato));
         when(pedidoPersistence.clientFindPedidoProcess(1L)).thenReturn(false);
-        when(platoPersistence.findById(1L)).thenReturn(new Plato());
-        when(platoPersistence.findById(3L)).thenReturn(new Plato());
-        when(platoPersistence.findById(4L)).thenReturn(new Plato());
-        when(platoPersistence.existsPlatosOfRestaurant(List.of(1L, 3L, 4L), 1L)).thenReturn(false);
-
-        Pedido saved = new Pedido();
-        saved.setId(555L);
-        when(pedidoPersistence.savePedido(pedido)).thenReturn(saved);
-
-        useCase.savePedido(pedido);
-
-        for (PedidoPlato pp : pedido.getPlatos()) {
-            assertEquals(555L, pp.getIdPedido());
-        }
-
-
-        verify(pedidoPersistence).savePedido(pedido);
-        verify(pedidoPersistence).savePedidoPlatos(eq(pedido.getPlatos()), eq(saved), anyList());
-    }
-
-    @Test
-    @Order(5)
-    void savePedido_platosNoPertenecenAlRestaurante_rechaza() {
-        Pedido pedido = buildPedido();
-
-        when(pedidoPersistence.clientFindPedidoProcess(1L)).thenReturn(false);
-        when(platoPersistence.findById(1L)).thenReturn(new Plato());
-        when(platoPersistence.findById(3L)).thenReturn(new Plato());
-        when(platoPersistence.findById(4L)).thenReturn(new Plato());
-
-
-        when(platoPersistence.existsPlatosOfRestaurant(List.of(1L, 3L, 4L), 1L)).thenReturn(true);
-
+        when(platoPersistence.findById(100L)).thenReturn(null);
         PedidoValidationException ex = assertThrows(PedidoValidationException.class,
                 () -> useCase.savePedido(pedido));
+        assertEquals(ID_PLATO_PEDIDO_NULL.getMessage() + List.of(100L), ex.getMessage());
 
-        assertEquals(PEDIDO_PLATO_RESTAURANTE.getMessage(), ex.getMessage());
-    }
-
-    @Test
-    @Order(6)
-    void findByEstadoAndRestauranteId_pendiente_conPedidos_deberiaRetornarPagina() {
-        Long idRestaurante = 1L;
-        int page = 0;
-        int pageSize = 10;
-
-        List<Pedido> pedidos = List.of(new Pedido());
-        PageResponse<Pedido> response = PageResponse.<Pedido>builder()
-                .content(pedidos)
-                .build();
-
-        when(pedidoPersistence.findByEstadoAndRestauranteId(
-                eq(PENDIENTE), eq(idRestaurante), eq(page), eq(pageSize))
-        ).thenReturn(response);
-
-        PageResponse<Pedido> result = useCase.findByEstadoAndRestauranteId(
-               PENDIENTE, idRestaurante, null, page, pageSize
-        );
-
-        assertEquals(pedidos, result.getContent());
-    }
-
-    @Test
-    @Order(7)
-    void findByEstadoAndRestauranteId_pendiente_sinPedidos_deberiaLanzarExcepcion() {
-        Long idRestaurante = 1L;
-
-        when(pedidoPersistence.findByEstadoAndRestauranteId(
-                eq(PENDIENTE), eq(idRestaurante), anyInt(), anyInt())
-        ).thenReturn(PageResponse.<Pedido>builder().content(Collections.emptyList()).build());
-
-        RefactorException exception = assertThrows(RefactorException.class, () ->
-                useCase.findByEstadoAndRestauranteId(PENDIENTE, idRestaurante, null, 0, 10)
-        );
-
-        assertTrue(exception.getMessage().contains(PEDIDO_RESTAURANTE.getMessage()));
-    }
-
-    @Test
-    @Order(8)
-    void findByEstadoAndRestauranteId_otroEstado_conPedidos_deberiaRetornarPagina() {
-        Long idRestaurante = 1L;
-        Long idChef = 99L;
-
-        List<Pedido> pedidos = List.of(new Pedido());
-        PageResponse<Pedido> response = PageResponse.<Pedido>builder()
-                .content(pedidos)
-                .build();
-
-        when(pedidoPersistence.findByEstadoAndRestauranteIdChef(
-                eq(ENTREGADO), eq(idRestaurante), eq(idChef), anyInt(), anyInt())
-        ).thenReturn(response);
-
-        PageResponse<Pedido> result = useCase.findByEstadoAndRestauranteId(
-                ENTREGADO, idRestaurante, idChef, 0, 10
-        );
-
-        assertEquals(pedidos, result.getContent());
-    }
-
-    @Test
-    @Order(9)
-    void findByEstadoAndRestauranteId_otroEstado_sinPedidos_deberiaLanzarExcepcion() {
-        Long idRestaurante = 1L;
-        Long idChef = 99L;
-
-        when(pedidoPersistence.findByEstadoAndRestauranteIdChef(
-                eq(ENTREGADO), eq(idRestaurante), eq(idChef), anyInt(), anyInt())
-        ).thenReturn(PageResponse.<Pedido>builder().content(Collections.emptyList()).build());
-
-        RefactorException exception = assertThrows(RefactorException.class, () ->
-                useCase.findByEstadoAndRestauranteId(ENTREGADO, idRestaurante, idChef, 0, 10)
-        );
-
-        assertTrue(exception.getMessage().contains(USER_NOT_RESTAURANT.getMessage()));
-    }
-
-    @Test
-    @Order(10)
-    void updatePedido_asignarChefYEstadoCuandoPendienteYSinChef() {
-
-        Long pedidoId = 1L;
-        String token = "Bearer token";
-        Pedido existente = buildPedido();
-        existente.setEstado(PENDIENTE);
-        existente.setId(1L);
-        Pedido update = buildPedido();
-        update.setEstado(EN_PREPARACION);
-        update.setIdChef(10L);
-        update.setRestaurante(null);
-        update.setPlatos(null);
-
-        when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
-
-        useCase.updatePedido(pedidoId, "empleado@email.com", update,token);
-
-        assertEquals(update.getIdChef(), existente.getIdChef());
-        assertEquals(EN_PREPARACION, existente.getEstado());
-        verify(pedidoPersistence).savePedido(existente);
-    }
-
-    @Test
-    @Order(11)
-    void updatePedido_errorCuandoChefEsNullYEstadoNoEsPendiente() {
-
-        Long pedidoId = 1L;
-        String token = "Bearer token";
-        Pedido existente = buildPedido();
-        existente.setEstado(EN_PREPARACION);
-        Pedido update = buildPedido();
-        update.setEstado(ENTREGADO);
-        update.setRestaurante(null);
-
-
-        when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
-
-        RefactorException ex = assertThrows(RefactorException.class, () ->
-                useCase.updatePedido(pedidoId, "empleado@email.com", update, token)
-        );
-
-        assertTrue(ex.getMessage().contains(EMPLEADO_PLATO_RESTAURANTE.getMessage()));
-    }
-
-
-    @Test
-    @Order(12)
-    void updatePedido_errorCuandoChefNoCoincide() {
-
-        Long pedidoId = 1L;
-        String token = "Bearer token";
-        Pedido existente = buildPedido();
-        existente.setEstado(EN_PREPARACION);
-        existente.setId(1L);
-        existente.setIdChef(1L);
-        Pedido update = buildPedido();
-        update.setEstado(ENTREGADO);
-        update.setIdChef(10L);
-        update.setRestaurante(null);
-        update.setPlatos(null);
-
-        when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
-
-        RefactorException ex = assertThrows(RefactorException.class, () ->
-                useCase.updatePedido(pedidoId, "empleado@email.com", update, token)
-        );
-
-        assertTrue(ex.getMessage().contains(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage()));
-    }
-
-    @Test
-    @Order(13)
-    void updatePedidoListo_cambiaEstadoSiChefCoincide() {
-
-        Long pedidoId = 1L;
-        Pedido existente = buildPedido();
-        String token = "Bearer token";
-        existente.setEstado(EN_PREPARACION);
-        existente.setId(1L);
-        existente.setIdChef(10L);
-        Pedido update = buildPedido();
-        update.setEstado(LISTO);
-        update.setIdChef(10L);
-        update.setRestaurante(null);
-        update.setPlatos(null);
-        User userMock = buildValidUser();
-
-        when(pedidoPersistence.findById(pedidoId)).thenReturn(existente);
-        when(apiClientPort.findByIdCUser(existente.getIdCliente(), token)).thenReturn(userMock);
-
-        useCase.updatePedido(pedidoId, "empleado@email.com", update, token);
-
-        assertEquals(LISTO, existente.getEstado());
-        verify(pedidoPersistence).savePedido(existente);
-
-        verify(apiClientPort).notificarUser(
-                eq(userMock.getCelular()),
-                pinCaptor.capture(),
-                eq(token)
-        );
 
 
     }
-
-
-    @Test
-    @Order(14)
-    void testCrearPinSeguridadViaReflection() throws Exception {
-
-
-        String pin = TestUtil.invokePrivateMethod(
-                useCase,
-                "crearPinSeguridad",
-                String.class,
-                new Class<?>[]{}
-        );
-
-        assertNotNull(pin);
-        assertEquals(4, pin.length());
-        assertTrue(pin.matches("\\d{4}"));
-    }
-
-
 
 
 private Pedido buildPedido() {

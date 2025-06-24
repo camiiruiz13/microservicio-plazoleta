@@ -38,6 +38,11 @@ public class PedidoUseCase implements IPedidoServicePort {
             throw new PedidoValidationException(PEDIDO_PROCESS.getMessage());
         }
 
+        if (pedido.getPlatos() == null || pedido.getPlatos().isEmpty()) {
+            throw new PedidoValidationException(PEDIDO_NO_EXITS.getMessage());
+        }
+
+
         List<Long> idsPlatos = pedidoPlatos.stream()
                 .map(PedidoPlato::getIdPlato)
                 .toList();
@@ -45,19 +50,14 @@ public class PedidoUseCase implements IPedidoServicePort {
         List<Long> missingPlatoIds = idsPlatos.stream()
                 .filter(id -> platoPersistencePort.findById(id) == null)
                 .toList();
-
         if (!missingPlatoIds.isEmpty()) {
             throw new PedidoValidationException(ID_PLATO_PEDIDO_NULL.getMessage() + missingPlatoIds);
         }
-
-
-
         if (platoPersistencePort.existsPlatosOfRestaurant(idsPlatos, idRestaurante)) {
             throw new PedidoValidationException(PEDIDO_PLATO_RESTAURANTE.getMessage());
         }
 
         pedidoPersistencePort.savePedido(pedido);
-
 
     }
 

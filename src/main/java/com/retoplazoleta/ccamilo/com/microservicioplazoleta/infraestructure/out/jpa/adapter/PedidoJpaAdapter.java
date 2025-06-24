@@ -43,8 +43,6 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
         return pedidoEntityMapper.toModel(pedidoGuardado);
     }
 
-
-
     @Override
     public boolean clientFindPedidoProcess(Long idCliente) {
         return pedidoRepository.existsByIdClienteAndEstadoIn(
