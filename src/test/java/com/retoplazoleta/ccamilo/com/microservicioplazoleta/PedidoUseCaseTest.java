@@ -112,7 +112,20 @@ class PedidoUseCaseTest {
                 () -> useCase.savePedido(pedido));
         assertEquals(ID_PLATO_PEDIDO_NULL.getMessage() + List.of(100L), ex.getMessage());
 
+    }
 
+    @Test
+    @Order(5)
+    void savePedido_plato_noPertenece_restahrante() {
+        Pedido pedido = buildPedido();
+        when(pedidoPersistence.clientFindPedidoProcess(1L)).thenReturn(false);
+        when(platoPersistence.findById(1L)).thenReturn(new Plato());
+        when(platoPersistence.findById(3L)).thenReturn(new Plato());
+        when(platoPersistence.findById(4L)).thenReturn(new Plato());
+        when(platoPersistence.existsPlatosOfRestaurant(List.of(1L, 3L, 4L), 1L)).thenReturn(true);
+        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.savePedido(pedido));
+        assertEquals(PEDIDO_PLATO_RESTAURANTE.getMessage(), ex.getMessage());
 
     }
 
