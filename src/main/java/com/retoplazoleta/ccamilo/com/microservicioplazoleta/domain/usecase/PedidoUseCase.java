@@ -3,7 +3,6 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PedidoValidationException;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.PlatoValidationException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RefactorException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
@@ -33,12 +32,7 @@ public class PedidoUseCase implements IPedidoServicePort {
     public void savePedido(Pedido pedido) {
         Long idRestaurante = pedido.getRestaurante().getId();
         Long idCliente = pedido.getIdCliente();
-
         List<PedidoPlato> pedidoPlatos = pedido.getPlatos();
-
-        if (pedidoPlatos == null || pedidoPlatos.isEmpty()) {
-            throw new PedidoValidationException(PEDIDO_NO_EXITS.getMessage());
-        }
 
         if (pedidoPersistencePort.clientFindPedidoProcess(idCliente)) {
             throw new PedidoValidationException(PEDIDO_PROCESS.getMessage());
@@ -48,25 +42,23 @@ public class PedidoUseCase implements IPedidoServicePort {
                 .map(PedidoPlato::getIdPlato)
                 .toList();
 
-        List<Plato> platos = idsPlatos.stream()
-                .map(id -> {
-                    Plato plato = platoPersistencePort.findById(id);
-                    if (plato == null) {
-                        throw new PedidoValidationException(ID_PLATO_PEDIDO_NULL.getMessage() + id);
-                    }
-                    return plato;
-                })
+        List<Long> missingPlatoIds = idsPlatos.stream()
+                .filter(id -> platoPersistencePort.findById(id) == null)
                 .toList();
+
+        if (!missingPlatoIds.isEmpty()) {
+            throw new PedidoValidationException(ID_PLATO_PEDIDO_NULL.getMessage() + missingPlatoIds);
+        }
+
+
 
         if (platoPersistencePort.existsPlatosOfRestaurant(idsPlatos, idRestaurante)) {
             throw new PedidoValidationException(PEDIDO_PLATO_RESTAURANTE.getMessage());
         }
 
-        Pedido pedidoGuardado = pedidoPersistencePort.savePedido(pedido);
+        pedidoPersistencePort.savePedido(pedido);
 
-        pedidoPlatos.forEach(pp -> pp.setIdPedido(pedidoGuardado.getId()));
 
-        pedidoPersistencePort.savePedidoPlatos(pedidoPlatos, pedidoGuardado, platos);
     }
 
     @Override
@@ -100,24 +92,12 @@ public class PedidoUseCase implements IPedidoServicePort {
     @Override
     public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, Long idChef, int page, int pageSize) {
 
-        PageResponse<Pedido> result = null;
+        PageResponse<Pedido> result = pedidoPersistencePort.findByEstadoAndRestauranteId(estado, idRestaurante, page, pageSize);
 
-        if (estado == EstadoPedido.PENDIENTE) {
-
-            result = pedidoPersistencePort.findByEstadoAndRestauranteId(estado, idRestaurante, page, pageSize);
-
-            if (result == null || result.getContent() == null || result.getContent().isEmpty()) {
-                throw new RefactorException(PEDIDO_RESTAURANTE, idRestaurante);
-            }
-
-        } else {
-            result = pedidoPersistencePort.findByEstadoAndRestauranteIdChef(estado, idRestaurante, idChef, page, pageSize);
-
-            if (result == null || result.getContent() == null || result.getContent().isEmpty()) {
-                throw new RefactorException(USER_NOT_RESTAURANT, idChef);
-            }
-
+        if (result == null || result.getContent() == null || result.getContent().isEmpty()) {
+            throw new RefactorException(PEDIDO_RESTAURANTE, idRestaurante);
         }
+
         return result;
     }
 

@@ -36,29 +36,14 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
 
     @Override
     public Pedido savePedido(Pedido pedido) {
-        PedidoEntity entity = pedidoEntityMapper.toEntity(pedido);
-        return pedidoEntityMapper.toModel(pedidoRepository.save(entity));
-
+        PedidoEntity pedidoEntity = pedidoEntityMapper.toEntity(pedido);
+        PedidoEntity pedidoGuardado = pedidoRepository.save(pedidoEntity);
+        List<PedidoPlatoEntity> pedidoPlatos = pedidoPlatoEntityMapper.toEntityList(pedido.getPlatos(), pedidoGuardado);
+        pedidoPlatoRepository.saveAll(pedidoPlatos);
+        return pedidoEntityMapper.toModel(pedidoGuardado);
     }
 
-    @Override
-    public List<PedidoPlato> savePedidoPlatos(List<PedidoPlato> pedidoPlatos, Pedido pedido, List<Plato> platos) {
-        List<PedidoPlatoEntity> pedidoPlatoEntities = pedidoPlatoEntityMapper.toEntityList(pedidoPlatos);
-        PedidoEntity pedidoEntity  = pedidoEntityMapper.toEntity(pedido);
-        List<PlatoEntity> platoEntities = platoEntityMapper.toPlatoEntities(platos);
 
-        Map<Long, PlatoEntity> platoEntityMap = platoEntities.stream()
-                .collect(Collectors.toMap(PlatoEntity::getId, Function.identity()));
-
-        for (PedidoPlatoEntity entity : pedidoPlatoEntities) {
-            entity.setPedido(pedidoEntity);
-            entity.setPlato(platoEntityMap.get(entity.getId().getIdPlato()));
-        }
-
-
-
-        return pedidoPlatoEntityMapper.toModelList(pedidoPlatoRepository.saveAll(pedidoPlatoEntities));
-    }
 
     @Override
     public boolean clientFindPedidoProcess(Long idCliente) {
@@ -71,7 +56,7 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
     @Override
     public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<PedidoEntity> pedidoPaginados = pedidoRepository.findByEstadoAndRestaurante_Id(estado, idRestaurante, pageable);
+        Page<PedidoEntity> pedidoPaginados = pedidoRepository.findPedidosConPlatosActivos(estado, idRestaurante, pageable);
         List<Pedido> pedidos = pedidoEntityMapper.toModelList(pedidoPaginados.getContent());
         return PageResponse.<Pedido>builder()
                 .content(pedidos)
@@ -84,22 +69,6 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
                 .build();
     }
 
-    @Override
-    public PageResponse<Pedido> findByEstadoAndRestauranteIdChef(EstadoPedido estado, Long idRestaurante, Long idChef, int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        Page<PedidoEntity> pedidoPaginados = pedidoRepository.findByEstadoAndRestauranteAndChefConditionally(estado, idRestaurante,idChef, pageable);
-        List<Pedido> pedidos = pedidoEntityMapper.toModelList(pedidoPaginados.getContent());
-        return PageResponse.<Pedido>builder()
-                .content(pedidos)
-                .currentPage(pedidoPaginados.getNumber())
-                .pageSize(pedidoPaginados.getSize())
-                .totalElements(pedidoPaginados.getTotalElements())
-                .totalPages(pedidoPaginados.getTotalPages())
-                .hasNext(pedidoPaginados.hasNext())
-                .hasPrevious(pedidoPaginados.hasPrevious())
-                .build();
-
-    }
 
     @Override
     public Pedido findById(Long id) {
