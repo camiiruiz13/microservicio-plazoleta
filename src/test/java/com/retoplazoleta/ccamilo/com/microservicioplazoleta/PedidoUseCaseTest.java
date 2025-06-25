@@ -31,8 +31,7 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.consta
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
@@ -146,7 +145,7 @@ class PedidoUseCaseTest {
         ).thenReturn(response);
 
         PageResponse<Pedido> result = useCase.findByEstadoAndRestauranteId(
-                PENDIENTE, idRestaurante,  page, pageSize
+                PENDIENTE, idRestaurante, page, pageSize
         );
 
         assertEquals(pedidos, result.getContent());
@@ -200,6 +199,25 @@ class PedidoUseCaseTest {
     }
 
 
+    @Test
+    @Order(11)
+    void notificarPedido_ok() {
+        Long idPedido = 1L;
+        Pedido pedido = buildPedido();
+        Long idChef = 1L;
+        String token = "Bearer token";
+        pedido.setIdChef(idChef);
+        pedido.setPinSeguridad("4070");
+        pedido.setEstado(LISTO);
+        User user = buildValidUser();
+        when(pedidoPersistence.findById(1L)).thenReturn(pedido);
+        when(apiClientPort.findByIdCUser(pedido.getIdCliente(), token)).thenReturn(user);
+        doNothing().when(apiClientPort)
+                .notificarUser(anyString(), anyString(), anyString());
+        useCase.notificarPedido(idPedido, "empleadotest@test.com", pedido, token);
+        verify(pedidoPersistence).savePedido(pedido);
+    }
+
 
     private Pedido buildPedido() {
 
@@ -218,10 +236,9 @@ class PedidoUseCaseTest {
         pedido.setPlatos(builPedidoPlatos());
         return pedido;
 
-
     }
 
-    private List<PedidoPlato> builPedidoPlatos(){
+    private List<PedidoPlato> builPedidoPlatos() {
 
         PedidoPlato pp1 = new PedidoPlato();
         pp1.setIdPlato(1L);
@@ -251,7 +268,6 @@ class PedidoUseCaseTest {
         user.setCorreo("test@correo.com");
         return user;
     }
-
 
 
 }

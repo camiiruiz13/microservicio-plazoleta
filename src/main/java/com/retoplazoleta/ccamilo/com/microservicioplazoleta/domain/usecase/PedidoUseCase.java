@@ -72,6 +72,8 @@ public class PedidoUseCase implements IPedidoServicePort {
     @Override
     public void notificarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) {
         Pedido pedidoExistente = findById(idPedido);
+        if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
+            throw new PedidoValidationException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef());
         String pinSeguridad = crearPinSeguridad();
         User user =  apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
         apiClientPort.notificarUser(user.getCelular(),pinSeguridad,token);
