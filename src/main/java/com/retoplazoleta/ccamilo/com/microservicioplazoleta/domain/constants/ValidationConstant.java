@@ -28,6 +28,7 @@ public enum ValidationConstant {
     PEDIDO_PROCESS("El cliente ya tiene un pedido en proceso."),
     PEDIDO_PLATO_RESTAURANTE("El plato no pertence al restaurante"),
     PEDIDO_PLATO_EMPLEADO_RESTAURANTE("El empleado no pertenece al restaurante ID EMPLEADO "),
+    CODIGO_PEDIDO("El codigo del pedido es incorrecto "),
     EMPLEADO_PLATO_RESTAURANTE("No se puede cambiar el estado, asignese el pedido ID EMPLEADO "),
     PEDIDO_RESTAURANTE("El pedido no pertenece al restaurante. Restaurante ID: "),
     USER_NOT_RESTAURANT("El empleado no pertenece al restaurante. Empleado ID: "),

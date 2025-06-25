@@ -6,7 +6,6 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.Ped
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RefactorException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.User;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
@@ -100,6 +99,18 @@ public class PedidoUseCase implements IPedidoServicePort {
         if (pedido == null)
             throw new RefactorException(ID_PEDIDO_NULL, id);
         return pedido;
+    }
+
+    @Override
+    public void entregarPedido(Long idPedido, Pedido pedido) {
+
+        Pedido pedidoExistente = findById(idPedido);
+        if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
+            throw new PedidoValidationException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef());
+        if (!pedidoExistente.getPinSeguridad().equals(pedido.getPinSeguridad()))
+            throw new PedidoValidationException(CODIGO_PEDIDO.getMessage());
+        pedidoExistente.setEstado(EstadoPedido.ENTREGADO);
+        pedidoPersistencePort.savePedido(pedidoExistente);
     }
 
     private String crearPinSeguridad() {

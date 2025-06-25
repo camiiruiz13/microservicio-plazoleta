@@ -2,11 +2,13 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.inp
 
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDeliverDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPedidoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoDeliverRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoUpdateRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.auth.AuthenticatedUser;
@@ -193,6 +195,41 @@ public class Pedidoontroller {
         pedidoDTO.setIdChef(Long.valueOf(user.getIdUser()));
         pedidoDTO.setCorreoEmpleado(user.getUsername());
         pedidoHandler.notificarPedido(id, pedidoDTO, token);
+        return new ResponseEntity<>(
+                ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping(EndpointApi.ENTREGAR_PEDIDO)
+    @PreAuthorize("hasAuthority('ROLE_EMPLEADO')")
+    @Operation(
+            summary = OP_UPDATE_PEDIDO_SUMMARY,
+            description = OP_ENTREGAR_PEDIDO_DESC
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    public ResponseEntity<GenericResponseDTO<Void>> entregarPedido(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                                                          description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
+                                                                          content = @Content(
+                                                                                  mediaType = CONTENT_TYPE,
+                                                                                  schema = @Schema(implementation = PedidoUpdateRequest.class)))
+                                                                  @PathVariable
+                                                                  @Parameter(description = OP_FILTER_ID_PEDIDO, required = true, example = EXAMPLES_ID)
+                                                                  Long id,
+                                                                  @RequestBody PedidoDeliverRequest pedidoRequest,
+                                                                  @AuthenticationPrincipal AuthenticatedUser user) {
+
+
+        PedidoDeliverDTO pedidoDTO = pedidoRequest.getRequest();
+        pedidoDTO.setIdChef(Long.valueOf(user.getIdUser()));
+        pedidoHandler.entregarPedido(id, pedidoDTO);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),
                 HttpStatus.OK

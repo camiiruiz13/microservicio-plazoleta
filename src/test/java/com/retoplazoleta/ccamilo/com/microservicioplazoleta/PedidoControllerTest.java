@@ -2,12 +2,14 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDeliverDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPedidoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.controller.Pedidoontroller;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoDeliverRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoUpdateRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.auth.AuthenticatedUser;
@@ -161,6 +163,30 @@ class PedidoControllerTest {
         assertEquals(PEDIDO_UPDATE_SUCCES.getMessage(), response.getBody().getMessage());
         verify(pedidoHandler).notificarPedido(idPedido,dto, token);
 
+    }
+
+    @Test
+    @Order(5)
+    void entregarPedido_Retorna200_CuandoRequestEsValida() {
+
+        AuthenticatedUser user = new AuthenticatedUser(
+                "10", "empleado@email.com", null,
+                List.of(new SimpleGrantedAuthority("ROLE_EMPLEADO"))
+        );
+
+        Long idPedido = 1L;
+        PedidoDeliverRequest pedidoRequest = new PedidoDeliverRequest();
+        PedidoDeliverDTO dto = new PedidoDeliverDTO();
+        dto.setIdRestaurante(1L);
+        dto.setIdChef(Long.valueOf(user.getIdUser()));
+        pedidoRequest.setRequest(dto);
+
+        doNothing().when(pedidoHandler).entregarPedido(idPedido, dto);
+
+        ResponseEntity<GenericResponseDTO<Void>> response =
+                controller.entregarPedido(idPedido, pedidoRequest, user);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
 

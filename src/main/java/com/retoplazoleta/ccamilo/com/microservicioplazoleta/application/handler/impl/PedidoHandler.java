@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.impl;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDeliverDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
@@ -50,5 +51,11 @@ public class PedidoHandler implements IPedidoHandler {
                 pedidoResponseMapper::toResponse
 
         );
+    }
+
+    @Override
+    public void entregarPedido(Long idPedido, PedidoDeliverDTO pedidoDTO) {
+        Pedido pedido = pedidoRequestMapper.toPedidoDeliver(pedidoDTO);
+        pedidoServicePort.entregarPedido(idPedido, pedido);
     }
 }

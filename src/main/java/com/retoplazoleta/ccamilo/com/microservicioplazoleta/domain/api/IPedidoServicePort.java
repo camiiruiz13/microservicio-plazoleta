@@ -11,4 +11,5 @@ public interface IPedidoServicePort {
     void notificarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) ;
     PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, int page, int pageSize);
     Pedido findById(Long id);
+    void entregarPedido(Long idPedido, Pedido pedido);
 }
