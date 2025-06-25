@@ -218,6 +218,38 @@ class PedidoUseCaseTest {
         verify(pedidoPersistence).savePedido(pedido);
     }
 
+    @Test
+    @Order(12)
+    void notificarPedido_idChef_noPertenece() {
+        Long idPedido = 1L;
+        Pedido pedido = buildPedido();
+        Pedido pedidoExistente = buildPedido();
+        pedidoExistente.setIdChef(100L);
+        String token = "Bearer token";
+        when(pedidoPersistence.findById(1L)).thenReturn(pedidoExistente);
+        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.notificarPedido(idPedido, "empleadotest@test.com", pedido, token));
+        assertEquals(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef(), ex.getMessage());
+    }
+
+    @Test
+    @Order(13)
+    void testCrearPinSeguridadViaReflection() throws Exception {
+
+
+        String pin = TestUtil.invokePrivateMethod(
+                useCase,
+                "crearPinSeguridad",
+                String.class,
+                new Class<?>[]{}
+        );
+
+        assertNotNull(pin);
+        assertEquals(4, pin.length());
+        assertTrue(pin.matches("\\d{4}"));
+    }
+
+
 
     private Pedido buildPedido() {
 
