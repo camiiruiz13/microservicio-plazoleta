@@ -18,11 +18,12 @@ import java.util.List;
 public interface IPedidoRequestMapper {
 
     @Mapping(target = "restaurante.id", source = "idRestaurante")
+    @Mapping(target = "idCliente", source = "idCliente")
     @Mapping(target = "platos", source = "platos")
-    Pedido toPedido(PedidoDTO pedidoDTO);
+    Pedido toPedido(PedidoDTO dto);
 
     @Mapping(target = "restaurante.id", source = "idRestaurante")
     Pedido toPedidoUpdate(PedidoUpdateDTO pedidoDTO);
 
-    List<PedidoPlato> toPedidoPlatoList(List<PedidoPlatoDTO> requestList);
+    List<PedidoPlato> toPedidoPlatoList(List<PedidoPlatoDTO> dtos);
 }

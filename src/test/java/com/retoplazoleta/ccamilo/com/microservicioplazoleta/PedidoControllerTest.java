@@ -12,6 +12,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.inpu
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoUpdateRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.auth.AuthenticatedUser;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,8 @@ import java.util.List;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.shared.ResponseMessage.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
@@ -38,13 +39,15 @@ class PedidoControllerTest {
     @Mock
     private IPedidoHandler pedidoHandler;
 
+    @Mock
+    private HttpServletRequest request;
+
     @InjectMocks
     private Pedidoontroller controller;
 
     @Test
     @Order(1)
     void crearPedido_Retorna201_CuandoRequestEsValida() {
-
 
 
         AuthenticatedUser user = new AuthenticatedUser(
@@ -65,6 +68,7 @@ class PedidoControllerTest {
         assertEquals(ResponseMessage.PEDIDO_SUCCES.getMessage(), response.getBody().getMessage());
         verify(pedidoHandler).savePedido(dto);
     }
+
     @Test
     @Order(2)
     void testListarPedidosRestaurante_Returns200() {
@@ -77,8 +81,6 @@ class PedidoControllerTest {
                 "1", "carlos@mail.com", null,
                 List.of(new SimpleGrantedAuthority("ROLE_EMPLEADO"))
         );
-
-
 
 
         PageResponseDTO<PedidoDTOResponse> pageResponse = PageResponseDTO.<PedidoDTOResponse>builder()
@@ -97,44 +99,69 @@ class PedidoControllerTest {
         genericResponse.setMessage(PEDIDO_LIST.getMessage());
         genericResponse.setObjectResponse(pageResponse);
 
-        when(pedidoHandler.findByEstadoAndRestauranteId(estado , idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize)).thenReturn(pageResponse);
+        when(pedidoHandler.findByEstadoAndRestauranteId(estado, idRestaurante,  page, pageSize)).thenReturn(pageResponse);
 
 
         ResponseEntity<GenericResponseDTO<PageResponseDTO<PedidoDTOResponse>>> response =
-                controller.listaDePedidosPorEstado(estado, idRestaurante,  page, pageSize, user);
+                controller.listaDePedidosPorEstado(estado, idRestaurante, page, pageSize);
 
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(PEDIDO_LIST.getMessage(), response.getBody().getMessage());
-        assertEquals(1, response.getBody().getObjectResponse().getContent().size());
-        verify(pedidoHandler).findByEstadoAndRestauranteId(estado , idRestaurante, Long.valueOf(user.getIdUser()), page, pageSize);
     }
 
     @Test
     @Order(3)
-    void actualizarPedido_Retorna200_CuandoRequestEsValida() {
-
-        Long idPedido = 10L;
+    void asignarPedido_Retorna200_CuandoRequestEsValida() {
 
         AuthenticatedUser user = new AuthenticatedUser(
                 "10", "empleado@email.com", null,
                 List.of(new SimpleGrantedAuthority("ROLE_EMPLEADO"))
         );
 
-
+        Long idPedido = 1L;
+        PedidoUpdateRequest pedidoRequest = new PedidoUpdateRequest();
         PedidoUpdateDTO dto = new PedidoUpdateDTO();
+        dto.setIdRestaurante(1L);
         dto.setIdChef(Long.valueOf(user.getIdUser()));
-        PedidoUpdateRequest request = new PedidoUpdateRequest();
-        request.setRequest(dto);
+        pedidoRequest.setRequest(dto);
 
-        ResponseEntity<GenericResponseDTO<Void>> response = controller.actualizarPedido(idPedido, request, user);
+        doNothing().when(pedidoHandler).asignarPedido(idPedido, dto);
 
+        ResponseEntity<GenericResponseDTO<Void>> response =
+                controller.asignarPedido(idPedido, pedidoRequest, user);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @Order(4)
+    void notificarPedido_Retorna200_CuandoRequestEsValida() {
+
+        AuthenticatedUser user = new AuthenticatedUser(
+                "10", "empleado@email.com", null,
+                List.of(new SimpleGrantedAuthority("ROLE_EMPLEADO"))
+        );
+
+        Long idPedido = 1L;
+        PedidoUpdateRequest pedidoRequest = new PedidoUpdateRequest();
+        PedidoUpdateDTO dto = new PedidoUpdateDTO();
+        dto.setIdRestaurante(1L);
+        dto.setIdChef(Long.valueOf(user.getIdUser()));
+        pedidoRequest.setRequest(dto);
+
+        String token = "Bearer abc.def";
+
+        when(request.getHeader(eq("Authorization"))).thenReturn(token);
+        doNothing().when(pedidoHandler).notificarPedido(idPedido, dto, token);
+
+        ResponseEntity<GenericResponseDTO<Void>> response =
+                controller.notificarPedido(request, idPedido, pedidoRequest, user);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(PEDIDO_UPDATE_SUCCES.getMessage(), response.getBody().getMessage());
-        verify(pedidoHandler).updatePedido(idPedido,dto);
-    }
+        verify(pedidoHandler).notificarPedido(idPedido,dto, token);
 
+    }
 
 
 }

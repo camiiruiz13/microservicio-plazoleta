@@ -14,23 +14,32 @@ public interface PedidoRepository extends JpaRepository<PedidoEntity, Long> {
 
     boolean existsByIdClienteAndEstadoIn(Long idCliente, List<EstadoPedido> estados);
 
-    Page<PedidoEntity> findByEstadoAndRestaurante_Id(EstadoPedido estado, Long idRestaurante, Pageable pageable);
 
-    @Query("""
-    SELECT p FROM PedidoEntity p
+
+    @Query(value = """
+    SELECT DISTINCT p
+    FROM PedidoEntity p
+    JOIN p.platos pp
+    JOIN pp.plato pl
     WHERE p.estado = :estado
-      AND p.restaurante.id = :idRestaurante
-      AND (
-            :estado = 'PENDIENTE'
-         OR p.idChef = :idChef
-      )
-""")
-    Page<PedidoEntity> findByEstadoAndRestauranteAndChefConditionally(
+    AND p.restaurante.id = :idRestaurante
+    AND pl.activo = true
+    """,
+            countQuery = """
+    SELECT COUNT(DISTINCT p)
+    FROM PedidoEntity p
+    JOIN p.platos pp
+    JOIN pp.plato pl
+    WHERE p.estado = :estado
+    AND p.restaurante.id = :idRestaurante
+    AND pl.activo = true
+    """)
+    Page<PedidoEntity> findPedidosConPlatosActivos(
             @Param("estado") EstadoPedido estado,
             @Param("idRestaurante") Long idRestaurante,
-            @Param("idChef") Long idChef,
-            Pageable pageable
-    );
+            Pageable pageable);
+
+
 
 
 }

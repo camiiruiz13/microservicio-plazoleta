@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.ApiClient.FIND_BY_CORREO_API;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.ApiClient.*;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.RESTAURANTE_ROLE_EXCEPTION;
 
 
@@ -25,6 +25,9 @@ public class ApiAdapter implements IApiClientPort {
 
     @Value("${userServices}")
     private String urlUsers;
+
+    @Value("${servicioNotificaciones}")
+    private String urlNotificaciones;
 
     @Override
     public Long idPropietario(String correo, String token) {
@@ -51,5 +54,39 @@ public class ApiAdapter implements IApiClientPort {
             throw new RoleException(RESTAURANTE_ROLE_EXCEPTION.getMessage());
 
         return userResponse.getIdUsuario();
+    }
+
+    @Override
+    public User findByIdCUser(Long idUser, String token) {
+        String url = this.urlUsers + FIND_BY_ID_API.getMessage();
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
+        String finalUrl = builder.buildAndExpand(idUser).toUriString();
+
+        GenericResponseDTO<User> response = loginClient.sendRequest(
+                finalUrl,
+                HttpMethod.GET,
+                null,
+                token, User.class);
+
+        User userResponse = response.getObjectResponse();
+
+        return userResponse;
+    }
+
+    @Override
+    public void notificarUser(String celular, String codigo, String token) {
+
+        String url = this.urlNotificaciones +SEND_NOTIFICATION_ID_USER.getMessage();
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        String finalUrl = builder.buildAndExpand(celular, codigo).toUriString();
+
+         loginClient.sendRequest(
+                finalUrl,
+                HttpMethod.GET,
+                null,
+                token, Object.class);
+
     }
 }

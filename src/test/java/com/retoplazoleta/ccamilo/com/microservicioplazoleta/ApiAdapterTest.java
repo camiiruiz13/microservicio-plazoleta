@@ -11,13 +11,14 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.ApiClient.FIND_BY_CORREO_API;
+import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.ApiClient.*;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.RESTAURANTE_ROLE_EXCEPTION;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -67,7 +68,6 @@ class ApiAdapterTest {
 
         assertEquals(expectedId, resultado);
     }
-
 
 
     @Test
@@ -174,6 +174,80 @@ class ApiAdapterTest {
         });
 
         assertEquals(RESTAURANTE_ROLE_EXCEPTION.getMessage(), ex.getMessage());
+    }
+
+    @Test
+    @Order(5)
+    void findy_By_User() {
+
+        String token = "token321";
+        Long idUser = 1L;
+
+
+        User user = buildValidUser();
+
+        GenericResponseDTO<User> response = new GenericResponseDTO<>();
+        response.setObjectResponse(user);
+
+        ReflectionTestUtils.setField(apiAdapter, "urlUsers", "http://test.com");
+
+        String urlEsperada = "http://test.com" + FIND_BY_ID_API.getMessage().replace("{id}", idUser.toString());
+
+        when(loginClient.sendRequest(
+                eq(urlEsperada),
+                eq(HttpMethod.GET),
+                isNull(),
+                eq(token),
+                eq(User.class))
+        ).thenReturn(response);
+
+        User resultado = apiAdapter.findByIdCUser(idUser, token);
+
+        assertEquals(user, resultado);
+    }
+
+    @Test
+    @Order(6)
+    void notificate_user_response() {
+        String celular = "+57123456789";
+        String codigo = "codigo example";
+        String token = "token123";
+
+        ReflectionTestUtils.setField(apiAdapter, "urlNotificaciones", "http://test.com");
+
+        String urlEsperada = "http://test.com" +
+                SEND_NOTIFICATION_ID_USER.getMessage()
+                        .replace("{destinatario}", celular)
+                        .replace("{mensaje}", codigo);
+
+        when(loginClient.sendRequest(
+                eq(urlEsperada),
+                eq(HttpMethod.GET),
+                isNull(),
+                eq(token),
+                eq(Object.class))
+        ).thenReturn(GenericResponseDTO.builder().build());
+
+        apiAdapter.notificarUser(celular, codigo, token);
+
+        verify(loginClient).sendRequest(
+                eq(urlEsperada),
+                eq(HttpMethod.GET),
+                isNull(),
+                eq(token),
+                eq(Object.class)
+        );
+    }
+
+    private User buildValidUser() {
+        User user = new User();
+        user.setIdUsuario(1L);
+        user.setNombre("Test");
+        user.setApellido("Test");
+        user.setNumeroDocumento("123456");
+        user.setCelular("+573001112233");
+        user.setCorreo("test@correo.com");
+        return user;
     }
 
 

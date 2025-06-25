@@ -87,8 +87,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    IPedidoServicePort pedidoServicePort(){
-        return new PedidoUseCase(pedidoPersistencePort(), platoPersistencePort());
+    IPedidoServicePort pedidoServicePort(IApiClientPort apiClientPort){
+        return new PedidoUseCase(apiClientPort,pedidoPersistencePort(), platoPersistencePort());
     }
 
 

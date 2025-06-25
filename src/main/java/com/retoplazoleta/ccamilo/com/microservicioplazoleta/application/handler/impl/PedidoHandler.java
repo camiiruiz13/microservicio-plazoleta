@@ -32,15 +32,21 @@ public class PedidoHandler implements IPedidoHandler {
     }
 
     @Override
-    public void updatePedido(Long idPedido, PedidoUpdateDTO pedidoDTO) {
+    public void asignarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO){
         Pedido pedido = pedidoRequestMapper.toPedidoUpdate(pedidoDTO);
-        pedidoServicePort.updatePedido(idPedido,pedidoDTO.getCorreoEmpleado(), pedido);
+        pedidoServicePort.asignarPedido(idPedido, pedido);
     }
 
     @Override
-    public PageResponseDTO<PedidoDTOResponse> findByEstadoAndRestauranteId(String estado, Long idRestaurante,  Long idChef, int page, int pageSize) {
+    public void notificarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO, String token) {
+        Pedido pedido = pedidoRequestMapper.toPedidoUpdate(pedidoDTO);
+        pedidoServicePort.notificarPedido(idPedido,pedidoDTO.getCorreoEmpleado(), pedido, token);
+    }
+
+    @Override
+    public PageResponseDTO<PedidoDTOResponse> findByEstadoAndRestauranteId(String estado, Long idRestaurante, int page, int pageSize) {
         return PageResponseMapper.toResponseDTO(
-                pedidoServicePort.findByEstadoAndRestauranteId(EstadoPedido.valueOf(estado), idRestaurante, idChef, page, pageSize),
+                pedidoServicePort.findByEstadoAndRestauranteId(EstadoPedido.valueOf(estado), idRestaurante,page, pageSize),
                 pedidoResponseMapper::toResponse
 
         );

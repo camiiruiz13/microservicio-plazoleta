@@ -44,6 +44,9 @@ public class PedidoEntity {
     @OneToMany(mappedBy = "pedido")
     private List<PedidoPlatoEntity> platos;
 
+    @Column(name = "pin_seguridad", length = 4)
+    private String pinSeguridad;
+
 
     @PrePersist
     public void prePersist() {
