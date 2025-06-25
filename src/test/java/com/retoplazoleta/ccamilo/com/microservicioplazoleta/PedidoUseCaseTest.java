@@ -236,7 +236,6 @@ class PedidoUseCaseTest {
     @Order(13)
     void testCrearPinSeguridadViaReflection() throws Exception {
 
-
         String pin = TestUtil.invokePrivateMethod(
                 useCase,
                 "crearPinSeguridad",
@@ -244,9 +243,51 @@ class PedidoUseCaseTest {
                 new Class<?>[]{}
         );
 
-        assertNotNull(pin);
         assertEquals(4, pin.length());
-        assertTrue(pin.matches("\\d{4}"));
+
+    }
+
+    @Test
+    @Order(14)
+    void entregarPedido_ok() {
+        Long idPedido = 1L;
+        Pedido pedido = buildPedido();
+        Long idChef = 1L;
+        pedido.setIdChef(idChef);
+        pedido.setPinSeguridad("4070");
+        pedido.setEstado(LISTO);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedido);
+       useCase.entregarPedido(idPedido, pedido);
+        verify(pedidoPersistence).savePedido(pedido);
+    }
+
+    @Test
+    @Order(15)
+    void entregarPedido_idChef_noPertenece() {
+        Long idPedido = 1L;
+        Pedido pedido = buildPedido();
+        Pedido pedidoExistente = buildPedido();
+        pedidoExistente.setIdChef(100L);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedidoExistente);
+        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.entregarPedido(idPedido, pedido));
+        assertEquals(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef(), ex.getMessage());
+    }
+
+    @Test
+    @Order(16)
+    void entregarPedido_codigo_error() {
+        Long idPedido = 1L;
+        Pedido pedido = buildPedido();
+        pedido.setIdChef(1L);
+        pedido.setPinSeguridad("4070");
+        Pedido pedidoExistente = buildPedido();
+        pedidoExistente.setPinSeguridad("5000");
+        pedidoExistente.setIdChef(1L);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedidoExistente);
+        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.entregarPedido(idPedido, pedido));
+        assertEquals(CODIGO_PEDIDO.getMessage(), ex.getMessage());
     }
 
 

@@ -102,6 +102,18 @@ public class PedidoUseCase implements IPedidoServicePort {
         return pedido;
     }
 
+    @Override
+    public void entregarPedido(Long idPedido, Pedido pedido) {
+
+        Pedido pedidoExistente = findById(idPedido);
+        if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
+            throw new PedidoValidationException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef());
+        if (!pedidoExistente.getPinSeguridad().equals(pedido.getPinSeguridad()))
+            throw new PedidoValidationException(CODIGO_PEDIDO.getMessage());
+        pedidoExistente.setEstado(EstadoPedido.ENTREGADO);
+        pedidoPersistencePort.savePedido(pedidoExistente);
+    }
+
     private String crearPinSeguridad() {
         int pin = (int) (Math.random() * 10_000);
         return String.format("%04d", pin);
