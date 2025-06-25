@@ -189,5 +189,29 @@ class PedidoControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
+    @Test
+    @Order(6)
+    void cancelarPedido_Retorna200_CuandoRequestEsValida() {
+
+        AuthenticatedUser user = new AuthenticatedUser(
+                "10", "empleado@email.com", null,
+                List.of(new SimpleGrantedAuthority("ROLE_CLIENTE"))
+        );
+
+        Long idPedido = 1L;
+        PedidoUpdateRequest pedidoRequest = new PedidoUpdateRequest();
+        PedidoUpdateDTO dto = new PedidoUpdateDTO();
+        dto.setIdRestaurante(1L);
+        dto.setIdCliente(Long.valueOf(user.getIdUser()));
+        pedidoRequest.setRequest(dto);
+
+        doNothing().when(pedidoHandler).cancelarPedido(idPedido, dto);
+
+        ResponseEntity<GenericResponseDTO<Void>> response =
+                controller.cancelarPedido(idPedido, pedidoRequest, user);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
 
 }

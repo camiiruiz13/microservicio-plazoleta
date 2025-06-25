@@ -125,5 +125,16 @@ class PedidoHandlerTest {
         verify(pedidoRequestMapper).toPedidoDeliver(pedidoDTO);
     }
 
+    @Test
+    @Order(6)
+    void cancelarPedido_deberiaGuardarCorrectamente() {
+        Long idPedido = 1L;
+        PedidoUpdateDTO pedidoDTO = new PedidoUpdateDTO();
+        Pedido pedido = new Pedido();
+        when(pedidoRequestMapper.toPedidoUpdate(pedidoDTO)).thenReturn(pedido);
+        pedidoHandler.cancelarPedido(idPedido, pedidoDTO);
+        verify(pedidoRequestMapper).toPedidoUpdate(pedidoDTO);
+    }
+
 
 }

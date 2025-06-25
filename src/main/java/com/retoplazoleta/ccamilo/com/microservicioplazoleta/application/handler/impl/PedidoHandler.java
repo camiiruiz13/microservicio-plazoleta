@@ -58,4 +58,10 @@ public class PedidoHandler implements IPedidoHandler {
         Pedido pedido = pedidoRequestMapper.toPedidoDeliver(pedidoDTO);
         pedidoServicePort.entregarPedido(idPedido, pedido);
     }
+
+    @Override
+    public void cancelarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO) {
+        Pedido pedido = pedidoRequestMapper.toPedidoUpdate(pedidoDTO);
+        pedidoServicePort.cancelarPedido(idPedido, pedido);
+    }
 }

@@ -236,5 +236,41 @@ public class Pedidoontroller {
         );
     }
 
+    @PutMapping(EndpointApi.CANCELAR_PEDIDO)
+    @PreAuthorize("hasAuthority('ROLE_CLIENTE')")
+    @Operation(
+            summary = OP_UPDATE_PEDIDO_SUMMARY,
+            description = OP_CANCELAR_PEDIDO_DESC
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    public ResponseEntity<GenericResponseDTO<Void>> cancelarPedido(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                                                           description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
+                                                                           content = @Content(
+                                                                                   mediaType = CONTENT_TYPE,
+                                                                                   schema = @Schema(implementation = PedidoUpdateRequest.class)))
+                                                                   @PathVariable
+                                                                   @Parameter(description = OP_FILTER_ID_PEDIDO, required = true, example = EXAMPLES_ID)
+                                                                   Long id,
+                                                                   @RequestBody PedidoUpdateRequest pedidoRequest,
+                                                                   @AuthenticationPrincipal AuthenticatedUser user) {
+
+
+        PedidoUpdateDTO pedidoDTO = pedidoRequest.getRequest();
+        pedidoDTO.setIdCliente(Long.valueOf(user.getIdUser()));
+        pedidoHandler.cancelarPedido(id, pedidoDTO);
+        return new ResponseEntity<>(
+                ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),
+                HttpStatus.OK
+        );
+    }
+
+
 
 }
