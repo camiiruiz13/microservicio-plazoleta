@@ -14,5 +14,6 @@ public interface EndpointApi {
     String CREATE_PEDIDOS = "/crearPedidos";
     String ASIGNAR_PEDIDO = "/asignarPedido/{id}";
     String NOTIFICAR_PEDIDO = "/notificarPedido/{id}";
+    String ENTREGAR_PEDIDO = "/entregarPedido/{id}";
     String LIST_PEDIDOS_BY_ESTADO = "/obtenerPedido/{estado}/restaurante/{idRestaurante}";
 }
