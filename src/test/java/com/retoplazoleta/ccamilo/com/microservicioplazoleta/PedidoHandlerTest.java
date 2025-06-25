@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDTO;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoDeliverDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
@@ -112,5 +113,17 @@ class PedidoHandlerTest {
         pedidoHandler.notificarPedido(idPedido, pedidoDTO, token);
         verify(pedidoRequestMapper).toPedidoUpdate(pedidoDTO);
     }
+
+    @Test
+    @Order(5)
+    void entregarPedido_deberiaGuardarCorrectamente() {
+        Long idPedido = 1L;
+        PedidoDeliverDTO pedidoDTO = new PedidoDeliverDTO();
+        Pedido pedido = new Pedido();
+        when(pedidoRequestMapper.toPedidoDeliver(pedidoDTO)).thenReturn(pedido);
+        pedidoHandler.entregarPedido(idPedido, pedidoDTO);
+        verify(pedidoRequestMapper).toPedidoDeliver(pedidoDTO);
+    }
+
 
 }

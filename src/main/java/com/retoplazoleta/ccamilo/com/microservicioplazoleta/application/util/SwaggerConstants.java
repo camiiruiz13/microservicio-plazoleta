@@ -38,6 +38,8 @@ public class SwaggerConstants {
     public static final String PLATO_ID_RESTAURANTE_DESC = "Id del restaurante";
     public static final String PLATO_ID_RESTAURANTE_EXAMPLE = "1";
 
+    public static final String PLATO_CODIGO_DESC = "Codigo de seguridad de notificacion";
+    public static final String PLATO_CODIGO_EXAMPLE = "1412";
 
 
     public static final String PLATO_ID_DESC = "Id del plato";
