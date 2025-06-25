@@ -26,6 +26,8 @@ public enum ValidationConstant {
     PRICE_PLATO_NULL_EXCEPTION("El precio no debe ser nulo"),
     PEDIDO_NO_EXITS("El pedido no contiene platos."),
     PEDIDO_PROCESS("El cliente ya tiene un pedido en proceso."),
+    PEDIDO_PROCESS_CANCELED("El cliente no puede cancelar pedido , porque no tiene pedido en proceso"),
+    PEDIDO_CANCELED("El cliente no pertenece al restaurante."),
     PEDIDO_PLATO_RESTAURANTE("El plato no pertence al restaurante"),
     PEDIDO_PLATO_EMPLEADO_RESTAURANTE("El empleado no pertenece al restaurante ID EMPLEADO "),
     CODIGO_PEDIDO("El codigo del pedido es incorrecto "),

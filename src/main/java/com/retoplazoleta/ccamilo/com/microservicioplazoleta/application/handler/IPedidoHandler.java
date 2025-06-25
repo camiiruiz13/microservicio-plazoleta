@@ -11,7 +11,7 @@ public interface IPedidoHandler {
     void savePedido(PedidoDTO pedidoDTO);
     void asignarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO);
     void notificarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO, String token);
-
     PageResponseDTO<PedidoDTOResponse> findByEstadoAndRestauranteId(String estado, Long idRestaurante,  int page, int pageSize);
     void entregarPedido(Long idPedido, PedidoDeliverDTO pedidoDTO);
+    void cancelarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO);
 }
