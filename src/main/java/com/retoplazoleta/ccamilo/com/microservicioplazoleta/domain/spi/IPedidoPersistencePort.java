@@ -12,16 +12,9 @@ public interface IPedidoPersistencePort {
 
     Pedido savePedido(Pedido pedido);
 
-
-
     boolean clientFindPedidoProcess(Long idCliente);
 
     PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante,  int page, int pageSize);
 
     Pedido findById(Long id);
-
-
-
-
-
 }

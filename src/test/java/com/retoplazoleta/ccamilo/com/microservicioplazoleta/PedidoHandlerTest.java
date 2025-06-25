@@ -8,7 +8,6 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.IPedidoRequestMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.IPedidoResponseMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoServicePort;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
@@ -64,7 +63,6 @@ class PedidoHandlerTest {
     @Order(2)
     void testFindPedidosRestaurante() {
         Long idRestaurante = 1L;
-        Long idChef = 1L;
         int page = 0;
         int pageSize = 5;
 
@@ -94,16 +92,25 @@ class PedidoHandlerTest {
 
     @Test
     @Order(3)
-    void updatePedido_deberiaGuardarCorrectamente() {
+    void asignarPedido_deberiaGuardarCorrectamente() {
+        Long idPedido = 1L;
+        PedidoUpdateDTO pedidoDTO = new PedidoUpdateDTO();
+        Pedido pedido = new Pedido();
+        when(pedidoRequestMapper.toPedidoUpdate(pedidoDTO)).thenReturn(pedido);
+        pedidoHandler.asignarPedido(idPedido, pedidoDTO);
+        verify(pedidoRequestMapper).toPedidoUpdate(pedidoDTO);
+    }
+
+    @Test
+    @Order(4)
+    void notificarPedido_deberiaGuardarCorrectamente() {
         Long idPedido = 1L;
         String token = "Bearer token";
         PedidoUpdateDTO pedidoDTO = new PedidoUpdateDTO();
         Pedido pedido = new Pedido();
         when(pedidoRequestMapper.toPedidoUpdate(pedidoDTO)).thenReturn(pedido);
-        pedidoHandler.updatePedido(idPedido, pedidoDTO, token);
+        pedidoHandler.notificarPedido(idPedido, pedidoDTO, token);
         verify(pedidoRequestMapper).toPedidoUpdate(pedidoDTO);
-        verify(pedidoServicePort).updatePedido(idPedido,pedidoDTO.getCorreoEmpleado(),pedido, token);
-
     }
 
 }

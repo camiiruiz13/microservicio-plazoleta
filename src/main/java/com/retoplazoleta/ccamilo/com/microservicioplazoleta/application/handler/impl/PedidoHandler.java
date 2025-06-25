@@ -32,9 +32,15 @@ public class PedidoHandler implements IPedidoHandler {
     }
 
     @Override
-    public void updatePedido(Long idPedido, PedidoUpdateDTO pedidoDTO, String token) {
+    public void asignarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO){
         Pedido pedido = pedidoRequestMapper.toPedidoUpdate(pedidoDTO);
-        pedidoServicePort.updatePedido(idPedido,pedidoDTO.getCorreoEmpleado(), pedido, token);
+        pedidoServicePort.asignarPedido(idPedido, pedido);
+    }
+
+    @Override
+    public void notificarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO, String token) {
+        Pedido pedido = pedidoRequestMapper.toPedidoUpdate(pedidoDTO);
+        pedidoServicePort.notificarPedido(idPedido,pedidoDTO.getCorreoEmpleado(), pedido, token);
     }
 
     @Override

@@ -111,7 +111,7 @@ class PedidoControllerTest {
 
     @Test
     @Order(3)
-    void actualizarPedido_Retorna200_CuandoRequestEsValida() {
+    void asignarPedido_Retorna200_CuandoRequestEsValida() {
 
         AuthenticatedUser user = new AuthenticatedUser(
                 "10", "empleado@email.com", null,
@@ -122,21 +122,44 @@ class PedidoControllerTest {
         PedidoUpdateRequest pedidoRequest = new PedidoUpdateRequest();
         PedidoUpdateDTO dto = new PedidoUpdateDTO();
         dto.setIdRestaurante(1L);
-        dto.setEstado("EN_PREPARACION");
+        dto.setIdChef(Long.valueOf(user.getIdUser()));
+        pedidoRequest.setRequest(dto);
+
+        doNothing().when(pedidoHandler).asignarPedido(idPedido, dto);
+
+        ResponseEntity<GenericResponseDTO<Void>> response =
+                controller.asignarPedido(idPedido, pedidoRequest, user);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @Order(4)
+    void notificarPedido_Retorna200_CuandoRequestEsValida() {
+
+        AuthenticatedUser user = new AuthenticatedUser(
+                "10", "empleado@email.com", null,
+                List.of(new SimpleGrantedAuthority("ROLE_EMPLEADO"))
+        );
+
+        Long idPedido = 1L;
+        PedidoUpdateRequest pedidoRequest = new PedidoUpdateRequest();
+        PedidoUpdateDTO dto = new PedidoUpdateDTO();
+        dto.setIdRestaurante(1L);
         dto.setIdChef(Long.valueOf(user.getIdUser()));
         pedidoRequest.setRequest(dto);
 
         String token = "Bearer abc.def";
 
         when(request.getHeader(eq("Authorization"))).thenReturn(token);
-        doNothing().when(pedidoHandler).updatePedido(idPedido, dto, token);
+        doNothing().when(pedidoHandler).notificarPedido(idPedido, dto, token);
 
         ResponseEntity<GenericResponseDTO<Void>> response =
-                controller.actualizarPedido(request, idPedido, pedidoRequest, user);
+                controller.notificarPedido(request, idPedido, pedidoRequest, user);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(PEDIDO_UPDATE_SUCCES.getMessage(), response.getBody().getMessage());
-        verify(pedidoHandler).updatePedido(idPedido,dto, token);
+        verify(pedidoHandler).notificarPedido(idPedido,dto, token);
 
     }
 

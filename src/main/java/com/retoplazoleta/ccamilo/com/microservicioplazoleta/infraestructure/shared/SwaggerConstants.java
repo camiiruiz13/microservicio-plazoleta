@@ -80,7 +80,8 @@ public class SwaggerConstants {
     public static final String CREATE_PEDIDO_DESCRIPTION_REQUEST = "Objeto de crear pedido";
     public static final String UPDATE_PEDIDO_DESCRIPTION_REQUEST = "Objeto de actualizar pedido";
     public static final String OP_UPDATE_PEDIDO_SUMMARY = "Actualizar pedido";
-    public static final String OP_UPDATE_PEDIDO_DESC = "Actualiza  pedido para cambiar de estado";
+    public static final String OP_ASIGNAR_PEDIDO_DESC = "Asigna el pedido a estado en preparacion";
+    public static final String OP_NOTIFICAR_PEDIDO_DESC = "Notifica al cliente que el pedido esta listo";
 
 
 

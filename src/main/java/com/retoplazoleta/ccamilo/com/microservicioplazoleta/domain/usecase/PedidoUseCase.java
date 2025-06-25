@@ -62,30 +62,21 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public void updatePedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) {
-
+    public void asignarPedido(Long idPedido, Pedido pedido) {
         Pedido pedidoExistente = findById(idPedido);
+        pedidoExistente.setIdChef(pedido.getIdChef());
+        pedidoExistente.setEstado(EstadoPedido.EN_PREPARACION);
+        pedidoPersistencePort.savePedido(pedidoExistente);
+    }
 
-        EstadoPedido estadoActual = pedidoExistente.getEstado();
-        EstadoPedido nuevoEstado = pedido.getEstado();
-
-        if (estadoActual == EstadoPedido.PENDIENTE && pedidoExistente.getIdChef() == null) {
-            pedidoExistente.setIdChef(pedido.getIdChef());
-            pedidoExistente.setEstado(nuevoEstado);
-        } else if (pedidoExistente.getIdChef() == null) {
-            throw new RefactorException(EMPLEADO_PLATO_RESTAURANTE, pedido.getIdChef());
-        } else {
-            if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
-                throw new RefactorException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE, pedido.getIdChef());
-            if (nuevoEstado == EstadoPedido.LISTO) {
-                String pinSeguridad = crearPinSeguridad();
-                User user =  apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
-                apiClientPort.notificarUser(user.getCelular(),pinSeguridad,token);
-                pedidoExistente.setPinSeguridad(pinSeguridad);
-            }
-            pedidoExistente.setEstado(nuevoEstado);
-
-        }
+    @Override
+    public void notificarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) {
+        Pedido pedidoExistente = findById(idPedido);
+        String pinSeguridad = crearPinSeguridad();
+        User user =  apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
+        apiClientPort.notificarUser(user.getCelular(),pinSeguridad,token);
+        pedidoExistente.setPinSeguridad(pinSeguridad);
+        pedidoExistente.setEstado(EstadoPedido.LISTO);
         pedidoPersistencePort.savePedido(pedidoExistente);
     }
 

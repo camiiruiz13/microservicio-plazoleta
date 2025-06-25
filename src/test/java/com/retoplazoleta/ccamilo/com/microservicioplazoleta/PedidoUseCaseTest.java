@@ -187,6 +187,18 @@ class PedidoUseCaseTest {
         assertEquals(ID_PEDIDO_NULL.getMessage() + 1L, ex.getMessage());
     }
 
+    @Test
+    @Order(10)
+    void asignarPedido_ok() {
+        Long idPedido = 1L;
+        Pedido pedido = buildPedido();
+        Long idChef = 1L;
+        pedido.setIdChef(idChef);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedido);
+        useCase.asignarPedido(idPedido, pedido);
+        verify(pedidoPersistence).savePedido(pedido);
+    }
+
 
 
     private Pedido buildPedido() {
