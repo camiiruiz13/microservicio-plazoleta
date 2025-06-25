@@ -290,6 +290,49 @@ class PedidoUseCaseTest {
         assertEquals(CODIGO_PEDIDO.getMessage(), ex.getMessage());
     }
 
+    @Test
+    @Order(17)
+    void cancelarPedido_ok() {
+        Long idPedido = 1L;
+        Pedido pedido = buildPedido();
+        pedido.setEstado(CANCELADO);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedido);
+        when(pedidoPersistence.clientFindPedidoProcess(pedido.getIdCliente())).thenReturn(true);
+        useCase.cancelarPedido(idPedido, pedido);
+        verify(pedidoPersistence).savePedido(pedido);
+    }
+
+    @Test
+    @Order(18)
+    void cancelarPedido_cliente_no_pertenece() {
+        Long idPedido = 1L;
+        Pedido pedido = buildPedido();
+        pedido.setEstado(CANCELADO);
+        Pedido pedidoExistente = new Pedido();
+        pedidoExistente.setIdCliente(10L);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedidoExistente);
+        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.cancelarPedido(idPedido, pedido));
+        assertEquals(PEDIDO_CANCELED.getMessage() + pedido.getIdCliente(), ex.getMessage());
+    }
+
+    @Test
+    @Order(19)
+    void cancelarPedido_distinto_cancelado() {
+        Long idPedido = 1L;
+        Pedido pedido = buildPedido();
+        pedido.setEstado(CANCELADO);
+        Pedido pedidoExistente = new Pedido();
+        pedidoExistente.setIdCliente(1L);
+        pedidoExistente.setEstado(LISTO);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedidoExistente);
+        when(pedidoPersistence.clientFindPedidoProcess(pedido.getIdCliente())).thenReturn(false);
+        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.cancelarPedido(idPedido, pedido));
+        assertEquals(PEDIDO_PROCESS_CANCELED.getMessage() , ex.getMessage());
+    }
+
+
 
 
     private Pedido buildPedido() {

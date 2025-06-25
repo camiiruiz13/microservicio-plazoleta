@@ -113,6 +113,18 @@ public class PedidoUseCase implements IPedidoServicePort {
         pedidoPersistencePort.savePedido(pedidoExistente);
     }
 
+    @Override
+    public void cancelarPedido(Long idPedido, Pedido pedido) {
+        Pedido pedidoExistente = findById(idPedido);
+        if (!pedidoExistente.getIdCliente().equals(pedido.getIdCliente()))
+            throw new PedidoValidationException(PEDIDO_CANCELED.getMessage() + pedido.getIdCliente());
+        if (!pedidoPersistencePort.clientFindPedidoProcess(pedido.getIdCliente())) {
+            throw new PedidoValidationException(PEDIDO_PROCESS_CANCELED.getMessage());
+        }
+        pedidoExistente.setEstado(EstadoPedido.CANCELADO);
+        pedidoPersistencePort.savePedido(pedidoExistente);
+    }
+
     private String crearPinSeguridad() {
         int pin = (int) (Math.random() * 10_000);
         return String.format("%04d", pin);
