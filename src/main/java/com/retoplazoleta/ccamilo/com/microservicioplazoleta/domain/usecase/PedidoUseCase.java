@@ -6,6 +6,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.Ped
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.exception.RefactorException;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.request.TraceLog;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.User;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
@@ -13,6 +14,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPedidoPe
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPersistencePort;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.ValidationConstant.*;
@@ -55,15 +57,15 @@ public class PedidoUseCase implements IPedidoServicePort {
         if (platoPersistencePort.existsPlatosOfRestaurant(idsPlatos, idRestaurante)) {
             throw new PedidoValidationException(PEDIDO_PLATO_RESTAURANTE.getMessage());
         }
-
         pedidoPersistencePort.savePedido(pedido);
-
     }
 
     @Override
     public void asignarPedido(Long idPedido, Pedido pedido) {
         Pedido pedidoExistente = findById(idPedido);
         pedidoExistente.setIdChef(pedido.getIdChef());
+        if (pedidoExistente.getEstado() != null)
+            throw new PedidoValidationException(PEDIDO_ESTADO_PREPARACION.getMessage() + pedidoExistente.getEstado());
         pedidoExistente.setEstado(EstadoPedido.EN_PREPARACION);
         pedidoPersistencePort.savePedido(pedidoExistente);
     }
@@ -73,16 +75,29 @@ public class PedidoUseCase implements IPedidoServicePort {
         Pedido pedidoExistente = findById(idPedido);
         if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
             throw new PedidoValidationException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef());
+        if (pedidoExistente.getEstado() == EstadoPedido.EN_PREPARACION)
+            throw new PedidoValidationException(PEDIDO_ESTADO_DIFERENTE.getMessage() + EstadoPedido.EN_PREPARACION + " " + pedidoExistente.getEstado());
         String pinSeguridad = crearPinSeguridad();
-        User user =  apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
-        apiClientPort.notificarUser(user.getCelular(),pinSeguridad,token);
+        User user = apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
+        apiClientPort.notificarUser(user.getCelular(), pinSeguridad, token);
+
+        TraceLog traceLog = TraceLog.builder().
+                idPedido(idPedido).
+                idCliente(pedidoExistente.getIdCliente()).
+                correoEmpleado(user.getCorreo()).
+                fecha(LocalDateTime.now()).
+                estadoAnterior(pedidoExistente.getEstado().name()).
+                estadoNuevo(EstadoPedido.LISTO.name()).
+                idEmpleado(pedido.getIdChef())
+                .correoEmpleado(correoEmpleado).
+                build();
         pedidoExistente.setPinSeguridad(pinSeguridad);
         pedidoExistente.setEstado(EstadoPedido.LISTO);
         pedidoPersistencePort.savePedido(pedidoExistente);
     }
 
     @Override
-    public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante,  int page, int pageSize) {
+    public PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, int page, int pageSize) {
 
         PageResponse<Pedido> result = pedidoPersistencePort.findByEstadoAndRestauranteId(estado, idRestaurante, page, pageSize);
 

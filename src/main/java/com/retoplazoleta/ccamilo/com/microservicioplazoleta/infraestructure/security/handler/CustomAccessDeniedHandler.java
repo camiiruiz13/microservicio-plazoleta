@@ -23,8 +23,6 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructu
 @RequiredArgsConstructor
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
-
-
     private static final String ERROR = "error";
     private static final String CODIGO = "codigo";
     private static final String RUTA = "ruta";

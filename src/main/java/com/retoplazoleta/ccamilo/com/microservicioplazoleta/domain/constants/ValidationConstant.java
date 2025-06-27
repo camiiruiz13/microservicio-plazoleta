@@ -35,6 +35,8 @@ public enum ValidationConstant {
     PEDIDO_RESTAURANTE("El pedido no pertenece al restaurante. Restaurante ID: "),
     USER_NOT_RESTAURANT("El empleado no pertenece al restaurante. Empleado ID: "),
     MATCHES("^\\d+$"),
+    PEDIDO_ESTADO_PREPARACION("El pedido ya tiene asignado un estado "),
+    PEDIDO_ESTADO_DIFERENTE("El pedido ya tiene asignado un estado diferente a " ),
     MATCHES_TEL("^\\+?\\d{1,13}$");
 
     private final String message;

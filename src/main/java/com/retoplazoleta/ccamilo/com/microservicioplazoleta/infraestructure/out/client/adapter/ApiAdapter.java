@@ -2,6 +2,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out
 
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.request.TraceLog;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.Role;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.User;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
@@ -28,6 +29,9 @@ public class ApiAdapter implements IApiClientPort {
 
     @Value("${servicioNotificaciones}")
     private String urlNotificaciones;
+
+    @Value("${servicioTrazabilty}")
+    private String urlTrazabilidad;
 
     @Override
     public Long idPropietario(String correo, String token) {
@@ -87,6 +91,11 @@ public class ApiAdapter implements IApiClientPort {
                 HttpMethod.GET,
                 null,
                 token, Object.class);
+
+    }
+
+    @Override
+    public void crearTraza(TraceLog traceLog, String token) {
 
     }
 }

@@ -29,6 +29,8 @@ hostUsers: http://localhost:8080
 userServices: ${hostUsers}/api/users
 hostNotificaciones: http://localhost:8082
 servicioNotificaciones: ${hostNotificaciones}/api/notificaciones
+hostTrazabilty: http://localhost:8083
+servicioTrazabilty: ${hostTrazabilty}/api/trazabilidad
 
 appDescripcion: API para gestionar platos y pedidos
 appVersion: 1.0.0
