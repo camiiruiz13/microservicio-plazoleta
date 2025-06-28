@@ -8,6 +8,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.respons
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.RoleCode;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.RoleException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import lombok.RequiredArgsConstructor;
@@ -96,6 +97,15 @@ public class ApiAdapter implements IApiClientPort {
 
     @Override
     public void crearTraza(TraceLog traceLog, String token) {
-
+        String url = this.urlTrazabilidad + CREATE_TRACE.getMessage();
+        GenericRequest<TraceLog> request = new GenericRequest<>();
+        request.setRequest(traceLog);
+        loginClient.sendRequest(
+                url,
+                HttpMethod.POST,
+                request,
+                token,
+                Object.class
+        );
     }
 }

@@ -64,7 +64,7 @@ public class PedidoUseCase implements IPedidoServicePort {
     public void asignarPedido(Long idPedido, Pedido pedido) {
         Pedido pedidoExistente = findById(idPedido);
         pedidoExistente.setIdChef(pedido.getIdChef());
-        if (pedidoExistente.getEstado() != null)
+        if (pedidoExistente.getEstado()!= EstadoPedido.PENDIENTE)
             throw new PedidoValidationException(PEDIDO_ESTADO_PREPARACION.getMessage() + pedidoExistente.getEstado());
         pedidoExistente.setEstado(EstadoPedido.EN_PREPARACION);
         pedidoPersistencePort.savePedido(pedidoExistente);
@@ -75,7 +75,7 @@ public class PedidoUseCase implements IPedidoServicePort {
         Pedido pedidoExistente = findById(idPedido);
         if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
             throw new PedidoValidationException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef());
-        if (pedidoExistente.getEstado() == EstadoPedido.EN_PREPARACION)
+        if (pedidoExistente.getEstado() != EstadoPedido.EN_PREPARACION)
             throw new PedidoValidationException(PEDIDO_ESTADO_DIFERENTE.getMessage() + EstadoPedido.EN_PREPARACION + " " + pedidoExistente.getEstado());
         String pinSeguridad = crearPinSeguridad();
         User user = apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
@@ -91,6 +91,7 @@ public class PedidoUseCase implements IPedidoServicePort {
                 idEmpleado(pedido.getIdChef())
                 .correoEmpleado(correoEmpleado).
                 build();
+        apiClientPort.crearTraza(traceLog, token);
         pedidoExistente.setPinSeguridad(pinSeguridad);
         pedidoExistente.setEstado(EstadoPedido.LISTO);
         pedidoPersistencePort.savePedido(pedidoExistente);
