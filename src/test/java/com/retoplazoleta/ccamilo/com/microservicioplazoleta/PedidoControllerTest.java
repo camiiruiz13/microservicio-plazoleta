@@ -7,7 +7,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.requ
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPedidoHandler;
-import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.controller.Pedidoontroller;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.controller.PedidoController;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoDeliverRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoRequest;
@@ -45,7 +45,7 @@ class PedidoControllerTest {
     private HttpServletRequest request;
 
     @InjectMocks
-    private Pedidoontroller controller;
+    private PedidoController controller;
 
     @Test
     @Order(1)

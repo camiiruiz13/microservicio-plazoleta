@@ -40,7 +40,7 @@ import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructu
 @RequestMapping(EndpointApi.BASE_PATH_PEDIDO)
 @RequiredArgsConstructor
 @Tag(name = SwaggerConstants.TAG_PEDIDO, description = SwaggerConstants.TAG_PEDIDO_DESC)
-public class Pedidoontroller {
+public class PedidoController {
 
     private final IPedidoHandler pedidoHandler;
 
@@ -123,7 +123,7 @@ public class Pedidoontroller {
             @RequestParam(defaultValue = PAGE_SIZE) int pageSize
     ) {
         return new ResponseEntity<>(
-                ResponseUtils.buildResponse(PEDIDO_LIST.getMessage(), pedidoHandler.findByEstadoAndRestauranteId(estado , idRestaurante,  page, pageSize),
+                ResponseUtils.buildResponse(PEDIDO_LIST.getMessage(), pedidoHandler.findByEstadoAndRestauranteId(estado, idRestaurante, page, pageSize),
                         HttpStatus.OK),
                 HttpStatus.OK
         );
@@ -143,21 +143,22 @@ public class Pedidoontroller {
             @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
-    public ResponseEntity<GenericResponseDTO<Void>> asignarPedido(@io.swagger.v3.oas.annotations.parameters.RequestBody(
-                                                                        description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
-                                                                        content = @Content(
-                                                                                mediaType = CONTENT_TYPE,
-                                                                                schema = @Schema(implementation = PedidoUpdateRequest.class)))
-                                                                         @PathVariable
-                                                                         @Parameter(description = OP_FILTER_ID_PEDIDO, required = true, example = EXAMPLES_ID)
-                                                                         Long id,
-                                                                    @RequestBody PedidoUpdateRequest pedidoRequest,
-                                                                    @AuthenticationPrincipal AuthenticatedUser user) {
+    public ResponseEntity<GenericResponseDTO<Void>> asignarPedido(HttpServletRequest request,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                                                          description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
+                                                                          content = @Content(
+                                                                                  mediaType = CONTENT_TYPE,
+                                                                                  schema = @Schema(implementation = PedidoUpdateRequest.class)))
+                                                                  @PathVariable
+                                                                  @Parameter(description = OP_FILTER_ID_PEDIDO, required = true, example = EXAMPLES_ID)
+                                                                  Long id,
+                                                                  @RequestBody PedidoUpdateRequest pedidoRequest,
+                                                                  @AuthenticationPrincipal AuthenticatedUser user) {
 
-
+        String token = request.getHeader(HEADER_AUTHORIZATION);
         PedidoUpdateDTO pedidoDTO = pedidoRequest.getRequest();
         pedidoDTO.setIdChef(Long.valueOf(user.getIdUser()));
-        pedidoHandler.asignarPedido(id, pedidoDTO);
+        pedidoHandler.asignarPedido(id, pedidoDTO, token);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),
                 HttpStatus.OK
@@ -190,7 +191,7 @@ public class Pedidoontroller {
                                                                     @RequestBody PedidoUpdateRequest pedidoRequest,
                                                                     @AuthenticationPrincipal AuthenticatedUser user) {
 
-        String token =request.getHeader(HEADER_AUTHORIZATION);
+        String token = request.getHeader(HEADER_AUTHORIZATION);
         PedidoUpdateDTO pedidoDTO = pedidoRequest.getRequest();
         pedidoDTO.setIdChef(Long.valueOf(user.getIdUser()));
         pedidoDTO.setCorreoEmpleado(user.getUsername());
@@ -215,21 +216,22 @@ public class Pedidoontroller {
             @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
-    public ResponseEntity<GenericResponseDTO<Void>> entregarPedido(@io.swagger.v3.oas.annotations.parameters.RequestBody(
-                                                                          description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
-                                                                          content = @Content(
-                                                                                  mediaType = CONTENT_TYPE,
-                                                                                  schema = @Schema(implementation = PedidoUpdateRequest.class)))
-                                                                  @PathVariable
-                                                                  @Parameter(description = OP_FILTER_ID_PEDIDO, required = true, example = EXAMPLES_ID)
-                                                                  Long id,
-                                                                  @RequestBody PedidoDeliverRequest pedidoRequest,
-                                                                  @AuthenticationPrincipal AuthenticatedUser user) {
+    public ResponseEntity<GenericResponseDTO<Void>> entregarPedido(HttpServletRequest request,
+                                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                                                           description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
+                                                                           content = @Content(
+                                                                                   mediaType = CONTENT_TYPE,
+                                                                                   schema = @Schema(implementation = PedidoUpdateRequest.class)))
+                                                                   @PathVariable
+                                                                   @Parameter(description = OP_FILTER_ID_PEDIDO, required = true, example = EXAMPLES_ID)
+                                                                   Long id,
+                                                                   @RequestBody PedidoDeliverRequest pedidoRequest,
+                                                                   @AuthenticationPrincipal AuthenticatedUser user) {
 
-
+        String token = request.getHeader(HEADER_AUTHORIZATION);
         PedidoDeliverDTO pedidoDTO = pedidoRequest.getRequest();
         pedidoDTO.setIdChef(Long.valueOf(user.getIdUser()));
-        pedidoHandler.entregarPedido(id, pedidoDTO);
+        pedidoHandler.entregarPedido(id, pedidoDTO, token);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),
                 HttpStatus.OK
@@ -250,7 +252,8 @@ public class Pedidoontroller {
             @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
-    public ResponseEntity<GenericResponseDTO<Void>> cancelarPedido(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+    public ResponseEntity<GenericResponseDTO<Void>> cancelarPedido(HttpServletRequest request,
+                                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                                                            description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
                                                                            content = @Content(
                                                                                    mediaType = CONTENT_TYPE,
@@ -262,15 +265,16 @@ public class Pedidoontroller {
                                                                    @AuthenticationPrincipal AuthenticatedUser user) {
 
 
+        String token = request.getHeader(HEADER_AUTHORIZATION);
         PedidoUpdateDTO pedidoDTO = pedidoRequest.getRequest();
         pedidoDTO.setIdCliente(Long.valueOf(user.getIdUser()));
-        pedidoHandler.cancelarPedido(id, pedidoDTO);
+        pedidoDTO.setCorreoCliente(user.getUsername());
+        pedidoHandler.cancelarPedido(id, pedidoDTO, token);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),
                 HttpStatus.OK
         );
     }
-
 
 
 }

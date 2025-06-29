@@ -61,17 +61,19 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public void asignarPedido(Long idPedido, Pedido pedido) {
+    public void asignarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) {
         Pedido pedidoExistente = findById(idPedido);
         pedidoExistente.setIdChef(pedido.getIdChef());
         if (pedidoExistente.getEstado()!= EstadoPedido.PENDIENTE)
             throw new PedidoValidationException(PEDIDO_ESTADO_PREPARACION.getMessage() + pedidoExistente.getEstado());
+        User user = apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
+        buildTraceLog(pedidoExistente, correoEmpleado, EstadoPedido.EN_PREPARACION, user.getCorreo(), token);
         pedidoExistente.setEstado(EstadoPedido.EN_PREPARACION);
         pedidoPersistencePort.savePedido(pedidoExistente);
     }
 
     @Override
-    public void notificarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) {
+    public void notificarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token){
         Pedido pedidoExistente = findById(idPedido);
         if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
             throw new PedidoValidationException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef());
@@ -80,18 +82,7 @@ public class PedidoUseCase implements IPedidoServicePort {
         String pinSeguridad = crearPinSeguridad();
         User user = apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
         apiClientPort.notificarUser(user.getCelular(), pinSeguridad, token);
-
-        TraceLog traceLog = TraceLog.builder().
-                idPedido(idPedido).
-                idCliente(pedidoExistente.getIdCliente()).
-                correoCliente(user.getCorreo()).
-                fecha(LocalDateTime.now()).
-                estadoAnterior(pedidoExistente.getEstado().name()).
-                estadoNuevo(EstadoPedido.LISTO.name()).
-                idEmpleado(pedido.getIdChef())
-                .correoEmpleado(correoEmpleado).
-                build();
-        apiClientPort.crearTraza(traceLog, token);
+        buildTraceLog(pedidoExistente, correoEmpleado, EstadoPedido.LISTO, user.getCorreo(), token);
         pedidoExistente.setPinSeguridad(pinSeguridad);
         pedidoExistente.setEstado(EstadoPedido.LISTO);
         pedidoPersistencePort.savePedido(pedidoExistente);
@@ -118,25 +109,29 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public void entregarPedido(Long idPedido, Pedido pedido) {
+    public void entregarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) {
 
         Pedido pedidoExistente = findById(idPedido);
         if (!pedidoExistente.getIdChef().equals(pedido.getIdChef()))
             throw new PedidoValidationException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef());
         if (!pedidoExistente.getPinSeguridad().equals(pedido.getPinSeguridad()))
             throw new PedidoValidationException(CODIGO_PEDIDO.getMessage());
+        User user = apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
+        buildTraceLog(pedidoExistente, correoEmpleado, EstadoPedido.ENTREGADO, user.getCorreo(), token);
         pedidoExistente.setEstado(EstadoPedido.ENTREGADO);
         pedidoPersistencePort.savePedido(pedidoExistente);
     }
 
     @Override
-    public void cancelarPedido(Long idPedido, Pedido pedido) {
+    public void cancelarPedido(Long idPedido,  Pedido pedido, String correoCliente, String token) {
         Pedido pedidoExistente = findById(idPedido);
         if (!pedidoExistente.getIdCliente().equals(pedido.getIdCliente()))
             throw new PedidoValidationException(PEDIDO_CANCELED.getMessage() + pedido.getIdCliente());
         if (!pedidoPersistencePort.clientFindPedidoProcess(pedido.getIdCliente())) {
             throw new PedidoValidationException(PEDIDO_PROCESS_CANCELED.getMessage());
         }
+        User user = apiClientPort.findByIdCUser(pedidoExistente.getIdChef(), token);
+        buildTraceLog(pedidoExistente, user.getCorreo(), EstadoPedido.CANCELADO, correoCliente, token);
         pedidoExistente.setEstado(EstadoPedido.CANCELADO);
         pedidoPersistencePort.savePedido(pedidoExistente);
     }
@@ -145,5 +140,19 @@ public class PedidoUseCase implements IPedidoServicePort {
         int pin = (int) (Math.random() * 10_000);
         return String.format("%04d", pin);
     }
+    private TraceLog buildTraceLog(Pedido p, String correoEmpleado, EstadoPedido nuevoEstado, String correoCliente, String token) {
 
+        TraceLog traceLog = TraceLog.builder()
+                .idPedido(p.getId())
+                .idCliente(p.getIdCliente())
+                .correoCliente(correoCliente)
+                .fecha(LocalDateTime.now())
+                .estadoAnterior(p.getEstado().name())
+                .estadoNuevo(nuevoEstado.name())
+                .idEmpleado(p.getIdChef()!=null ? p.getIdChef() : 0L)
+                .correoEmpleado(correoEmpleado!=null ? correoEmpleado : "")
+                .build();
+        apiClientPort.crearTraza(traceLog, token);
+        return traceLog;
+    }
 }
