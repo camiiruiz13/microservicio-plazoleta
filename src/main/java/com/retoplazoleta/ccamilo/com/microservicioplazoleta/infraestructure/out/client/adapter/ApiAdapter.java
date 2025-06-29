@@ -105,7 +105,7 @@ public class ApiAdapter implements IApiClientPort {
                 HttpMethod.POST,
                 request,
                 token,
-                Object.class
+                Void.class
         );
     }
 }

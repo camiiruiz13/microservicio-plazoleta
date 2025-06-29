@@ -84,7 +84,7 @@ public class PedidoUseCase implements IPedidoServicePort {
         TraceLog traceLog = TraceLog.builder().
                 idPedido(idPedido).
                 idCliente(pedidoExistente.getIdCliente()).
-                correoEmpleado(user.getCorreo()).
+                correoCliente(user.getCorreo()).
                 fecha(LocalDateTime.now()).
                 estadoAnterior(pedidoExistente.getEstado().name()).
                 estadoNuevo(EstadoPedido.LISTO.name()).
