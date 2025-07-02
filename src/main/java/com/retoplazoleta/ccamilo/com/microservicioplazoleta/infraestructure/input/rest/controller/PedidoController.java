@@ -158,6 +158,7 @@ public class PedidoController {
         String token = request.getHeader(HEADER_AUTHORIZATION);
         PedidoUpdateDTO pedidoDTO = pedidoRequest.getRequest();
         pedidoDTO.setIdChef(Long.valueOf(user.getIdUser()));
+        pedidoDTO.setCorreoEmpleado(user.getUsername());
         pedidoHandler.asignarPedido(id, pedidoDTO, token);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),
@@ -231,6 +232,7 @@ public class PedidoController {
         String token = request.getHeader(HEADER_AUTHORIZATION);
         PedidoDeliverDTO pedidoDTO = pedidoRequest.getRequest();
         pedidoDTO.setIdChef(Long.valueOf(user.getIdUser()));
+        pedidoDTO.setCorreoEmpleado(user.getUsername());
         pedidoHandler.entregarPedido(id, pedidoDTO, token);
         return new ResponseEntity<>(
                 ResponseUtils.buildResponse(PEDIDO_UPDATE_SUCCES.getMessage(), HttpStatus.OK),

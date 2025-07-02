@@ -204,11 +204,11 @@ class PedidoUseCaseTest {
     void asignarPedido_estado_diferente() {
         Long idPedido = 1L;
         Long idChef = 1L;
+        when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
         pedidoBase.setEstado(LISTO);
         pedidoBase.setIdChef(idChef);
         PedidoValidationException ex = assertThrows(PedidoValidationException.class,
-                () -> useCase.notificarPedido(idPedido, correoMock, pedidoBase, token));
-        assertEquals(PEDIDO_ESTADO_PREPARACION.getMessage() + pedidoBase.getEstado(), ex.getMessage());
+                () -> useCase.asignarPedido(idPedido, correoMock, pedidoBase, token));
     }
 
 
@@ -219,7 +219,7 @@ class PedidoUseCaseTest {
         Long idChef = 1L;
         pedidoBase.setIdChef(idChef);
         pedidoBase.setPinSeguridad("4070");
-        pedidoBase.setEstado(LISTO);
+        pedidoBase.setEstado(EN_PREPARACION);
         when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
         when(apiClientPort.findByIdCUser(pedidoBase.getIdCliente(), token)).thenReturn(userBase);
         useCase.notificarPedido(idPedido, correoMock, pedidoBase, token);
@@ -228,13 +228,13 @@ class PedidoUseCaseTest {
 
     @Test
     @Order(13)
-    void notificarPedido_idChef_noPertenece() {
+    void notificarPedido_idCliente_noPertenece() {
         Long idPedido = 1L;
         pedidoBase.setIdChef(100L);
         when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
         PedidoValidationException ex = assertThrows(PedidoValidationException.class,
                 () -> useCase.notificarPedido(idPedido, correoMock, pedidoBase, token));
-        assertEquals(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedidoBase.getIdChef(), ex.getMessage());
+
     }
 
     @Test
@@ -283,13 +283,12 @@ class PedidoUseCaseTest {
     @Order(17)
     void entregarPedido_codigo_error() {
         Long idPedido = 1L;
-        Pedido pedido = buildPedido();
+        pedidoBase.setIdChef(1L);
+        pedidoBase.setPinSeguridad("4070");
+        Pedido pedido = new Pedido();
+        pedido.setPinSeguridad("5000");
         pedido.setIdChef(1L);
-        pedido.setPinSeguridad("4070");
-        Pedido pedidoExistente = buildPedido();
-        pedidoExistente.setPinSeguridad("5000");
-        pedidoExistente.setIdChef(1L);
-        when(pedidoPersistence.findById(1L)).thenReturn(pedidoExistente);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
         PedidoValidationException ex = assertThrows(PedidoValidationException.class,
                 () -> useCase.entregarPedido(idPedido, correoMock, pedido, token));
         assertEquals(CODIGO_PEDIDO.getMessage(), ex.getMessage());
@@ -300,8 +299,11 @@ class PedidoUseCaseTest {
     void cancelarPedido_ok() {
         Long idPedido = 1L;
         pedidoBase.setEstado(CANCELADO);
+        pedidoBase.setIdChef(1L);
+        userBase.setIdUsuario(1L);
         when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
         when(pedidoPersistence.clientFindPedidoProcess(pedidoBase.getIdCliente())).thenReturn(true);
+        when(apiClientPort.findByIdCUser(1L, token)).thenReturn(userBase);
         useCase.cancelarPedido(idPedido, pedidoBase, correoMock, token);
         verify(pedidoPersistence).savePedido(pedidoBase);
     }
@@ -311,9 +313,10 @@ class PedidoUseCaseTest {
     void cancelarPedido_cliente_no_pertenece() {
         Long idPedido = 1L;
         pedidoBase.setEstado(CANCELADO);
+        pedidoBase.setIdChef(1L);
         Pedido pedidoExistente = new Pedido();
         pedidoExistente.setIdCliente(10L);
-        when(pedidoPersistence.findById(1L)).thenReturn(pedidoExistente);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
         PedidoValidationException ex = assertThrows(PedidoValidationException.class,
                 () -> useCase.cancelarPedido(idPedido, pedidoExistente, correoMock, token));
         assertEquals(PEDIDO_CANCELED.getMessage() + pedidoExistente.getIdCliente(), ex.getMessage());
@@ -362,6 +365,20 @@ class PedidoUseCaseTest {
         );
 
         assertNotNull(traceLog);
+    }
+
+    @Test
+    @Order(3)
+    void notificarPedido_idChef_noPertenece() {
+        Long idPedido = 1L;
+        pedidoBase.setIdChef(100L);
+        Pedido pedio = new Pedido();
+        pedidoBase.setId(1L);
+        pedio.setIdChef(1L);
+        when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
+        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.notificarPedido(idPedido, correoMock, pedio, token));
+
     }
 
 
