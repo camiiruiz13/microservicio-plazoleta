@@ -26,4 +26,7 @@ public class PedidoUpdateDTO {
 
     @Schema(hidden = true)
     private Long idCliente;
+
+    @Schema(hidden = true)
+    private String correoCliente;
 }

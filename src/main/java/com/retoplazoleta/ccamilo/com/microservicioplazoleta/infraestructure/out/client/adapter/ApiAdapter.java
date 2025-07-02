@@ -2,11 +2,13 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out
 
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.request.TraceLog;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.Role;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.User;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.RoleCode;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.RoleException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,9 @@ public class ApiAdapter implements IApiClientPort {
 
     @Value("${servicioNotificaciones}")
     private String urlNotificaciones;
+
+    @Value("${servicioTrazabilty}")
+    private String urlTrazabilidad;
 
     @Override
     public Long idPropietario(String correo, String token) {
@@ -88,5 +93,19 @@ public class ApiAdapter implements IApiClientPort {
                 null,
                 token, Object.class);
 
+    }
+
+    @Override
+    public void crearTraza(TraceLog traceLog, String token) {
+        String url = this.urlTrazabilidad + CREATE_TRACE.getMessage();
+        GenericRequest<TraceLog> request = new GenericRequest<>();
+        request.setRequest(traceLog);
+        loginClient.sendRequest(
+                url,
+                HttpMethod.POST,
+                request,
+                token,
+                Void.class
+        );
     }
 }

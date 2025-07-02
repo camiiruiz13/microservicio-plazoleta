@@ -1,8 +1,10 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.request.TraceLog;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.Role;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.User;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.RoleException;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericRequest;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.IGenericApiClient;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.adapter.ApiAdapter;
@@ -237,6 +239,28 @@ class ApiAdapterTest {
                 eq(token),
                 eq(Object.class)
         );
+    }
+
+    @Test
+    @Order(7)
+    void create_trace_response() {
+        String token = "token123";
+        ReflectionTestUtils.setField(apiAdapter, "urlTrazabilidad", "http://test.com");
+        String urlEsperada = "http://test.com" + CREATE_TRACE.getMessage();
+        when(loginClient.sendRequest(
+                eq(urlEsperada),
+                eq(HttpMethod.POST),
+                any(GenericRequest.class),
+                eq(token),
+                eq(Void.class)
+        )).thenReturn(GenericResponseDTO.<Void>builder().build());
+        apiAdapter.crearTraza(TraceLog.builder().build(), token);
+        verify(loginClient).sendRequest(eq(urlEsperada),
+                eq(HttpMethod.POST),
+                any(GenericRequest.class),
+                eq(token),
+                eq(Void.class));
+
     }
 
     private User buildValidUser() {

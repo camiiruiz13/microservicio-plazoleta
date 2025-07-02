@@ -1,6 +1,8 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPedidoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IPlatoServicePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.api.IRestauranteServicePort;
@@ -18,14 +20,15 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.mapper.*;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.repositories.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @RequiredArgsConstructor
 public class BeanConfiguration {
-
 
     private  final ICategoriaEntityMapper categoriaEntityMapper;
     private final CategoriaRepository categoriaRepository;
@@ -49,13 +52,23 @@ public class BeanConfiguration {
     }
 
     @Bean
-    RestTemplate restTemplate() {
-        return new RestTemplate();
+    RestTemplate restTemplate(ObjectMapper baseMapper) {
+        ObjectMapper mapper = baseMapper.copy()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        MappingJackson2HttpMessageConverter jsonConverter =
+                new MappingJackson2HttpMessageConverter(mapper);
+
+        return new RestTemplateBuilder()
+                .additionalMessageConverters(jsonConverter)
+                .build();
+
+
     }
 
     @Bean
     IGenericApiClient genericApiClient(ObjectMapper objectMapper) {
-        return new GenericAplClient(restTemplate(),objectMapper);
+        return new GenericAplClient(restTemplate(objectMapper),objectMapper);
     }
 
     @Bean

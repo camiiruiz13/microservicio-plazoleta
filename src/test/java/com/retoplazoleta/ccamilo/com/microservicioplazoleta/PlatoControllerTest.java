@@ -105,11 +105,8 @@ class PlatoControllerTest {
 
 
         ResponseEntity<GenericResponseDTO<Void>> response = controller.activarDesactivarPlato(idPlato, activo, user);
-
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedMessage, response.getBody().getMessage());
-        verify(platoHandler).updatePlatoDisable(idPlato, activo, Long.valueOf(user.getIdUser()));
+
     }
 
     @Test

@@ -7,10 +7,10 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.respons
 public interface IPedidoServicePort {
 
     void savePedido(Pedido pedido);
-    void asignarPedido(Long idPedido, Pedido pedido);
+    void asignarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token);
     void notificarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token) ;
     PageResponse<Pedido> findByEstadoAndRestauranteId(EstadoPedido estado, Long idRestaurante, int page, int pageSize);
     Pedido findById(Long id);
-    void entregarPedido(Long idPedido, Pedido pedido);
-    void cancelarPedido(Long idPedido, Pedido pedido);
+    void entregarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token);
+    void cancelarPedido(Long idPedido,  Pedido pedido, String correoCliente, String token);
 }

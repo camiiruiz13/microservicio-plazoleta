@@ -46,6 +46,8 @@ class PedidoHandlerTest {
     @InjectMocks
     private PedidoHandler pedidoHandler;
 
+    private final String token = "dummyToken";
+
 
     @Test
     @Order(1)
@@ -98,7 +100,7 @@ class PedidoHandlerTest {
         PedidoUpdateDTO pedidoDTO = new PedidoUpdateDTO();
         Pedido pedido = new Pedido();
         when(pedidoRequestMapper.toPedidoUpdate(pedidoDTO)).thenReturn(pedido);
-        pedidoHandler.asignarPedido(idPedido, pedidoDTO);
+        pedidoHandler.asignarPedido(idPedido, pedidoDTO, token);
         verify(pedidoRequestMapper).toPedidoUpdate(pedidoDTO);
     }
 
@@ -106,7 +108,6 @@ class PedidoHandlerTest {
     @Order(4)
     void notificarPedido_deberiaGuardarCorrectamente() {
         Long idPedido = 1L;
-        String token = "Bearer token";
         PedidoUpdateDTO pedidoDTO = new PedidoUpdateDTO();
         Pedido pedido = new Pedido();
         when(pedidoRequestMapper.toPedidoUpdate(pedidoDTO)).thenReturn(pedido);
@@ -121,7 +122,7 @@ class PedidoHandlerTest {
         PedidoDeliverDTO pedidoDTO = new PedidoDeliverDTO();
         Pedido pedido = new Pedido();
         when(pedidoRequestMapper.toPedidoDeliver(pedidoDTO)).thenReturn(pedido);
-        pedidoHandler.entregarPedido(idPedido, pedidoDTO);
+        pedidoHandler.entregarPedido(idPedido, pedidoDTO, token);
         verify(pedidoRequestMapper).toPedidoDeliver(pedidoDTO);
     }
 
@@ -132,7 +133,7 @@ class PedidoHandlerTest {
         PedidoUpdateDTO pedidoDTO = new PedidoUpdateDTO();
         Pedido pedido = new Pedido();
         when(pedidoRequestMapper.toPedidoUpdate(pedidoDTO)).thenReturn(pedido);
-        pedidoHandler.cancelarPedido(idPedido, pedidoDTO);
+        pedidoHandler.cancelarPedido(idPedido, pedidoDTO, token);
         verify(pedidoRequestMapper).toPedidoUpdate(pedidoDTO);
     }
 

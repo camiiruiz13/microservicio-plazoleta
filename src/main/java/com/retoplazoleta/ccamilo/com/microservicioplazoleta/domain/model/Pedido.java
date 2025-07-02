@@ -24,7 +24,6 @@ public class Pedido {
     private EstadoPedido estado;
     private Long idChef;
     private Restaurante restaurante;
-
     private List<PedidoPlato> platos;
     private String pinSeguridad;
 }

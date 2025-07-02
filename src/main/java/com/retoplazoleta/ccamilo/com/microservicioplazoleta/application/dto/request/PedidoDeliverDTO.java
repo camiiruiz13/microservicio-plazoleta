@@ -25,5 +25,4 @@ public class PedidoDeliverDTO {
     @Schema(hidden = true)
     private String correoEmpleado;
 
-
 }
