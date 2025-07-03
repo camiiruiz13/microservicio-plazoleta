@@ -37,6 +37,7 @@ public enum ValidationConstant {
     MATCHES("^\\d+$"),
     PEDIDO_ESTADO_PREPARACION("El pedido ya tiene asignado un estado "),
     PEDIDO_ESTADO_DIFERENTE("El pedido ya tiene asignado un estado diferente a " ),
+    PEDIDO_ESTADO_DIFERENTE_PENDIENTE("Lo sentimos, tu pedido ya está en preparación y no puede cancelarse" ),
     MATCHES_TEL("^\\+?\\d{1,13}$");
 
     private final String message;

@@ -116,6 +116,8 @@ public class PedidoUseCase implements IPedidoServicePort {
             throw new PedidoValidationException(PEDIDO_PLATO_EMPLEADO_RESTAURANTE.getMessage() + pedido.getIdChef());
         if (!pedidoExistente.getPinSeguridad().equals(pedido.getPinSeguridad()))
             throw new PedidoValidationException(CODIGO_PEDIDO.getMessage());
+        if (pedidoExistente.getEstado()!= EstadoPedido.LISTO)
+            throw new PedidoValidationException(PEDIDO_ESTADO_DIFERENTE.getMessage() + pedidoExistente.getEstado());
         User user = apiClientPort.findByIdCUser(pedidoExistente.getIdCliente(), token);
         buildTraceLog(pedidoExistente, correoEmpleado, EstadoPedido.ENTREGADO, user.getCorreo(), token);
         pedidoExistente.setEstado(EstadoPedido.ENTREGADO);
@@ -127,9 +129,8 @@ public class PedidoUseCase implements IPedidoServicePort {
         Pedido pedidoExistente = findById(idPedido);
         if (!pedidoExistente.getIdCliente().equals(pedido.getIdCliente()))
             throw new PedidoValidationException(PEDIDO_CANCELED.getMessage() + pedido.getIdCliente());
-        if (!pedidoPersistencePort.clientFindPedidoProcess(pedido.getIdCliente())) {
-            throw new PedidoValidationException(PEDIDO_PROCESS_CANCELED.getMessage());
-        }
+        if (pedidoExistente.getEstado()!= EstadoPedido.PENDIENTE)
+            throw new PedidoValidationException(PEDIDO_ESTADO_DIFERENTE_PENDIENTE.getMessage()) ;
         User user = apiClientPort.findByIdCUser(pedidoExistente.getIdChef(), token);
         buildTraceLog(pedidoExistente, user.getCorreo(), EstadoPedido.CANCELADO, correoCliente, token);
         pedidoExistente.setEstado(EstadoPedido.CANCELADO);
