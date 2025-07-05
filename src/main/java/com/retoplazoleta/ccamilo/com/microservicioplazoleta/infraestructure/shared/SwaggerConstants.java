@@ -85,6 +85,9 @@ public class SwaggerConstants {
     public static final String OP_ENTREGAR_PEDIDO_DESC = "Entregar el pedido a estado en listo";
     public static final String OP_CANCELAR_PEDIDO_DESC = "Cancela los pedidos del cliente en pendiente";
 
+    public static final String OP_FILTRAR_PEDIDO_RESTAURANTE_SUMMARY = "Filtro los pedidos por el restaurante";
+    public static final String OP_FILTRA_PEDIDO_REST_DESC = "El propietario filtra los pedidos por restaurante";
+
     public static final String OK = "200";
     public static final String CREATED = "201";
     public static final String BAD_REQUEST = "400";

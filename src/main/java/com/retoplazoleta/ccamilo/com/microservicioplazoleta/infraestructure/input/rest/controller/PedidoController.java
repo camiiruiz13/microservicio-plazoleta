@@ -6,6 +6,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.requ
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoTraceDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPedidoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.PedidoDeliverRequest;
@@ -30,6 +31,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.CONTENT_TYPE;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.security.jwt.TokenJwtConfig.HEADER_AUTHORIZATION;
@@ -144,7 +147,7 @@ public class PedidoController {
             @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
     })
     public ResponseEntity<GenericResponseDTO<Void>> asignarPedido(HttpServletRequest request,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                                                  @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                                                           description = SwaggerConstants.UPDATE_PEDIDO_DESCRIPTION_REQUEST,
                                                                           content = @Content(
                                                                                   mediaType = CONTENT_TYPE,
@@ -278,5 +281,27 @@ public class PedidoController {
         );
     }
 
-
+    @GetMapping(EndpointApi.FILTRAR_PEDIDOS_ID_RESTAURANTE)
+    @PreAuthorize("hasRole('ROLE_PROPIETARIO')")
+    @Operation(summary = SwaggerConstants.OP_FILTRAR_PEDIDO_RESTAURANTE_SUMMARY,
+            description = SwaggerConstants.OP_FILTRA_PEDIDO_REST_DESC)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerConstants.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
+            @ApiResponse(responseCode = SwaggerConstants.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    public ResponseEntity<GenericResponseDTO<List<PedidoTraceDTOResponse>>> findPedidoByIdRestaurant(HttpServletRequest request,
+                                                                                                     @PathVariable("idRestaurante")
+                                                                                                     @Parameter(description = OP_FILTER_ID_RESTAURANTE, required = true, example = EXAMPLES_ID)
+                                                                                                     Long idRestaurante,
+                                                                                                     @AuthenticationPrincipal AuthenticatedUser user) {
+        String token = request.getHeader(HEADER_AUTHORIZATION);
+        return new ResponseEntity<>(
+                ResponseUtils.buildResponse(PEDIDO_LISTAS_RESTAURANTE_ID.getMessage(), pedidoHandler.findPedidoByIdRestaurant(idRestaurante, Long.valueOf(user.getIdUser()), token),
+                        HttpStatus.OK),
+                HttpStatus.OK
+        );}
 }

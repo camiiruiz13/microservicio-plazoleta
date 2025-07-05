@@ -78,7 +78,7 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
 
     @Override
     public List<PedidoTrace> findByIdRestaurant(Long idRestaurante) {
-        return pedidoEntityMapper.toModelPedidoList(pedidoRepository.findByRestauranteEntityId(idRestaurante));
+        return pedidoEntityMapper.toModelPedidoList(pedidoRepository.findByRestauranteId(idRestaurante));
     }
 
 

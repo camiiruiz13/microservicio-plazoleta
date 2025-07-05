@@ -17,4 +17,5 @@ public interface EndpointApi {
     String ENTREGAR_PEDIDO = "/entregarPedido/{id}";
     String CANCELAR_PEDIDO = "/cancelarPedido/{id}";
     String LIST_PEDIDOS_BY_ESTADO = "/obtenerPedido/{estado}/restaurante/{idRestaurante}";
+    String FILTRAR_PEDIDOS_ID_RESTAURANTE = "/{idRestaurante}";
 }

@@ -140,10 +140,14 @@ public class PedidoUseCase implements IPedidoServicePort {
     }
 
     @Override
-    public List<PedidoTrace> findByIdRestaurant(Long idRestaurante, String token) {
+    public List<PedidoTrace> findByIdRestaurant(Long idRestaurante, Long idPropietario,String token) {
         List<PedidoTrace> findByIdRestaurant = pedidoPersistencePort.findByIdRestaurant(idRestaurante);
         if (findByIdRestaurant == null)
             throw new RefactorException(NO_EXISTE_PEDIDO_RESTAURANTE, idRestaurante);
+        Long propietarioRestaurante = findByIdRestaurant.get(0).getRestaurante().getIdPropietario();
+        if (!idPropietario.equals(propietarioRestaurante)) {
+            throw new RefactorException(PROPIETARIO_NO_PERTENECE, idPropietario);
+        }
         List<Long> clientIds = findByIdRestaurant.stream()
                 .map(PedidoTrace::getIdCliente)
                 .filter(Objects::nonNull)

@@ -16,5 +16,5 @@ public interface IPedidoServicePort {
     Pedido findById(Long id);
     void entregarPedido(Long idPedido, String correoEmpleado, Pedido pedido, String token);
     void cancelarPedido(Long idPedido,  Pedido pedido, String correoCliente, String token);
-    List<PedidoTrace> findByIdRestaurant(Long idRestaurante, String token);
+    List<PedidoTrace> findByIdRestaurant(Long idRestaurante, Long idPropietario,String token);
 }

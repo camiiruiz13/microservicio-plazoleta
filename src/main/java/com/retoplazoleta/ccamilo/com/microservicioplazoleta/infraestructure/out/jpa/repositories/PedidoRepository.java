@@ -38,6 +38,9 @@ public interface PedidoRepository extends JpaRepository<PedidoEntity, Long> {
             Pageable pageable);
 
 
-List<PedidoEntity> findByRestauranteEntityId(Long idRestaurante);
+    @Query("SELECT p FROM PedidoEntity p WHERE p.restaurante.id = :idRestaurante AND p.idChef IS NOT NULL")
+    List<PedidoEntity> findByRestauranteId(@Param("idRestaurante") Long idRestaurante);
+
+
 
 }
