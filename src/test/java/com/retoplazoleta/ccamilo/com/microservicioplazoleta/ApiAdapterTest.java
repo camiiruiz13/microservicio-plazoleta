@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -203,7 +202,7 @@ class ApiAdapterTest {
                 eq(User.class))
         ).thenReturn(response);
 
-        User resultado = apiAdapter.findByIdCUser(idUser, token);
+        User resultado = apiAdapter.idUser(idUser, token);
 
         assertEquals(user, resultado);
     }

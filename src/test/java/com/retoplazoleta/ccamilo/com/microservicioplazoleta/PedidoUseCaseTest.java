@@ -194,7 +194,7 @@ class PedidoUseCaseTest {
         Long idChef = 1L;
         pedidoBase.setIdChef(idChef);
         when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
-        when(apiClientPort.findByIdCUser(pedidoBase.getIdCliente(), token)).thenReturn(userBase);
+        when(apiClientPort.idUser(pedidoBase.getIdCliente(), token)).thenReturn(userBase);
         useCase.asignarPedido(idPedido, correoMock, pedidoBase, token);
         verify(pedidoPersistence).savePedido(pedidoBase);
     }
@@ -221,7 +221,7 @@ class PedidoUseCaseTest {
         pedidoBase.setPinSeguridad("4070");
         pedidoBase.setEstado(EN_PREPARACION);
         when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
-        when(apiClientPort.findByIdCUser(pedidoBase.getIdCliente(), token)).thenReturn(userBase);
+        when(apiClientPort.idUser(pedidoBase.getIdCliente(), token)).thenReturn(userBase);
         useCase.notificarPedido(idPedido, correoMock, pedidoBase, token);
         verify(pedidoPersistence).savePedido(pedidoBase);
     }
@@ -261,7 +261,7 @@ class PedidoUseCaseTest {
         pedidoBase.setPinSeguridad("4070");
         pedidoBase.setEstado(LISTO);
         when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
-        when(apiClientPort.findByIdCUser(pedidoBase.getIdCliente(), token)).thenReturn(userBase);
+        when(apiClientPort.idUser(pedidoBase.getIdCliente(), token)).thenReturn(userBase);
         useCase.entregarPedido(idPedido, correoMock, pedidoBase, token);
         verify(pedidoPersistence).savePedido(pedidoBase);
     }
@@ -303,7 +303,7 @@ class PedidoUseCaseTest {
         userBase.setIdUsuario(1L);
         when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
         when(pedidoPersistence.clientFindPedidoProcess(pedidoBase.getIdCliente())).thenReturn(true);
-        when(apiClientPort.findByIdCUser(1L, token)).thenReturn(userBase);
+        when(apiClientPort.idUser(1L, token)).thenReturn(userBase);
         useCase.cancelarPedido(idPedido, pedidoBase, correoMock, token);
         verify(pedidoPersistence).savePedido(pedidoBase);
     }

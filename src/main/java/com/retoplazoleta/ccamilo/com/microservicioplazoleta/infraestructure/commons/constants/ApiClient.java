@@ -10,7 +10,8 @@ public enum ApiClient {
     FIND_BY_CORREO_API("/buscarPorCorreo/{correo}"),
     FIND_BY_ID_API("/buscarPorId/{id}"),
     SEND_NOTIFICATION_ID_USER("/enviar-notificacion/{destinatario}/pedido/{mensaje}"),
-    CREATE_TRACE("/crearTrazabilidad");
+    CREATE_TRACE("/crearTrazabilidad"),
+    FIND_BY_IDS_API("/buscarPorId/{id}");
 
     private final String message;
 }

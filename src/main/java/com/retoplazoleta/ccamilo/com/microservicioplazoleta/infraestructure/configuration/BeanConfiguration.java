@@ -72,8 +72,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    IApiClientPort iApiClientPort(IGenericApiClient genericApiClient){
-        return new ApiAdapter(genericApiClient);
+    IApiClientPort iApiClientPort(IGenericApiClient genericApiClient, ObjectMapper objectMapper){
+        return new ApiAdapter(genericApiClient, objectMapper);
     }
 
     @Bean

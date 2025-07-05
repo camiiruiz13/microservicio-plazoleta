@@ -1,6 +1,7 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.mapper;
 
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PedidoTrace;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity.PedidoEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,4 +19,6 @@ public interface IPedidoEntityMapper {
     PedidoEntity toEntity(Pedido model);
     List<PedidoEntity> toEntityList(List<Pedido> models);
     List<Pedido> toModelList(List<PedidoEntity> entities);
+    PedidoTrace toModelPedido(PedidoEntity entity);
+    List<PedidoTrace> toModelPedidoList(List<PedidoEntity> entities);
 }

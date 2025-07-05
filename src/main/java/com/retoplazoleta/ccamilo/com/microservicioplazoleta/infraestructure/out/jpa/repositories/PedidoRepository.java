@@ -14,8 +14,6 @@ public interface PedidoRepository extends JpaRepository<PedidoEntity, Long> {
 
     boolean existsByIdClienteAndEstadoIn(Long idCliente, List<EstadoPedido> estados);
 
-
-
     @Query(value = """
     SELECT DISTINCT p
     FROM PedidoEntity p
@@ -40,6 +38,6 @@ public interface PedidoRepository extends JpaRepository<PedidoEntity, Long> {
             Pageable pageable);
 
 
-
+List<PedidoEntity> findByRestauranteEntityId(Long idRestaurante);
 
 }

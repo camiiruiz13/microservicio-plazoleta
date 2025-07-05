@@ -38,6 +38,7 @@ public enum ValidationConstant {
     PEDIDO_ESTADO_PREPARACION("El pedido ya tiene asignado un estado "),
     PEDIDO_ESTADO_DIFERENTE("El pedido ya tiene asignado un estado diferente a " ),
     PEDIDO_ESTADO_DIFERENTE_PENDIENTE("Lo sentimos, tu pedido ya está en preparación y no puede cancelarse" ),
+    NO_EXISTE_PEDIDO_RESTAURANTE ("No existen pedidos en el restaurante "),
     MATCHES_TEL("^\\+?\\d{1,13}$");
 
     private final String message;
