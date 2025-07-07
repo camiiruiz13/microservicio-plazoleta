@@ -69,10 +69,9 @@ public class SwaggerConstants {
     public static final String OP_FILTER_ID_RESTAURANTE = "ID del restaurante para listar su menú";
     public static final String OP_FILTER_ID_PEDIDO = "ID del pedido para actualizar";
 
-    public static final String TAG_PEDIDO = "Plato";
+    public static final String TAG_PEDIDO = "Pedido";
     public static final String TAG_PEDIDO_DESC = """
-            Solicitar los platos de mi preferencia
-            para que puedan prepararlos y traerlos a mi mesa
+            Permite al usuario solicitar los platos de su preferencia para que sean preparados y servidos en su mesa
             """;
 
     public static final String OP_CREAR_PEDIDO_SUMMARY = "Crear pedido";
