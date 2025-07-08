@@ -14,8 +14,6 @@ public interface PedidoRepository extends JpaRepository<PedidoEntity, Long> {
 
     boolean existsByIdClienteAndEstadoIn(Long idCliente, List<EstadoPedido> estados);
 
-
-
     @Query(value = """
     SELECT DISTINCT p
     FROM PedidoEntity p
@@ -39,6 +37,9 @@ public interface PedidoRepository extends JpaRepository<PedidoEntity, Long> {
             @Param("idRestaurante") Long idRestaurante,
             Pageable pageable);
 
+
+    @Query("SELECT p FROM PedidoEntity p WHERE p.restaurante.id = :idRestaurante AND p.idChef IS NOT NULL")
+    List<PedidoEntity> findByRestauranteId(@Param("idRestaurante") Long idRestaurante);
 
 
 

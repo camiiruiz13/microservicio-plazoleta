@@ -5,6 +5,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.PedidoPlato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PedidoTrace;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPedidoPersistencePort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity.PedidoEntity;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity.PedidoPlatoEntity;
@@ -73,6 +74,11 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
         return pedidoRepository.findById(id)
                 .map(pedidoEntityMapper::toModel)
                 .orElse(null);
+    }
+
+    @Override
+    public List<PedidoTrace> findByIdRestaurant(Long idRestaurante) {
+        return pedidoEntityMapper.toModelPedidoList(pedidoRepository.findByRestauranteId(idRestaurante));
     }
 
 

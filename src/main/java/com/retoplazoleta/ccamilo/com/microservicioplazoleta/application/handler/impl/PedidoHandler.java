@@ -5,6 +5,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.requ
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoTraceDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPedidoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.IPedidoRequestMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.mapper.IPedidoResponseMapper;
@@ -15,6 +16,8 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -63,5 +66,10 @@ public class PedidoHandler implements IPedidoHandler {
     public void cancelarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO, String token) {
         Pedido pedido = pedidoRequestMapper.toPedidoUpdate(pedidoDTO);
         pedidoServicePort.cancelarPedido(idPedido, pedido, pedidoDTO.getCorreoCliente(), token);
+    }
+
+    @Override
+    public List<PedidoTraceDTOResponse> findPedidoByIdRestaurant(Long idRestaurante, Long idPropietario,String token) {
+        return pedidoResponseMapper.toPedidoTraceResponseList(pedidoServicePort.findByIdRestaurant(idRestaurante, idPropietario, token));
     }
 }

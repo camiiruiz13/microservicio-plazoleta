@@ -5,6 +5,9 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.requ
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoTraceDTOResponse;
+
+import java.util.List;
 
 public interface IPedidoHandler {
 
@@ -14,4 +17,5 @@ public interface IPedidoHandler {
     PageResponseDTO<PedidoDTOResponse> findByEstadoAndRestauranteId(String estado, Long idRestaurante,  int page, int pageSize);
     void entregarPedido(Long idPedido, PedidoDeliverDTO pedidoDTO,String token);
     void cancelarPedido(Long idPedido, PedidoUpdateDTO pedidoDTO, String token);
+    List<PedidoTraceDTOResponse> findPedidoByIdRestaurant(Long idRestaurante, Long idPropietario,String token);
 }

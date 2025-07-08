@@ -1,6 +1,6 @@
 package com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.client.adapter;
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.request.TraceLog;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.Role;
@@ -16,14 +16,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.commons.constants.ApiClient.*;
 import static com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.exception.ErrorException.RESTAURANTE_ROLE_EXCEPTION;
-
 
 @RequiredArgsConstructor
 public class ApiAdapter implements IApiClientPort {
 
     private final IGenericApiClient loginClient;
+
+    private final ObjectMapper objectMapper;
 
     @Value("${userServices}")
     private String urlUsers;
@@ -62,7 +67,7 @@ public class ApiAdapter implements IApiClientPort {
     }
 
     @Override
-    public User findByIdCUser(Long idUser, String token) {
+    public User idUser(Long idUser, String token) {
         String url = this.urlUsers + FIND_BY_ID_API.getMessage();
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
@@ -108,4 +113,34 @@ public class ApiAdapter implements IApiClientPort {
                 Void.class
         );
     }
+
+    @Override
+    public List<User> fetchEmployeesAndClients(List<Long> clientIds, List<Long> chefIds, String token) {
+        String url = this.urlUsers + FIND_BY_IDS_API.getMessage();
+
+        Map<String, Object> innerRequest = Map.of(
+                "clientIds", clientIds,
+                "chefIds", chefIds
+        );
+        Map<String, Object> body = Map.of("request", innerRequest);
+
+        GenericResponseDTO<Object> resp = loginClient.sendRequest(
+                url,
+                HttpMethod.POST,
+                body,
+                token,
+                Object.class
+        );
+
+        Object rawObj = resp.getObjectResponse();
+        if (!(rawObj instanceof List)) {
+            return List.of();
+        }
+        @SuppressWarnings("unchecked")
+        List<Object> rawList = (List<Object>) rawObj;
+        return rawList.stream()
+                .map(item -> objectMapper.convertValue(item, User.class))
+                .toList();
+    }
+
 }
