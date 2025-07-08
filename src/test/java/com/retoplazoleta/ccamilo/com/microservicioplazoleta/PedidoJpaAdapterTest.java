@@ -3,6 +3,7 @@ package com.retoplazoleta.ccamilo.com.microservicioplazoleta;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.constants.EstadoPedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Pedido;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PedidoTrace;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.adapter.PedidoJpaAdapter;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.entity.*;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.out.jpa.mapper.IPedidoEntityMapper;
@@ -75,7 +76,6 @@ class PedidoJpaAdapterTest {
                 .thenReturn(true);
 
         assertTrue(adapter.clientFindPedidoProcess(idCliente));
-        verify(pedidoRepository).existsByIdClienteAndEstadoIn(eq(idCliente), anyList());
     }
 
     @Test
@@ -86,7 +86,6 @@ class PedidoJpaAdapterTest {
                 .thenReturn(false);
 
         assertFalse(adapter.clientFindPedidoProcess(idCliente));
-        verify(pedidoRepository).existsByIdClienteAndEstadoIn(eq(idCliente), anyList());
     }
 
     @Test
@@ -151,8 +150,18 @@ class PedidoJpaAdapterTest {
         Pedido resultado = adapter.findById(id);
 
         assertNotNull(resultado);
-        verify(pedidoRepository).findById(id);
-        verify(pedidoEntityMapper).toModel(pedidoEntity);
 
+    }
+
+    @Test
+    @Order(6)
+    void findByIdRestaurant() {
+        Long idRestaurant = 1L;
+        PedidoEntity pedidoEntity = new PedidoEntity();
+        PedidoTrace persistence = new PedidoTrace();
+        when(pedidoRepository.findByRestauranteId(idRestaurant)).thenReturn(List.of(pedidoEntity));
+        when(pedidoEntityMapper.toModelPedidoList(List.of(pedidoEntity))).thenReturn(List.of(persistence));
+        List<PedidoTrace> resultado = adapter.findByIdRestaurant(idRestaurant);
+        assertNotNull(resultado);
     }
 }

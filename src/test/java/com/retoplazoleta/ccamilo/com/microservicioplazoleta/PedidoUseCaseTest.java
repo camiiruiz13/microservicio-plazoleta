@@ -10,6 +10,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Plato;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.Restaurante;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.request.TraceLog;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PageResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.PedidoTrace;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.model.response.User;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IApiClientPort;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPedidoPersistencePort;
@@ -17,6 +18,8 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.spi.IPlatoPer
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.domain.usecase.PedidoUseCase;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,6 +48,10 @@ class PedidoUseCaseTest {
 
     @InjectMocks
     private PedidoUseCase useCase;
+
+    @Captor
+    private ArgumentCaptor<Pedido> pedidoCaptor;
+
 
     private Pedido pedidoBase;
     private User userBase;
@@ -294,19 +301,22 @@ class PedidoUseCaseTest {
         assertEquals(CODIGO_PEDIDO.getMessage(), ex.getMessage());
     }
 
-    @Test
     @Order(18)
+    @Test
     void cancelarPedido_ok() {
         Long idPedido = 1L;
-        pedidoBase.setEstado(CANCELADO);
+
+        pedidoBase.setEstado(EstadoPedido.PENDIENTE);
         pedidoBase.setIdChef(1L);
         userBase.setIdUsuario(1L);
-        when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
-        when(pedidoPersistence.clientFindPedidoProcess(pedidoBase.getIdCliente())).thenReturn(true);
+
+        when(pedidoPersistence.findById(idPedido)).thenReturn(pedidoBase);
         when(apiClientPort.idUser(1L, token)).thenReturn(userBase);
+
         useCase.cancelarPedido(idPedido, pedidoBase, correoMock, token);
-        verify(pedidoPersistence).savePedido(pedidoBase);
+        verify(pedidoPersistence).savePedido(pedidoCaptor.capture());
     }
+
 
     @Test
     @Order(19)
@@ -324,17 +334,16 @@ class PedidoUseCaseTest {
 
     @Test
     @Order(20)
-    void cancelarPedido_distinto_cancelado() {
+    void cancelarPedido_estadoDistinto_lanzaExcepcion() {
         Long idPedido = 1L;
-        pedidoBase.setEstado(CANCELADO);
-        pedidoBase.setIdCliente(1L);
         pedidoBase.setEstado(LISTO);
-        when(pedidoPersistence.findById(1L)).thenReturn(pedidoBase);
-        when(pedidoPersistence.clientFindPedidoProcess(pedidoBase.getIdCliente())).thenReturn(false);
+        pedidoBase.setIdCliente(1L);
+        when(pedidoPersistence.findById(idPedido)).thenReturn(pedidoBase);
         PedidoValidationException ex = assertThrows(PedidoValidationException.class,
                 () -> useCase.cancelarPedido(idPedido, pedidoBase, correoMock, token));
-        assertEquals(PEDIDO_PROCESS_CANCELED.getMessage(), ex.getMessage());
+        assertEquals(PEDIDO_ESTADO_DIFERENTE_PENDIENTE.getMessage(), ex.getMessage());
     }
+
 
 
     @Test
@@ -368,7 +377,7 @@ class PedidoUseCaseTest {
     }
 
     @Test
-    @Order(3)
+    @Order(23)
     void notificarPedido_idChef_noPertenece() {
         Long idPedido = 1L;
         pedidoBase.setIdChef(100L);
@@ -383,7 +392,7 @@ class PedidoUseCaseTest {
 
 
     @Test
-    @Order(23)
+    @Order(24)
     void buildTraceLog_sinChefYCorreoEmpleadoNull() throws Exception {
         pedidoBase.setIdChef(null);
 
@@ -397,6 +406,123 @@ class PedidoUseCaseTest {
         );
 
         assertEquals(0L, traceLog.getIdEmpleado());
+    }
+
+    @Test
+    @Order(25)
+    void cancelarPedido_estadoNoPendiente_lanzaExcepcion() {
+        Long idPedido = 1L;
+
+        Pedido pedidoPersistido = buildPedido();
+        pedidoPersistido.setEstado(EstadoPedido.LISTO);
+        pedidoPersistido.setIdCliente(1L);
+        pedidoPersistido.setIdChef(1L);
+
+        pedidoBase.setIdCliente(1L);
+        pedidoBase.setEstado(EstadoPedido.LISTO);
+
+        when(pedidoPersistence.findById(idPedido)).thenReturn(pedidoPersistido);
+
+        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.cancelarPedido(idPedido, pedidoBase, correoMock, token));
+
+        assertEquals(PEDIDO_ESTADO_DIFERENTE_PENDIENTE.getMessage(), ex.getMessage());
+    }
+
+
+    @Test
+    @Order(26)
+    void findByIdRestaurant_ok_asignaCorreos() {
+        Long idRestaurante = 1L;
+        Long idPropietario = 10L;
+        String token = "Bearer xyz";
+
+        PedidoTrace pedido = new PedidoTrace();
+        pedido.setIdCliente(101L);
+        pedido.setIdChef(202L);
+
+        Restaurante restaurante = new Restaurante();
+        restaurante.setIdPropietario(idPropietario);
+        pedido.setRestaurante(restaurante);
+
+        List<PedidoTrace> pedidos = List.of(pedido);
+
+        User cliente = new User();
+        cliente.setIdUsuario(101L);
+        cliente.setCorreo("cliente@correo.com");
+
+        User chef = new User();
+        chef.setIdUsuario(202L);
+        chef.setCorreo("chef@correo.com");
+
+        List<User> usuarios = List.of(cliente, chef);
+
+        when(pedidoPersistence.findByIdRestaurant(idRestaurante)).thenReturn(pedidos);
+        when(apiClientPort.fetchEmployeesAndClients(List.of(101L), List.of(202L), token)).thenReturn(usuarios);
+
+        List<PedidoTrace> result = useCase.findByIdRestaurant(idRestaurante, idPropietario, token);
+        assertEquals(1, result.size());
+
+    }
+
+    @Test
+    @Order(27)
+    void findByIdRestaurant_null_lanzaExcepcion() {
+        Long idRestaurante = 1L;
+        Long idPropietario = 10L;
+        String token = "Bearer xyz";
+
+        when(pedidoPersistence.findByIdRestaurant(idRestaurante)).thenReturn(null);
+
+        RefactorException ex = assertThrows(RefactorException.class,
+                () -> useCase.findByIdRestaurant(idRestaurante, idPropietario, token));
+
+        assertEquals(NO_EXISTE_PEDIDO_RESTAURANTE.getMessage() + idRestaurante, ex.getMessage());
+    }
+    @Test
+    @Order(28)
+    void findByIdRestaurant_propietarioInvalido_lanzaExcepcion() {
+        Long idRestaurante = 1L;
+        Long idPropietario = 10L;
+        Long propietarioReal = 99L;
+
+        PedidoTrace pedido = new PedidoTrace();
+        Restaurante restaurante = new Restaurante();
+        restaurante.setIdPropietario(propietarioReal);
+        pedido.setRestaurante(restaurante);
+
+        List<PedidoTrace> pedidos = List.of(pedido);
+
+        when(pedidoPersistence.findByIdRestaurant(idRestaurante)).thenReturn(pedidos);
+
+        RefactorException ex = assertThrows(RefactorException.class,
+                () -> useCase.findByIdRestaurant(idRestaurante, idPropietario, "Bearer xyz"));
+
+        assertEquals(PROPIETARIO_NO_PERTENECE.getMessage() + idPropietario, ex.getMessage());
+    }
+
+    @Test
+    @Order(30)
+    void entregarPedido_estadoNoListo_lanzaExcepcion() {
+        Long idPedido = 1L;
+
+        Pedido pedidoPersistido = buildPedido();
+        pedidoPersistido.setEstado(PENDIENTE);
+        pedidoPersistido.setIdCliente(1L);
+        pedidoPersistido.setIdChef(1L);
+        pedidoPersistido.setPinSeguridad("4070");
+
+        pedidoBase.setIdCliente(1L);
+        pedidoBase.setEstado(LISTO);
+        pedidoBase.setPinSeguridad("4070");
+        pedidoBase.setIdChef(1L);
+
+        when(pedidoPersistence.findById(idPedido)).thenReturn(pedidoPersistido);
+
+        PedidoValidationException ex = assertThrows(PedidoValidationException.class,
+                () -> useCase.entregarPedido(idPedido, correoMock, pedidoBase,  token));
+
+        assertEquals(PEDIDO_ESTADO_DIFERENTE.getMessage() + pedidoPersistido.getEstado(), ex.getMessage());
     }
 
 

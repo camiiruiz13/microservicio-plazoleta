@@ -6,6 +6,7 @@ import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.requ
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.request.PedidoUpdateDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PageResponseDTO;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoDTOResponse;
+import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.dto.response.PedidoTraceDTOResponse;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.application.handler.IPedidoHandler;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.controller.PedidoController;
 import com.retoplazoleta.ccamilo.com.microservicioplazoleta.infraestructure.input.rest.dto.GenericResponseDTO;
@@ -209,6 +210,25 @@ class PedidoControllerTest {
 
         ResponseEntity<GenericResponseDTO<Void>> response =
                 controller.cancelarPedido(request, idPedido, pedidoRequest, user);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @Order(7)
+    void findPedidoByIdRestaurant() {
+
+        PedidoTraceDTOResponse pedidoTraceDTOResponse = new PedidoTraceDTOResponse();
+        AuthenticatedUser user = new AuthenticatedUser(
+                "10", "empleado@email.com", null,
+                List.of(new SimpleGrantedAuthority("ROLE_PROPIETARIO"))
+        );
+
+        Long idPedido = 1L;
+        when(request.getHeader(eq("Authorization"))).thenReturn(token);
+        when(pedidoHandler.findPedidoByIdRestaurant(idPedido, Long.valueOf(user.getIdUser()), token)).thenReturn(List.of(pedidoTraceDTOResponse));
+        ResponseEntity<GenericResponseDTO<List<PedidoTraceDTOResponse>>> response =
+                controller.findPedidoByIdRestaurant(request, idPedido, user);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
